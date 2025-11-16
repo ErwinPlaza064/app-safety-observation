@@ -3,18 +3,18 @@
     "tasks": [
         {
             "type": "shell",
-            "label": "Inicar Frontend",
-            "command": "npm",
-            "args": ["run", "dev"],
+            "label": "Inicar Backend",
+            "command": "php",
+            "args": ["artisan", "serve"],
             "runOptions": {
                 "runOn": "folderOpen"
             }
         },
         {
             "type": "shell",
-            "label": "Inicar Backend",
-            "command": "php",
-            "args": ["artisan", "serve"],
+            "label": "Inicar Frontend",
+            "command": "npm",
+            "args": ["run", "dev"],
             "runOptions": {
                 "runOn": "folderOpen"
             }
