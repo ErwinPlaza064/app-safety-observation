@@ -1,0 +1,22 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "type": "npm",
+            "label": "Inicar Frontend",
+            "script": "dev",
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        },
+        {
+            "type": "shell",
+            "label": "Inicar Backend",
+            "command": "php",
+            "args": ["artisan", "serve"],
+            "runOptions": {
+                "runOn": "folderOpen"
+            }
+        }
+    ]
+}
