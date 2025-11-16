@@ -27,8 +27,16 @@ class AdminPanelProvider extends PanelProvider
             ->id('admin')
             ->path('admin')
             ->colors([
-                'primary' => Color::Amber,
+                'primary' => '#22408e', // Azul Wasion
+                'danger' => '#DC2626',  // Rojo para alertas
+                'gray' => '#6B7280',    // Gris neutro
+                'info' => '#3B82F6',    // Azul información
+                'success' => '#16A34A', // Verde éxito
+                'warning' => '#EAB308', // Amarillo advertencia
             ])
+            ->brandName('Safety Observation - Wasion')
+            ->brandLogo(asset('images/wasion-logo.svg'))
+            ->favicon(asset('images/favicon.ico'))
             ->discoverResources(in: app_path('Filament/Admin/Resources'), for: 'App\Filament\Admin\Resources')
             ->discoverPages(in: app_path('Filament/Admin/Pages'), for: 'App\Filament\Admin\Pages')
             ->pages([
