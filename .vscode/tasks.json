@@ -2,9 +2,10 @@
     "version": "2.0.0",
     "tasks": [
         {
-            "type": "npm",
+            "type": "shell",
             "label": "Inicar Frontend",
-            "script": "dev",
+            "command": "npm",
+            "args": ["run", "dev"],
             "runOptions": {
                 "runOn": "folderOpen"
             }
