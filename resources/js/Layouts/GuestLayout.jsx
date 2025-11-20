@@ -1,17 +1,24 @@
-import ApplicationLogo from '@/Components/ApplicationLogo';
-import { Link } from '@inertiajs/react';
+import WasionLogo from "@/Components/WasionLogo";
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="flex min-h-screen flex-col items-center bg-gray-100 pt-6 sm:justify-center sm:pt-0">
-            <div>
-                <Link href="/">
-                    <ApplicationLogo className="h-20 w-20 fill-current text-gray-500" />
-                </Link>
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 bg-gray-50">
+            {/* Logo y título */}
+            <div className="mb-8 text-center">
+                <WasionLogo className="h-12 mx-auto mb-4 w-auto" />
+                <h1 className="mb-2 text-2xl font-bold text-blue-900">
+                    Safety Observation
+                </h1>
             </div>
 
-            <div className="mt-6 w-full overflow-hidden bg-white px-6 py-4 shadow-md sm:max-w-md sm:rounded-lg">
+            {/* Card del formulario */}
+            <div className="w-full max-w-md px-8 py-8 bg-white rounded-lg shadow-lg">
                 {children}
+            </div>
+
+            {/* Footer */}
+            <div className="mt-8 text-xs text-center text-gray-500">
+                <p>© 2025 Wasion México. Todos los derechos reservados.</p>
             </div>
         </div>
     );

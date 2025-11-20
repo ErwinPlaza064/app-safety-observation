@@ -13,12 +13,19 @@ return new class extends Migration
     {
         Schema::create('users', function (Blueprint $table) {
             $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
+            $table->string('employee_number', 50)->unique()->comment('Número de nómina');
+            $table->string('name')->comment('Nombre completo del empleado');
+            $table->string('email')->unique()->comment('Correo corporativo (@wasion.cn o @wasion.com)');
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
+            $table->string('area')->nullable()->comment('Área de trabajo');
+            $table->string('position')->nullable()->comment('Puesto del empleado');
+            $table->boolean('is_ehs_manager')->default(false)->comment('Acceso a dashboard de estadísticas');
             $table->rememberToken();
             $table->timestamps();
+
+            // Índices
+            $table->index('employee_number');
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

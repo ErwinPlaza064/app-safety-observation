@@ -27,8 +27,34 @@ class LoginRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'email' => ['required', 'string', 'email'],
+            'login' => ['required', 'string'],
             'password' => ['required', 'string'],
+        ];
+    }
+
+    /**
+     * Get custom messages for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function messages(): array
+    {
+        return [
+            'login.required' => 'El número de nómina o correo es obligatorio.',
+            'password.required' => 'La contraseña es obligatoria.',
+        ];
+    }
+
+    /**
+     * Get custom attributes for validator errors.
+     *
+     * @return array<string, string>
+     */
+    public function attributes(): array
+    {
+        return [
+            'login' => 'número de nómina o correo',
+            'password' => 'contraseña',
         ];
     }
 
@@ -41,11 +67,19 @@ class LoginRequest extends FormRequest
     {
         $this->ensureIsNotRateLimited();
 
-        if (! Auth::attempt($this->only('email', 'password'), $this->boolean('remember'))) {
+        // Determinar si el login es email o número de nómina
+        $loginField = filter_var($this->login, FILTER_VALIDATE_EMAIL) ? 'email' : 'employee_number';
+
+        $credentials = [
+            $loginField => $this->login,
+            'password' => $this->password,
+        ];
+
+        if (! Auth::attempt($credentials, $this->boolean('remember'))) {
             RateLimiter::hit($this->throttleKey());
 
             throw ValidationException::withMessages([
-                'email' => trans('auth.failed'),
+                'login' => 'Las credenciales proporcionadas no coinciden con nuestros registros.',
             ]);
         }
 
@@ -68,10 +102,7 @@ class LoginRequest extends FormRequest
         $seconds = RateLimiter::availableIn($this->throttleKey());
 
         throw ValidationException::withMessages([
-            'email' => trans('auth.throttle', [
-                'seconds' => $seconds,
-                'minutes' => ceil($seconds / 60),
-            ]),
+            'login' => 'Demasiados intentos de inicio de sesión. Por favor intente de nuevo en ' . $seconds . ' segundos.',
         ]);
     }
 
