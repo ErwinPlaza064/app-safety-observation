@@ -21,7 +21,7 @@ export default function DeleteUserModal({ show, user, onClose, onConfirm }) {
                         Cancelar
                     </SecondaryButton>
                     <DangerButton onClick={onConfirm}>
-                        Eliminar Usuarios
+                        Eliminar Usuario
                     </DangerButton>
                 </div>
             </div>
