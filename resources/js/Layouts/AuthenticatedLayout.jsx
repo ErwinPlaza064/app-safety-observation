@@ -32,15 +32,14 @@ export default function AuthenticatedLayout({ header, children }) {
                                     <ApplicationLogo className="block w-auto h-6 text-gray-800 fill-current" />
                                 </Link>
                             </div>
-
-                            <div className="hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
-                                <NavLink
-                                    href={route("dashboard")}
-                                    active={route().current("dashboard")}
-                                >
-                                    Panel de Control
-                                </NavLink>
-                            </div>
+                        </div>
+                        <div className="justify-center hidden space-x-8 sm:-my-px sm:ms-10 sm:flex">
+                            <NavLink
+                                href={route("dashboard")}
+                                active={route().current("dashboard")}
+                            >
+                                Panel de Control
+                            </NavLink>
                         </div>
 
                         <div className="hidden sm:ms-6 sm:flex sm:items-center">
