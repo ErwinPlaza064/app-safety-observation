@@ -26,10 +26,9 @@ class UserManagementController extends Controller
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }
 
-    public function destroy(User $user)
+    public function destroy(Request $request, User $user)
     {
-        // Evitar que el super admin se elimine a sí mismo
-        if ($user->id === auth()->id()) {
+        if ($user->id === $request->user()->id) {
             return Redirect::route('dashboard')->with('error', 'No puedes eliminar tu propia cuenta');
         }
 

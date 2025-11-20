@@ -6,7 +6,10 @@ export default function WelcomeCard({ user, userStats }) {
                     Bienvenido, {userStats.name}
                 </h3>
                 <p className="mt-2 text-sm text-gray-600">
-                    {userStats.position} {userStats.area}
+                    <strong>Puesto: </strong>
+                    {userStats.position} <br />
+                    <strong>Área: </strong>
+                    {userStats.area}
                 </p>
                 <div className="flex gap-2 mt-4">
                     {user.is_super_admin && (
