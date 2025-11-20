@@ -6,13 +6,7 @@ export default function Dashboard({ userStats, users, stats }) {
     const user = auth.user;
 
     return (
-        <AuthenticatedLayout
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
-                    Panel de Control
-                </h2>
-            }
-        >
+        <AuthenticatedLayout>
             <Head title="Panel de Control" />
 
             <div className="py-12">
@@ -27,7 +21,7 @@ export default function Dashboard({ userStats, users, stats }) {
                             </p>
                             <div className="flex gap-2 mt-4">
                                 {user.is_super_admin && (
-                                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium text-purple-800 bg-purple-100 rounded-full">
+                                    <span className="inline-flex items-center px-3 py-1 text-xs font-medium text-red-800 bg-gray-100 rounded-full">
                                         Super Administrador
                                     </span>
                                 )}
@@ -40,7 +34,8 @@ export default function Dashboard({ userStats, users, stats }) {
                         </div>
                     </div>
 
-                    {stats && (
+                    {/* Estadísticas solo para Super Admin */}
+                    {user.is_super_admin && stats && (
                         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
                             <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                                 <div className="p-6">
@@ -80,10 +75,23 @@ export default function Dashboard({ userStats, users, stats }) {
                                     <div className="text-sm font-medium text-gray-500">
                                         Super Admins
                                     </div>
-                                    <div className="mt-2 text-3xl font-bold text-purple-600">
+                                    <div className="mt-2 text-3xl font-bold text-red-800">
                                         {stats.super_admins}
                                     </div>
                                 </div>
+                            </div>
+                        </div>
+                    )}
+
+                    {/* Mensaje para EHS Manager (sin estadísticas) */}
+                    {user.is_ehs_manager && !user.is_super_admin && (
+                        <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
+                            <div className="p-6 text-center text-gray-600">
+                                <p className="text-lg">Panel de Gestión EHS</p>
+                                <p className="mt-2 text-sm">
+                                    Próximamente podrás gestionar todas las
+                                    observaciones de seguridad desde aquí.
+                                </p>
                             </div>
                         </div>
                     )}
@@ -147,7 +155,7 @@ export default function Dashboard({ userStats, users, stats }) {
                                                     <td className="px-6 py-4 text-sm whitespace-nowrap">
                                                         <div className="flex gap-1">
                                                             {userData.is_super_admin && (
-                                                                <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-purple-800 bg-purple-100 rounded-full">
+                                                                <span className="inline-flex items-center px-2 py-1 text-xs font-medium text-red-800 bg-gray-100 rounded-full">
                                                                     Super Admin
                                                                 </span>
                                                             )}
@@ -186,7 +194,6 @@ export default function Dashboard({ userStats, users, stats }) {
                         </div>
                     )}
 
-                    {/* Mensaje para empleados normales */}
                     {!user.is_ehs_manager && !user.is_super_admin && (
                         <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
                             <div className="p-6 text-center text-gray-600">

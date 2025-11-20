@@ -29,7 +29,7 @@ export default function AuthenticatedLayout({ header, children }) {
                         <div className="flex">
                             <div className="flex items-center shrink-0">
                                 <Link href="/">
-                                    <ApplicationLogo className="block w-auto text-gray-800 fill-current h-9" />
+                                    <ApplicationLogo className="block w-auto h-6 text-gray-800 fill-current" />
                                 </Link>
                             </div>
 
