@@ -25,7 +25,7 @@ export default function Edit({ mustVerifyEmail, status }) {
                         <UpdatePasswordForm className="max-w-xl" />
                     </div>
 
-                    {user.is_super_admin && (
+                    {!user.is_super_admin && (
                         <div className="p-4 bg-white shadow sm:rounded-lg sm:p-8">
                             <DeleteUserForm className="max-w-xl" />
                         </div>
