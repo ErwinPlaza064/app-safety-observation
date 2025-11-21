@@ -1,5 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, useForm } from "@inertiajs/react";
+import { router } from "@inertiajs/react";
 import { useState } from "react";
 import WelcomeCard from "@/Components/Dashboard/WelcomeCard";
 import StatsCards from "@/Components/Dashboard/StatsCards";
@@ -49,8 +50,9 @@ export default function Dashboard({ userStats, users, stats }) {
 
     const handleDelete = () => {
         if (deletingUser) {
-            useForm().delete(route("admin.users.destroy", deletingUser.id), {
+            router.delete(route("admin.users.destroy", deletingUser.id), {
                 onSuccess: () => setDeletingUser(null),
+                preserveScroll: true,
             });
         }
     };
