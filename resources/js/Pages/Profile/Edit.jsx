@@ -1,12 +1,9 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage } from "@inertiajs/react";
-import DeleteUserForm from "./Partials/DeleteUserForm";
 import UpdatePasswordForm from "./Partials/UpdatePasswordForm";
 import UpdateProfileInformationForm from "./Partials/UpdateProfileInformationForm";
 
 export default function Edit({ mustVerifyEmail, status }) {
-    const user = usePage().props.auth.user;
-
     return (
         <AuthenticatedLayout>
             <Head title="Perfil" />
@@ -24,12 +21,6 @@ export default function Edit({ mustVerifyEmail, status }) {
                     <div className="p-4 bg-white shadow sm:rounded-lg sm:p-8">
                         <UpdatePasswordForm className="max-w-xl" />
                     </div>
-
-                    {!user.is_super_admin && (
-                        <div className="p-4 bg-white shadow sm:rounded-lg sm:p-8">
-                            <DeleteUserForm className="max-w-xl" />
-                        </div>
-                    )}
                 </div>
             </div>
         </AuthenticatedLayout>
