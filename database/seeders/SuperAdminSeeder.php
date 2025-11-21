@@ -13,7 +13,6 @@ class SuperAdminSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verificar si ya existe un usuario super admin
         $superAdminExists = User::where('email', 'superadmin@wasion.com')->exists();
 
         if (!$superAdminExists) {
