@@ -1,11 +1,10 @@
 <?php
 
 namespace App\Http\Controllers;
+use Illuminate\Support\Facades\Auth;
 use App\Models\Observation;
 use App\Models\Area;
-use App\Models\Category;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Storage;
 use Inertia\Inertia;
 
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
@@ -30,11 +29,10 @@ class ObservationController extends Controller
         ]);
 
 
-        // Generar folio único: OBS-{año}{mes}{id_usuario}-{timestamp}
-        $folio = 'OBS-' . date('Ymd') . '-' . auth()->id() . '-' . time();
+        $folio = 'OBS-' . date('Ymd') . '-' . Auth::id() . '-' . time();
 
         $observation = Observation::create([
-            'user_id' => auth()->id(),
+            'user_id' => Auth::id(),
             'observation_date' => $validated['observation_date'],
             'observed_person' => $validated['observed_person'],
             'area_id' => $validated['area_id'],
@@ -154,16 +152,16 @@ class ObservationController extends Controller
     }
 
 
-    public function destroy(Observation $observation)
+  public function destroy(Observation $observation)
     {
-
-        if ($observation->is_draft && $observation->user_id === auth()->id()) {
+        if ($observation->is_draft && $observation->user_id === Auth::id()) {
             $observation->delete();
             return redirect()->back()->with('success', 'Borrador eliminado');
         }
 
+        $user = Auth::user();
 
-        if (auth()->user()->is_super_admin) {
+        if ($user->is_super_admin) {
             $observation->delete();
             return redirect()->back()->with('success', 'Observación eliminada');
         }

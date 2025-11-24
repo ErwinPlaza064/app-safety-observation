@@ -20,7 +20,6 @@ export default function Register() {
         useState(false);
     const [showToast, setShowToast] = useState(false);
 
-    // Calcular la fortaleza de la contraseña
     const passwordStrength = useMemo(() => {
         const password = data.password;
         if (!password) return null;
@@ -29,14 +28,12 @@ export default function Register() {
         let label = "";
         let color = "";
 
-        // Criterios de fortaleza
         if (password.length >= 8) strength++;
         if (password.length >= 12) strength++;
         if (/[a-z]/.test(password) && /[A-Z]/.test(password)) strength++;
         if (/[0-9]/.test(password)) strength++;
         if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-        // Determinar nivel
         if (strength <= 2) {
             label = "Débil";
             color = "bg-red-500";
@@ -70,12 +67,11 @@ export default function Register() {
         <GuestLayout>
             <Head title="Registro" />
 
-            {/* Toast de notificación */}
             {showToast && (
-                <div className="fixed top-4 right-4 z-50 animate-slide-in">
-                    <div className="bg-green-500 text-white px-6 py-4 rounded-lg shadow-lg flex items-center gap-3 max-w-md">
+                <div className="fixed z-50 top-4 right-4 animate-slide-in">
+                    <div className="flex items-center max-w-md gap-3 px-6 py-4 text-white bg-green-500 rounded-lg shadow-lg">
                         <svg
-                            className="w-6 h-6 flex-shrink-0"
+                            className="flex-shrink-0 w-6 h-6"
                             fill="none"
                             strokeLinecap="round"
                             strokeLinejoin="round"
@@ -238,7 +234,6 @@ export default function Register() {
                         </button>
                     </div>
 
-                    {/* Indicador de fortaleza de contraseña */}
                     {passwordStrength && (
                         <div className="mt-2">
                             <div className="flex items-center justify-between mb-1">
@@ -260,7 +255,7 @@ export default function Register() {
                                     {passwordStrength.label}
                                 </span>
                             </div>
-                            <div className="w-full h-2 bg-gray-200 rounded-full overflow-hidden">
+                            <div className="w-full h-2 overflow-hidden bg-gray-200 rounded-full">
                                 <div
                                     className={`h-full transition-all duration-300 ${passwordStrength.color}`}
                                     style={{

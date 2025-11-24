@@ -20,10 +20,8 @@ export default function Login({ status, canResetPassword }) {
     const submit = (e) => {
         e.preventDefault();
 
-        // Activar el estado de carga
         setIsLoading(true);
 
-        // Esperar 1.5 segundos antes de enviar el formulario
         setTimeout(() => {
             post(route("login"), {
                 onFinish: () => {
@@ -154,7 +152,7 @@ export default function Login({ status, canResetPassword }) {
                         href={route("register")}
                         className="ml-10 text-sm text-center underline lg:ml-0 text-wasion hover:text-wasion-700"
                     >
-                        ¿No tiene cuenta? Regístrate
+                        ¿No tiene cuenta? <hr /> <b>Regístrate</b>
                     </Link>
                 </div>
 
@@ -203,7 +201,7 @@ export default function Login({ status, canResetPassword }) {
                 )}
 
                 <div className="mt-4 text-xs text-center text-gray-500">
-                    <p>Necesita ayuda? Contacte a TI:</p>
+                    <p>¿Necesitas ayuda? Contacte con el equipo de IT:</p>
                     <a
                         href="https://wasionithelp.freshservice.com"
                         className="text-wasion hover:underline"
