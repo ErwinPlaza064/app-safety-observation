@@ -59,6 +59,15 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->is_ehs_manager === true;
     }
 
+
+    /**
+ * Relación con observaciones de seguridad
+ */
+public function safetyObservations()
+{
+    return $this->hasMany(SafetyObservation::class);
+}
+
     /**
      * Check if user is Super Admin
      */

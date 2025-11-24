@@ -1,5 +1,5 @@
 <?php
-
+use App\Http\Controllers\SafetyObservationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
@@ -25,4 +25,19 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
     Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('users.destroy');
 });
 
-require __DIR__.'/auth.php';
+// Rutas para observaciones de seguridad
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::prefix('safety-observations')->name('safety-observations.')->group(function () {
+        Route::get('/', [SafetyObservationController::class, 'index'])->name('index');
+        Route::post('/draft', [SafetyObservationController::class, 'saveDraft'])->name('draft');
+        Route::post('/submit', [SafetyObservationController::class, 'submit'])->name('submit');
+        Route::get('/{observation}', [SafetyObservationController::class, 'show'])->name('show');
+        Route::delete('/{observation}', [SafetyObservationController::class, 'destroy'])->name('destroy');
+    });
+
+    // Rutas para EHS Managers - Ver todas las observaciones
+    Route::get('/ehs/observations', [SafetyObservationController::class, 'ehsIndex'])
+        ->name('ehs.observations');
+});
+
+require __DIR__.'/auth.php'; 
