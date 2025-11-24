@@ -298,9 +298,9 @@ export default function SafetyObservationForm({
                 </div>
 
                 {currentStep === 1 && (
-                    <div className="py-4 pl-4 border-l-4 border-blue-500 md:pl-6">
+                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
                         <div className="flex items-center mb-6">
-                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-blue-500 rounded-full">
+                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-[#1e3a8a] rounded-full">
                                 <svg
                                     className="w-5 h-5 text-white"
                                     fill="none"
@@ -389,7 +389,7 @@ export default function SafetyObservationForm({
                 )}
 
                 {currentStep === 2 && (
-                    <div className="py-4 pl-4 border-l-4 border-blue-500 md:pl-6">
+                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
                         <div className="mb-6">
                             <label className="block mb-2 text-sm font-medium text-gray-700">
                                 Área / Planta
@@ -480,7 +480,7 @@ export default function SafetyObservationForm({
                 )}
 
                 {currentStep === 3 && (
-                    <div className="py-4 pl-4 border-l-4 border-blue-500 md:pl-6">
+                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
                         <div className="mb-6">
                             <label className="block mb-3 text-sm font-medium text-gray-700">
                                 Categorías Aplicables
@@ -552,10 +552,10 @@ export default function SafetyObservationForm({
                 )}
 
                 {currentStep === 4 && (
-                    <div className="py-4 pl-4 border-l-4 border-blue-500 md:pl-6">
+                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
                         <div className="mb-6">
                             <label className="block mb-2 text-sm font-medium text-gray-700">
-                                Fotografías (Opcional)
+                                Fotografías <span>(Opcional)</span>
                             </label>
                             <input
                                 type="file"
