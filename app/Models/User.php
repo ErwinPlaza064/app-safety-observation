@@ -63,9 +63,9 @@ class User extends Authenticatable implements MustVerifyEmail
     /**
  * Relación con observaciones de seguridad
  */
-public function safetyObservations()
+public function observations()
 {
-    return $this->hasMany(SafetyObservation::class);
+    return $this->hasMany(Observation::class);
 }
 
     /**

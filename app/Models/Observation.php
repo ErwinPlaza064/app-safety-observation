@@ -1,12 +1,16 @@
 <?php
 
 namespace App\Models;
-
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Category;
 
-class SafetyObservation extends Model
+class Observation extends Model
 {
+        public function categories()
+        {
+            return $this->belongsToMany(Category::class, 'category_observation', 'observation_id', 'category_id');
+        }
     use HasFactory;
 
     protected $fillable = [
@@ -34,41 +38,26 @@ class SafetyObservation extends Model
         ];
     }
 
-    /**
-     * Relación con el usuario que creó la observación
-     */
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    /**
-     * Scope para filtrar por estado
-     */
     public function scopeByStatus($query, $status)
     {
         return $query->where('status', $status);
     }
 
-    /**
-     * Scope para obtener observaciones del usuario actual
-     */
     public function scopeForUser($query, $userId)
     {
         return $query->where('user_id', $userId);
     }
 
-    /**
-     * Verificar si es borrador
-     */
     public function isDraft(): bool
     {
         return $this->status === 'draft';
     }
 
-    /**
-     * Verificar si está enviada
-     */
     public function isSubmitted(): bool
     {
         return $this->status === 'submitted';

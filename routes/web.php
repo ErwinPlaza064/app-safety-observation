@@ -1,9 +1,10 @@
 <?php
-use App\Http\Controllers\SafetyObservationController;
+// use App\Http\Controllers\SafetyObservationController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use Illuminate\Support\Facades\Route;
-use Inertia\Inertia;
+use App\Http\Controllers\ObservationController;
+
 
 Route::get('/', function () {
     return redirect()->route('login');
@@ -19,25 +20,48 @@ Route::middleware('auth')->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 });
 
-// Rutas de administración (solo Super Admin)
 Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
     Route::patch('/users/{user}', [App\Http\Controllers\Admin\UserManagementController::class, 'update'])->name('users.update');
     Route::delete('/users/{user}', [App\Http\Controllers\Admin\UserManagementController::class, 'destroy'])->name('users.destroy');
 });
 
-// Rutas para observaciones de seguridad
 Route::middleware(['auth', 'verified'])->group(function () {
-    Route::prefix('safety-observations')->name('safety-observations.')->group(function () {
-        Route::get('/', [SafetyObservationController::class, 'index'])->name('index');
-        Route::post('/draft', [SafetyObservationController::class, 'saveDraft'])->name('draft');
-        Route::post('/submit', [SafetyObservationController::class, 'submit'])->name('submit');
-        Route::get('/{observation}', [SafetyObservationController::class, 'show'])->name('show');
-        Route::delete('/{observation}', [SafetyObservationController::class, 'destroy'])->name('destroy');
+    // Todas las rutas de observaciones apuntan solo a ObservationController
+    Route::prefix('observations')->name('observations.')->group(function () {
+        Route::get('/', [ObservationController::class, 'index'])->name('index');
+        Route::post('/', [ObservationController::class, 'store'])->name('store');
+        Route::post('/draft', [ObservationController::class, 'draft'])->name('draft');
+        Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
+        Route::delete('/{observation}', [ObservationController::class, 'destroy'])->name('destroy');
     });
 
-    // Rutas para EHS Managers - Ver todas las observaciones
-    Route::get('/ehs/observations', [SafetyObservationController::class, 'ehsIndex'])
-        ->name('ehs.observations');
+
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+
+    Route::prefix('observations')->name('observations.')->group(function () {
+
+        Route::post('/', [ObservationController::class, 'store'])->name('store');
+        Route::post('/draft', [ObservationController::class, 'draft'])->name('draft');
+
+        Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
+
+        Route::delete('/{observation}', [ObservationController::class, 'destroy'])
+            ->name('destroy');
+    });
+
+    Route::middleware('can:manage,App\Models\Observation')->group(function () {
+
+        Route::get('/observations', [ObservationController::class, 'index'])
+            ->name('observations.index');
+
+        Route::post('/observations/{observation}/close', [ObservationController::class, 'close'])
+            ->name('observations.close');
+
+        Route::post('/observations/{observation}/reopen', [ObservationController::class, 'reopen'])
+            ->name('observations.reopen');
+    });
 });
 
-require __DIR__.'/auth.php'; 
+
+require __DIR__.'/auth.php';

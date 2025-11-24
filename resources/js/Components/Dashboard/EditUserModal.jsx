@@ -18,6 +18,7 @@ export default function EditUserModal({
     onSubmit,
     onDelete,
 }) {
+    if (!data) return null;
     return (
         <Modal show={show} onClose={onClose} maxWidth="2xl">
             <form onSubmit={onSubmit} className="p-6">
@@ -31,10 +32,10 @@ export default function EditUserModal({
                         <TextInput
                             id="name"
                             className="block w-full mt-1"
-                            value={data.name}
+                            value={data?.name || ""}
                             onChange={(e) => setData("name", e.target.value)}
                         />
-                        <InputError message={errors.name} className="mt-2" />
+                        <InputError message={errors?.name} className="mt-2" />
                     </div>
 
                     <div>
