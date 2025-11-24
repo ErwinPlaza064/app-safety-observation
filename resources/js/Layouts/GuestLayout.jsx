@@ -2,10 +2,10 @@ import WasionLogo from "@/Components/WasionLogo";
 
 export default function GuestLayout({ children }) {
     return (
-        <div className="flex flex-col items-center justify-center min-h-screen px-4 py-12 bg-gray-50">
+        <div className="flex flex-col items-center justify-center min-h-screen px-4 py-4 bg-gray-50">
             {/* Logo y título */}
             <div className="mb-8 text-center">
-                <WasionLogo className="h-12 mx-auto mb-4 w-auto" />
+                <WasionLogo className="w-auto h-12 mx-auto mb-4" />
                 <h1 className="mb-2 text-2xl font-bold text-blue-900">
                     Safety Observation
                 </h1>

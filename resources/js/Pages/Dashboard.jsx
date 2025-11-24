@@ -2,7 +2,6 @@ import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage } from "@inertiajs/react";
 import { router } from "@inertiajs/react";
 import { useState } from "react";
-import WelcomeCard from "@/Components/Dashboard/WelcomeCard";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import EditUserModal from "@/Components/Dashboard/EditUserModal";
@@ -26,6 +25,7 @@ export default function Dashboard({
     const [deletingUser, setDeletingUser] = useState(null);
 
     const openEditModal = (userData) => {
+        console.log("¡Click recibido!", userData);
         setEditingUser(userData);
     };
 
