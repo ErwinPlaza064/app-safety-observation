@@ -170,7 +170,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             href={route("dashboard")}
                             active={route().current("dashboard")}
                         >
-                            Panel de Control
+                            Dashboard{" "}
                         </ResponsiveNavLink>
                     </div>
 

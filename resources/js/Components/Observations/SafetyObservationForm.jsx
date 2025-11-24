@@ -1,5 +1,10 @@
 import { router } from "@inertiajs/react";
 import { useState, useEffect } from "react";
+import AutoSaveIndicator from "@/Components/Observations/AutoSaveIndicator";
+import ObserverInfoStep from "./Steps/ObserverInfoStep";
+import AreaTypeStep from "./Steps/AreaTypeStep";
+import DetailsStep from "./Steps/DetailsStep";
+import PhotosStep from "./Steps/PhotosStep";
 
 export default function SafetyObservationForm({
     user,
@@ -34,16 +39,13 @@ export default function SafetyObservationForm({
 
     useEffect(() => {
         if (toast.show) {
-            const timer = setTimeout(() => {
-                setToast((prev) => ({ ...prev, show: false }));
-            }, 3000);
+            const timer = setTimeout(
+                () => setToast((prev) => ({ ...prev, show: false })),
+                3000
+            );
             return () => clearTimeout(timer);
         }
     }, [toast.show]);
-
-    const showToast = (message, type = "success") => {
-        setToast({ show: true, message, type });
-    };
 
     useEffect(() => {
         const timer = setInterval(() => {
@@ -57,11 +59,13 @@ export default function SafetyObservationForm({
         return () => clearInterval(timer);
     }, [formData]);
 
+    const showToast = (message, type = "success") => {
+        setToast({ show: true, message, type });
+    };
+
     const handleInputChange = (field, value) => {
         setFormData((prev) => ({ ...prev, [field]: value }));
-        if (errors[field]) {
-            setErrors((prev) => ({ ...prev, [field]: null }));
-        }
+        if (errors[field]) setErrors((prev) => ({ ...prev, [field]: null }));
     };
 
     const handleCategoryToggle = (categoryId) => {
@@ -94,41 +98,29 @@ export default function SafetyObservationForm({
 
     const validateStep = (step) => {
         const newErrors = {};
-
-        if (step === 2) {
-            if (!formData.observation_type) {
-                newErrors.observation_type =
-                    "Debe seleccionar un tipo de observación";
-            }
+        if (step === 2 && !formData.observation_type) {
+            newErrors.observation_type =
+                "Debe seleccionar un tipo de observación";
         }
-
         if (step === 3) {
-            if (formData.category_ids.length === 0) {
+            if (formData.category_ids.length === 0)
                 newErrors.category_ids =
                     "Debe seleccionar al menos una categoría";
-            }
-            if (formData.description.length < 20) {
+            if (formData.description.length < 20)
                 newErrors.description =
                     "La descripción debe tener al menos 20 caracteres";
-            }
         }
-
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
 
     const handleNext = () => {
-        if (validateStep(currentStep)) {
-            setCurrentStep(currentStep + 1);
-        }
+        if (validateStep(currentStep)) setCurrentStep(currentStep + 1);
     };
 
     const handlePrevious = () => {
-        if (currentStep > 1) {
-            setCurrentStep(currentStep - 1);
-        } else {
-            if (onClose) onClose();
-        }
+        if (currentStep > 1) setCurrentStep(currentStep - 1);
+        else if (onClose) onClose();
     };
 
     const handleAutoSave = () => {
@@ -153,11 +145,10 @@ export default function SafetyObservationForm({
             route("observations.draft"),
             { ...formData, is_draft: true },
             {
-                onSuccess: () => {
-                    showToast("Borrador guardado exitosamente", "success");
-                },
-                onError: (errors) => {
-                    console.error("Errores:", errors);
+                onSuccess: () =>
+                    showToast("Borrador guardado exitosamente", "success"),
+                onError: (e) => {
+                    console.error(e);
                     showToast("Error al guardar el borrador", "error");
                 },
             }
@@ -171,19 +162,16 @@ export default function SafetyObservationForm({
         }
 
         const submitData = new FormData();
-
         Object.keys(formData).forEach((key) => {
-            if (key === "category_ids") {
+            if (key === "category_ids")
                 formData[key].forEach((id) =>
                     submitData.append("category_ids[]", id)
                 );
-            } else if (key === "photos") {
+            else if (key === "photos")
                 formData[key].forEach((file) =>
                     submitData.append("photos[]", file)
                 );
-            } else {
-                submitData.append(key, formData[key]);
-            }
+            else submitData.append(key, formData[key]);
         });
 
         router.post(route("observations.store"), submitData, {
@@ -194,9 +182,9 @@ export default function SafetyObservationForm({
                     if (onClose) onClose();
                 }, 1500);
             },
-            onError: (errors) => {
-                setErrors(errors);
-                console.error("Errores:", errors);
+            onError: (err) => {
+                setErrors(err);
+                console.error(err);
                 showToast("Error al enviar. Verifica los datos.", "error");
             },
         });
@@ -213,55 +201,14 @@ export default function SafetyObservationForm({
                                 : "bg-green-500"
                         }`}
                     >
-                        {toast.type === "error" ? (
-                            <svg
-                                className="w-6 h-6 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-                                />
-                            </svg>
-                        ) : (
-                            <svg
-                                className="w-6 h-6 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M5 13l4 4L19 7"
-                                />
-                            </svg>
-                        )}
                         <span className="font-medium">{toast.message}</span>
                         <button
                             onClick={() =>
                                 setToast((prev) => ({ ...prev, show: false }))
                             }
-                            className="ml-4 text-white hover:text-gray-200 focus:outline-none"
+                            className="ml-4 focus:outline-none"
                         >
-                            <svg
-                                className="w-4 h-4"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M6 18L18 6M6 6l12 12"
-                                />
-                            </svg>
+                            x
                         </button>
                     </div>
                 </div>
@@ -298,336 +245,34 @@ export default function SafetyObservationForm({
                 </div>
 
                 {currentStep === 1 && (
-                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
-                        <div className="flex items-center mb-6">
-                            <div className="flex items-center justify-center flex-shrink-0 w-8 h-8 mr-3 bg-[#1e3a8a] rounded-full">
-                                <svg
-                                    className="w-5 h-5 text-white"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
-                                    />
-                                </svg>
-                            </div>
-                            <h3 className="text-lg font-semibold text-gray-800 md:text-xl">
-                                Información del Observador
-                            </h3>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
-                            <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-700">
-                                    Nombre
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.observer_name}
-                                    readOnly
-                                    className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg bg-gray-50"
-                                />
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-700">
-                                    ID
-                                </label>
-                                <input
-                                    type="text"
-                                    value={formData.employee_id}
-                                    readOnly
-                                    className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg bg-gray-50"
-                                />
-                            </div>
-                        </div>
-                        <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
-                            <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-700">
-                                    Depto
-                                </label>
-                                <input
-                                    value={formData.department}
-                                    readOnly
-                                    className="w-full px-4 py-2 border rounded-lg bg-gray-50"
-                                />
-                            </div>
-                            <div>
-                                <label className="block mb-2 text-sm font-medium text-gray-700">
-                                    Fecha
-                                </label>
-                                <input
-                                    type="date"
-                                    value={formData.observation_date}
-                                    onChange={(e) =>
-                                        handleInputChange(
-                                            "observation_date",
-                                            e.target.value
-                                        )
-                                    }
-                                    className="w-full px-4 py-2 border rounded-lg"
-                                />
-                            </div>
-                        </div>
-                        <div className="mb-6">
-                            <input
-                                type="text"
-                                placeholder="Persona observada"
-                                value={formData.observed_person}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "observed_person",
-                                        e.target.value
-                                    )
-                                }
-                                className="w-full px-4 py-2 border rounded-lg"
-                            />
-                        </div>
-                    </div>
+                    <ObserverInfoStep
+                        formData={formData}
+                        onChange={handleInputChange}
+                    />
                 )}
-
                 {currentStep === 2 && (
-                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
-                        <div className="mb-6">
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
-                                Área / Planta
-                            </label>
-                            <select
-                                value={formData.area_id}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "area_id",
-                                        parseInt(e.target.value)
-                                    )
-                                }
-                                className="w-full p-2 border rounded-lg"
-                            >
-                                {areas.map((a) => (
-                                    <option key={a.id} value={a.id}>
-                                        {a.name}
-                                    </option>
-                                ))}
-                            </select>
-                        </div>
-                        <div className="mb-6">
-                            <label className="block mb-3 text-sm font-medium text-gray-700">
-                                Tipo de Observación{" "}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            {errors.observation_type && (
-                                <p className="mb-2 text-sm text-red-600">
-                                    {errors.observation_type}
-                                </p>
-                            )}
-                            <div className="space-y-3">
-                                {[
-                                    {
-                                        value: "acto_inseguro",
-                                        label: "Acto Inseguro",
-                                        desc: "Comportamiento que puede causar un incidente",
-                                    },
-                                    {
-                                        value: "condicion_insegura",
-                                        label: "Condición Insegura",
-                                        desc: "Situación física que puede causar un incidente",
-                                    },
-                                    {
-                                        value: "acto_seguro",
-                                        label: "Acto Seguro",
-                                        desc: "Comportamiento positivo para reconocer",
-                                    },
-                                ].map((type) => (
-                                    <label
-                                        key={type.value}
-                                        className={`flex items-start p-3 md:p-4 border-2 rounded-lg cursor-pointer transition ${
-                                            formData.observation_type ===
-                                            type.value
-                                                ? "border-blue-500 bg-blue-50"
-                                                : "border-gray-300 hover:border-blue-300"
-                                        }`}
-                                    >
-                                        <input
-                                            type="radio"
-                                            name="observationType"
-                                            value={type.value}
-                                            checked={
-                                                formData.observation_type ===
-                                                type.value
-                                            }
-                                            onChange={(e) =>
-                                                handleInputChange(
-                                                    "observation_type",
-                                                    e.target.value
-                                                )
-                                            }
-                                            className="mt-1 mr-3"
-                                        />
-                                        <div>
-                                            <div className="text-sm font-semibold text-gray-800 md:text-base">
-                                                {type.label}
-                                            </div>
-                                            <div className="text-xs text-gray-600 md:text-sm">
-                                                {type.desc}
-                                            </div>
-                                        </div>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                    </div>
+                    <AreaTypeStep
+                        formData={formData}
+                        onChange={handleInputChange}
+                        areas={areas}
+                        errors={errors}
+                    />
                 )}
-
                 {currentStep === 3 && (
-                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
-                        <div className="mb-6">
-                            <label className="block mb-3 text-sm font-medium text-gray-700">
-                                Categorías Aplicables
-                            </label>
-                            {errors.category_ids && (
-                                <p className="mb-2 text-sm text-red-600">
-                                    {errors.category_ids}
-                                </p>
-                            )}
-                            <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                                {categories.map((category) => (
-                                    <label
-                                        key={category.id}
-                                        className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
-                                            formData.category_ids.includes(
-                                                category.id
-                                            )
-                                                ? "border-blue-500 bg-blue-50"
-                                                : "border-gray-300 hover:border-blue-300"
-                                        }`}
-                                    >
-                                        <input
-                                            type="checkbox"
-                                            checked={formData.category_ids.includes(
-                                                category.id
-                                            )}
-                                            onChange={() =>
-                                                handleCategoryToggle(
-                                                    category.id
-                                                )
-                                            }
-                                            className="mr-3"
-                                        />
-                                        <span className="text-sm text-gray-700">
-                                            {category.name}
-                                        </span>
-                                    </label>
-                                ))}
-                            </div>
-                        </div>
-                        <div className="mb-6">
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
-                                Descripción Detallada{" "}
-                                <span className="text-red-500">*</span>
-                            </label>
-                            {errors.description && (
-                                <p className="mb-2 text-sm text-red-600">
-                                    {errors.description}
-                                </p>
-                            )}
-                            <textarea
-                                value={formData.description}
-                                onChange={(e) =>
-                                    handleInputChange(
-                                        "description",
-                                        e.target.value
-                                    )
-                                }
-                                className="w-full p-2 border rounded-lg"
-                                rows={6}
-                                placeholder="Describa la observación en detalle..."
-                            ></textarea>
-                            <p className="mt-1 text-xs text-gray-500">
-                                Mínimo 20 caracteres. Actual:{" "}
-                                {formData.description.length}
-                            </p>
-                        </div>
-                    </div>
+                    <DetailsStep
+                        formData={formData}
+                        onChange={handleInputChange}
+                        onToggleCategory={handleCategoryToggle}
+                        categories={categories}
+                        errors={errors}
+                    />
                 )}
-
                 {currentStep === 4 && (
-                    <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
-                        <div className="mb-6">
-                            <label className="block mb-2 text-sm font-medium text-gray-700">
-                                Fotografías <span>(Opcional)</span>
-                            </label>
-                            <input
-                                type="file"
-                                multiple
-                                onChange={handlePhotoChange}
-                                className="hidden"
-                                id="p-upload"
-                            />
-                            <label
-                                htmlFor="p-upload"
-                                className="block p-8 text-center transition border-2 border-gray-300 border-dashed rounded-lg cursor-pointer md:p-12 hover:border-blue-400"
-                            >
-                                <svg
-                                    className="w-12 h-12 mx-auto mb-4 text-blue-500 md:w-16 md:h-16"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
-                                    />
-                                </svg>
-                                <div className="mb-2 text-base font-medium text-gray-700 md:text-lg">
-                                    Subir Fotografías
-                                </div>
-                                <div className="text-xs text-gray-500 md:text-sm">
-                                    Haga clic para seleccionar archivos
-                                </div>
-                            </label>
-
-                            {formData.photos.length > 0 && (
-                                <div className="grid grid-cols-2 gap-4 mt-4 md:grid-cols-5">
-                                    {formData.photos.map((photo, index) => (
-                                        <div
-                                            key={index}
-                                            className="relative group"
-                                        >
-                                            <img
-                                                src={URL.createObjectURL(photo)}
-                                                alt={`Preview ${index + 1}`}
-                                                className="object-cover w-full h-24 rounded-lg md:h-24"
-                                            />
-                                            <button
-                                                type="button"
-                                                onClick={() =>
-                                                    removePhoto(index)
-                                                }
-                                                className="absolute p-1 text-white bg-red-500 rounded-full shadow-md -top-2 -right-2 md:top-1 md:right-1 hover:bg-red-600"
-                                            >
-                                                <svg
-                                                    className="w-4 h-4"
-                                                    fill="none"
-                                                    stroke="currentColor"
-                                                    viewBox="0 0 24 24"
-                                                >
-                                                    <path
-                                                        strokeLinecap="round"
-                                                        strokeLinejoin="round"
-                                                        strokeWidth={2}
-                                                        d="M6 18L18 6M6 6l12 12"
-                                                    />
-                                                </svg>
-                                            </button>
-                                        </div>
-                                    ))}
-                                </div>
-                            )}
-                        </div>
-                    </div>
+                    <PhotosStep
+                        formData={formData}
+                        onPhotoChange={handlePhotoChange}
+                        onRemovePhoto={removePhoto}
+                    />
                 )}
 
                 <div className="flex flex-col-reverse justify-between gap-4 pt-6 mt-6 border-t md:flex-row md:items-center md:gap-0">
@@ -703,9 +348,7 @@ export default function SafetyObservationForm({
                     )}
                 </div>
 
-                <div className="flex items-center justify-center pt-4 text-xs text-gray-400">
-                    {isSaving ? "Guardando..." : "Autoguardado activado"}
-                </div>
+                <AutoSaveIndicator isSaving={isSaving} />
             </div>
         </div>
     );
