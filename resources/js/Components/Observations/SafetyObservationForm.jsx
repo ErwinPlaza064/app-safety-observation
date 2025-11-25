@@ -31,9 +31,9 @@ export default function SafetyObservationForm({
         observer_name: user?.name || "",
         employee_id: user?.employee_number || "",
         department: user?.area || "",
-        observation_date:
-            savedDraft?.observation_date ||
-            new Date().toISOString().split("T")[0],
+        observation_date: savedDraft?.observation_date
+            ? savedDraft.observation_date.split("T")[0]
+            : new Date().toISOString().split("T")[0],
         observed_person: savedDraft?.observed_person || "",
         area_id:
             savedDraft?.area_id ||
