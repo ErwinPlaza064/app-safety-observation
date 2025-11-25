@@ -71,7 +71,7 @@ export default function ObservationDetailsModal({
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-1 text-gray-400 transition-colors rounded-full mt-14 hover:text-gray-600 hover:bg-gray-100"
+                    className="p-1 mt-10 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100"
                 >
                     <svg
                         className="w-6 h-6"
@@ -272,7 +272,7 @@ export default function ObservationDetailsModal({
                 </div>
             </div>
 
-            <div className="flex justify-center gap-4 px-6 py-4 bg-white border-t">
+            <div className="flex justify-center gap-4 px-6 py-6 bg-white border-t">
                 <SecondaryButton
                     onClick={onClose}
                     className="justify-center w-full sm:w-auto"

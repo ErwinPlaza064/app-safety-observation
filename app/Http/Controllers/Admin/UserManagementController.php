@@ -21,7 +21,14 @@ class UserManagementController extends Controller
             'is_ehs_manager' => ['boolean'],
         ]);
 
-        $user->update($validated);
+        $user->update([
+        'name' => $validated['name'],
+        'email' => $validated['email'],
+        'employee_number' => $validated['employee_number'],
+        'area' => $validated['area'],
+        'position' => $validated['position'],
+        'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+        ]);
 
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }

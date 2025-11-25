@@ -24,6 +24,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'password',
         'area',
         'position',
+        'is_ehs_manager',
     ];
 
     /**

@@ -3,9 +3,11 @@ import { useEffect } from "react";
 import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
+import DangerButton from "@/Components/DangerButton";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
+import Checkbox from "@/Components/Checkbox";
 
 export default function EditUserModal({
     show,
@@ -20,6 +22,7 @@ export default function EditUserModal({
         employee_number: "",
         area: "",
         position: "",
+        is_ehs_manager: false,
     });
 
     useEffect(() => {
@@ -30,6 +33,7 @@ export default function EditUserModal({
                 employee_number: user.employee_number || "",
                 area: user.area || "",
                 position: user.position || "",
+                is_ehs_manager: !!user.is_ehs_manager,
             });
         } else {
             reset();
@@ -44,14 +48,14 @@ export default function EditUserModal({
     };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="2xl">
+        <Modal show={show} onClose={onClose} maxWidth="4xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
                 <h2 className="text-xl font-semibold text-gray-800">
                     Editar Usuario
                 </h2>
                 <button
                     onClick={onClose}
-                    className="text-gray-400 transition-colors hover:text-gray-600 focus:outline-none"
+                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
                 >
                     <svg
                         className="w-6 h-6"
@@ -91,7 +95,6 @@ export default function EditUserModal({
                                 className="mt-2"
                             />
                         </div>
-
                         <div>
                             <InputLabel
                                 htmlFor="employee_number"
@@ -148,7 +151,6 @@ export default function EditUserModal({
                                 className="mt-2"
                             />
                         </div>
-
                         <div>
                             <InputLabel
                                 htmlFor="position"
@@ -168,8 +170,32 @@ export default function EditUserModal({
                             />
                         </div>
                     </div>
+
+                    <div className="pt-4 border-t border-gray-100">
+                        <h3 className="mb-4 text-sm font-medium text-gray-900">
+                            Roles y Permisos
+                        </h3>
+                        <div className="block">
+                            <label className="flex items-center">
+                                <Checkbox
+                                    name="is_ehs_manager"
+                                    checked={data.is_ehs_manager}
+                                    onChange={(e) =>
+                                        setData(
+                                            "is_ehs_manager",
+                                            e.target.checked
+                                        )
+                                    }
+                                />
+                                <span className="ml-2 text-sm text-gray-600">
+                                    Asignar como <strong>Gerente de EHS</strong>
+                                </span>
+                            </label>
+                        </div>
+                    </div>
                 </div>
 
+                {/* ... Footer igual que antes ... */}
                 <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
                     <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex justify-center sm:justify-start">
@@ -179,13 +205,12 @@ export default function EditUserModal({
                                     <button
                                         type="button"
                                         onClick={onDelete}
-                                        className="text-sm font-medium text-red-600 transition-colors hover:text-red-800 hover:underline focus:outline-none"
+                                        className="text-sm font-medium text-red-600 hover:text-red-800 hover:underline focus:outline-none"
                                     >
                                         Eliminar este usuario
                                     </button>
                                 )}
                         </div>
-
                         <div className="flex flex-col gap-3 sm:flex-row sm:w-auto">
                             <SecondaryButton
                                 onClick={onClose}
@@ -193,7 +218,6 @@ export default function EditUserModal({
                             >
                                 Cancelar
                             </SecondaryButton>
-
                             <PrimaryButton
                                 disabled={processing}
                                 className="justify-center w-full sm:w-auto"
