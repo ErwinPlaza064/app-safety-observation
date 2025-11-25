@@ -1,56 +1,65 @@
 <?php
 
 namespace App\Http\Controllers;
+
+use App\Models\Area;
+use App\Models\Category;
 use App\Models\Observation;
 use App\Models\User;
-use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 
 class DashboardController extends Controller
 {
-    public function index(Request $request)
+    public function index()
     {
-        $user = $request->user();
+        $user = Auth::user();
 
-        $data = [
-            'userStats' => [
-                'name' => $user->name,
-                'email' => $user->email,
-                'employee_number' => $user->employee_number,
-                'area' => $user->area,
-                'position' => $user->position,
-                'is_ehs_manager' => $user->is_ehs_manager,
-                'is_super_admin' => $user->is_super_admin,
-                'total_observations' => Observation::forUser($user->id)->count(),
-                'drafts' => Observation::forUser($user->id)->byStatus('draft')->count(),
-                'submitted' => Observation::forUser($user->id)->byStatus('submitted')->count(),
-            ],
-        ];
+        $data = [];
 
         if ($user->is_super_admin) {
-            $data['users'] = User::select('id', 'employee_number', 'name', 'email', 'area', 'position', 'is_ehs_manager', 'is_super_admin', 'email_verified_at', 'created_at')
-                ->orderBy('created_at', 'desc')
-                ->get();
-        }
-
-        if ($user->is_ehs_manager || $user->is_super_admin) {
             $data['stats'] = [
                 'total_users' => User::count(),
                 'verified_users' => User::whereNotNull('email_verified_at')->count(),
                 'ehs_managers' => User::where('is_ehs_manager', true)->count(),
                 'super_admins' => User::where('is_super_admin', true)->count(),
-                'total_observations' => Observation::count(),
-                'observations_draft' => Observation::byStatus('draft')->count(),
-                'observations_submitted' => Observation::byStatus('submitted')->count(),
-                'observations_in_review' => Observation::byStatus('in-review')->count(),
-                'observations_resolved' => Observation::byStatus('resolved')->count(),
             ];
+
+            $data['users'] = User::all();
         }
 
-        // Enviar áreas activas al dashboard para el formulario
-        $data['areas'] = \App\Models\Area::active()->get();
-        // Enviar categorías activas al dashboard para el formulario
-        $data['categories'] = \App\Models\Category::where('is_active', true)->orderBy('sort_order')->get();
+        if (!$user->is_super_admin && !$user->is_ehs_manager) {
+
+            $data['areas'] = Area::where('is_active', true)->get();
+            $data['categories'] = Category::where('is_active', true)->get();
+
+            $data['userStats'] = [
+                'in_progress' => Observation::where('user_id', $user->id)
+                                    ->where('status', 'en_progreso')
+                                    ->count(),
+                'completed'   => Observation::where('user_id', $user->id)
+                                    ->where('status', 'cerrada')
+                                    ->count(),
+                'total'       => Observation::where('user_id', $user->id)
+                                    ->where('is_draft', false)
+                                    ->count(),
+            ];
+
+            $draft = Observation::where('user_id', $user->id)
+                        ->where('is_draft', true)
+                        ->latest()
+                        ->first();
+
+            if ($draft) {
+                $draft->load(['categories', 'images']);
+            }
+
+            $data['savedDraft'] = $draft;
+        }
+
+        if ($user->is_ehs_manager && !$user->is_super_admin) {
+        }
+
         return Inertia::render('Dashboard', $data);
     }
 }

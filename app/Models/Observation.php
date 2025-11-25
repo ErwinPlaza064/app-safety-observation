@@ -1,65 +1,63 @@
 <?php
 
 namespace App\Models;
+
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Category;
 
 class Observation extends Model
 {
-        public function categories()
-        {
-            return $this->belongsToMany(Category::class, 'category_observation', 'observation_id', 'category_id');
-        }
     use HasFactory;
 
     protected $fillable = [
         'user_id',
-        'observer_name',
-        'employee_id',
-        'department',
-        'position',
+        'area_id',
         'observation_date',
         'observed_person',
-        'area',
         'observation_type',
-        'categories',
         'description',
-        'photos',
         'status',
+        'is_draft',
+        'folio',
+        'closed_at',
+        'closed_by',
+        'closure_notes',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'categories' => 'array',
-            'photos' => 'array',
-            'observation_date' => 'date',
-        ];
-    }
+    protected $casts = [
+        'observation_date' => 'date',
+        'is_draft' => 'boolean',
+        'closed_at' => 'datetime',
+    ];
+
 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
 
-    public function scopeByStatus($query, $status)
+    public function area()
     {
-        return $query->where('status', $status);
+        return $this->belongsTo(Area::class);
     }
 
-    public function scopeForUser($query, $userId)
+    public function categories()
     {
-        return $query->where('user_id', $userId);
+        return $this->belongsToMany(Category::class, 'category_observation');
     }
 
-    public function isDraft(): bool
+    public function images()
     {
-        return $this->status === 'draft';
+
+        return $this->hasMany(ObservationImage::class);
     }
 
-    public function isSubmitted(): bool
+    public function closedByUser()
     {
-        return $this->status === 'submitted';
+        return $this->belongsTo(User::class, 'closed_by');
+    }
+    public function scopeSubmitted($query)
+    {
+        return $query->where('is_draft', false);
     }
 }

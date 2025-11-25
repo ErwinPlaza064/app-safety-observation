@@ -1,5 +1,5 @@
 import { router } from "@inertiajs/react";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import AutoSaveIndicator from "@/Components/Observations/AutoSaveIndicator";
 import ObserverInfoStep from "./Steps/ObserverInfoStep";
 import AreaTypeStep from "./Steps/AreaTypeStep";
@@ -11,10 +11,14 @@ export default function SafetyObservationForm({
     areas,
     categories,
     onClose,
+    savedDraft,
 }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [isSaving, setIsSaving] = useState(false);
-    const [lastSaved, setLastSaved] = useState(null);
+
+    const [lastSaved, setLastSaved] = useState(
+        savedDraft ? new Date(savedDraft.updated_at) : null
+    );
 
     const [toast, setToast] = useState({
         show: false,
@@ -23,19 +27,48 @@ export default function SafetyObservationForm({
     });
 
     const [formData, setFormData] = useState({
+        id: savedDraft?.id || null,
         observer_name: user?.name || "",
         employee_id: user?.employee_number || "",
         department: user?.area || "",
-        observation_date: new Date().toISOString().split("T")[0],
-        observed_person: "",
-        area_id: Array.isArray(areas) && areas.length > 0 ? areas[0].id : "",
-        observation_type: "",
-        category_ids: [],
-        description: "",
+        observation_date:
+            savedDraft?.observation_date ||
+            new Date().toISOString().split("T")[0],
+        observed_person: savedDraft?.observed_person || "",
+        area_id:
+            savedDraft?.area_id ||
+            (Array.isArray(areas) && areas.length > 0 ? areas[0].id : ""),
+        observation_type: savedDraft?.observation_type || "",
+        category_ids: savedDraft?.categories
+            ? savedDraft.categories.map((c) => c.id)
+            : [],
+        description: savedDraft?.description || "",
         photos: [],
     });
 
     const [errors, setErrors] = useState({});
+
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            return;
+        }
+
+        const isValidDraft =
+            formData.description.length > 5 &&
+            formData.category_ids.length > 0 &&
+            formData.observation_type !== "";
+
+        if (!isValidDraft) return;
+
+        const timeoutId = setTimeout(() => {
+            handleAutoSave();
+        }, 2000);
+
+        return () => clearTimeout(timeoutId);
+    }, [formData]);
 
     useEffect(() => {
         if (toast.show) {
@@ -46,18 +79,6 @@ export default function SafetyObservationForm({
             return () => clearTimeout(timer);
         }
     }, [toast.show]);
-
-    useEffect(() => {
-        const timer = setInterval(() => {
-            if (
-                formData.description.length > 0 ||
-                formData.category_ids.length > 0
-            ) {
-                handleAutoSave();
-            }
-        }, 30000);
-        return () => clearInterval(timer);
-    }, [formData]);
 
     const showToast = (message, type = "success") => {
         setToast({ show: true, message, type });
@@ -98,10 +119,9 @@ export default function SafetyObservationForm({
 
     const validateStep = (step) => {
         const newErrors = {};
-        if (step === 2 && !formData.observation_type) {
+        if (step === 2 && !formData.observation_type)
             newErrors.observation_type =
                 "Debe seleccionar un tipo de observación";
-        }
         if (step === 3) {
             if (formData.category_ids.length === 0)
                 newErrors.category_ids =
@@ -131,28 +151,28 @@ export default function SafetyObservationForm({
             {
                 preserveState: true,
                 preserveScroll: true,
-                onSuccess: () => {
+                onSuccess: (page) => {
                     setLastSaved(new Date());
                     setIsSaving(false);
+
+                    if (!formData.id && page.props.savedDraft) {
+                        setFormData((prev) => ({
+                            ...prev,
+                            id: page.props.savedDraft.id,
+                        }));
+                    }
                 },
-                onError: () => setIsSaving(false),
+                onError: (errors) => {
+                    console.error("Error autoguardado", errors);
+                    setIsSaving(false);
+                },
             }
         );
     };
 
     const handleSaveDraft = () => {
-        router.post(
-            route("observations.draft"),
-            { ...formData, is_draft: true },
-            {
-                onSuccess: () =>
-                    showToast("Borrador guardado exitosamente", "success"),
-                onError: (e) => {
-                    console.error(e);
-                    showToast("Error al guardar el borrador", "error");
-                },
-            }
-        );
+        handleAutoSave();
+        showToast("Borrador guardado manualmente", "success");
     };
 
     const handleSubmit = () => {
@@ -160,7 +180,6 @@ export default function SafetyObservationForm({
             setCurrentStep(3);
             return;
         }
-
         const submitData = new FormData();
         Object.keys(formData).forEach((key) => {
             if (key === "category_ids")
@@ -184,7 +203,6 @@ export default function SafetyObservationForm({
             },
             onError: (err) => {
                 setErrors(err);
-                console.error(err);
                 showToast("Error al enviar. Verifica los datos.", "error");
             },
         });
@@ -202,14 +220,6 @@ export default function SafetyObservationForm({
                         }`}
                     >
                         <span className="font-medium">{toast.message}</span>
-                        <button
-                            onClick={() =>
-                                setToast((prev) => ({ ...prev, show: false }))
-                            }
-                            className="ml-4 focus:outline-none"
-                        >
-                            x
-                        </button>
                     </div>
                 </div>
             )}
@@ -239,7 +249,7 @@ export default function SafetyObservationForm({
                                 strokeLinejoin="round"
                                 strokeWidth="2"
                                 d="M6 18L18 6M6 6l12 12"
-                            ></path>
+                            />
                         </svg>
                     </button>
                 </div>
@@ -284,26 +294,7 @@ export default function SafetyObservationForm({
                                 : "bg-gray-200 text-gray-700 hover:bg-gray-300"
                         }`}
                     >
-                        {currentStep === 1 ? (
-                            "Cancelar"
-                        ) : (
-                            <>
-                                <svg
-                                    className="w-5 h-5 mr-2"
-                                    fill="none"
-                                    stroke="currentColor"
-                                    viewBox="0 0 24 24"
-                                >
-                                    <path
-                                        strokeLinecap="round"
-                                        strokeLinejoin="round"
-                                        strokeWidth={2}
-                                        d="M15 19l-7-7 7-7"
-                                    />
-                                </svg>
-                                Anterior
-                            </>
-                        )}
+                        {currentStep === 1 ? "Cancelar" : "Anterior"}
                     </button>
 
                     <div className="text-sm text-center text-gray-500 md:text-left">
@@ -316,19 +307,6 @@ export default function SafetyObservationForm({
                             className="flex items-center justify-center w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 hover:scale-105 active:scale-95"
                         >
                             Siguiente
-                            <svg
-                                className="w-5 h-5 ml-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
-                            >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth={2}
-                                    d="M9 5l7 7-7 7"
-                                />
-                            </svg>
                         </button>
                     ) : (
                         <div className="flex flex-col w-full gap-3 md:flex-row md:w-auto">
@@ -348,7 +326,16 @@ export default function SafetyObservationForm({
                     )}
                 </div>
 
-                <AutoSaveIndicator isSaving={isSaving} />
+                {(isSaving || lastSaved) && (
+                    <div className="mt-4">
+                        <AutoSaveIndicator isSaving={isSaving} />
+                    </div>
+                )}
+                {!isSaving && lastSaved && (
+                    <div className="text-xs text-center text-gray-400">
+                        Guardado a las {lastSaved.toLocaleTimeString()}
+                    </div>
+                )}
             </div>
         </div>
     );

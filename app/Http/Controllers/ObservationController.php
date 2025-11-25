@@ -1,12 +1,12 @@
 <?php
 
 namespace App\Http\Controllers;
+
 use Illuminate\Support\Facades\Auth;
 use App\Models\Observation;
 use App\Models\Area;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
-
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 class ObservationController extends Controller
@@ -28,24 +28,38 @@ class ObservationController extends Controller
             'is_draft' => 'boolean',
         ]);
 
+        $user = Auth::user();
+        $observation = Observation::where('user_id', $user->id)
+            ->where('is_draft', true)
+            ->first();
 
-        $folio = 'OBS-' . date('Ymd') . '-' . Auth::id() . '-' . time();
+        if ($observation) {
+            $observation->update([
+                'observation_date' => $validated['observation_date'],
+                'observed_person' => $validated['observed_person'],
+                'area_id' => $validated['area_id'],
+                'observation_type' => $validated['observation_type'],
+                'description' => $validated['description'],
+                'status' => $request->boolean('is_draft') ? 'borrador' : 'en_progreso',
+                'is_draft' => $request->boolean('is_draft'),
+            ]);
+        } else {
+            $folio = 'OBS-' . date('Ymd') . '-' . $user->id . '-' . time();
 
-        $observation = Observation::create([
-            'user_id' => Auth::id(),
-            'observation_date' => $validated['observation_date'],
-            'observed_person' => $validated['observed_person'],
-            'area_id' => $validated['area_id'],
-            'observation_type' => $validated['observation_type'],
-            'description' => $validated['description'],
-            'status' => $request->boolean('is_draft') ? 'borrador' : 'en_progreso',
-            'is_draft' => $request->boolean('is_draft'),
-            'folio' => $folio,
-        ]);
+            $observation = Observation::create([
+                'user_id' => $user->id,
+                'observation_date' => $validated['observation_date'],
+                'observed_person' => $validated['observed_person'],
+                'area_id' => $validated['area_id'],
+                'observation_type' => $validated['observation_type'],
+                'description' => $validated['description'],
+                'status' => $request->boolean('is_draft') ? 'borrador' : 'en_progreso',
+                'is_draft' => $request->boolean('is_draft'),
+                'folio' => $folio,
+            ]);
+        }
 
-
-        $observation->categories()->attach(array_unique($validated['category_ids']));
-
+        $observation->categories()->sync($validated['category_ids']);
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $photo) {
@@ -67,16 +81,13 @@ class ObservationController extends Controller
         );
     }
 
-
     public function draft(Request $request)
     {
         return $this->store($request->merge(['is_draft' => true]));
     }
 
-
     public function show(Observation $observation)
     {
-
         $observation->load([
             'user',
             'area',
@@ -90,13 +101,11 @@ class ObservationController extends Controller
         ]);
     }
 
-
     public function index(Request $request)
     {
         $query = Observation::with(['user', 'area', 'categories'])
             ->submitted()
             ->latest('observation_date');
-
 
         if ($request->filled('status')) {
             $query->where('status', $request->status);
@@ -119,7 +128,6 @@ class ObservationController extends Controller
         ]);
     }
 
-
     public function close(Request $request, Observation $observation)
     {
         $this->authorize('manage', Observation::class);
@@ -130,12 +138,11 @@ class ObservationController extends Controller
 
         $observation->close(
             $validated['closure_notes'] ?? null,
-            auth()->id()
+            Auth::id()
         );
 
         return redirect()->back()->with('success', 'Observación cerrada exitosamente');
     }
-
 
     public function reopen(Observation $observation)
     {
@@ -151,15 +158,14 @@ class ObservationController extends Controller
         return redirect()->back()->with('success', 'Observación reabierta');
     }
 
-
-  public function destroy(Observation $observation)
+    public function destroy(Observation $observation)
     {
-        if ($observation->is_draft && $observation->user_id === Auth::id()) {
+        $user = Auth::user();
+
+        if ($observation->is_draft && $observation->user_id === $user->id) {
             $observation->delete();
             return redirect()->back()->with('success', 'Borrador eliminado');
         }
-
-        $user = Auth::user();
 
         if ($user->is_super_admin) {
             $observation->delete();
