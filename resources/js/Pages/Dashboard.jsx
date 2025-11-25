@@ -18,6 +18,8 @@ export default function Dashboard({
     savedDraft,
     ehsStats,
     myObservations,
+    filters,
+    filterAreas,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -53,6 +55,8 @@ export default function Dashboard({
                             stats={stats}
                             users={users}
                             onUserClick={openEditModal}
+                            filters={filters}
+                            filterAreas={filterAreas}
                         />
                     ) : user.is_ehs_manager ? (
                         ehsStats ? (

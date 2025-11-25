@@ -10,6 +10,7 @@ use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Request as RequestFacade;
 
 class DashboardController extends Controller
 {
@@ -27,7 +28,39 @@ class DashboardController extends Controller
                 'super_admins' => User::where('is_super_admin', true)->count(),
             ];
 
-            $data['users'] = User::all();
+        $usersQuery = User::query()
+            ->addSelect(['last_activity' => DB::table('sessions')
+                ->select('last_activity')
+                ->whereColumn('user_id', 'users.id')
+                ->orderByDesc('last_activity')
+                ->limit(1)
+            ])
+            ->when(request('search'), function ($query, $search) {
+                $query->where(function ($q) use ($search) {
+                    $q->where('name', 'like', "%{$search}%")
+                    ->orWhere('email', 'like', "%{$search}%")
+                    ->orWhere('employee_number', 'like', "%{$search}%");
+                });
+            })
+            ->when(request('area'), function ($query, $area) {
+                $query->where('area', $area);
+            })
+            ->when(request('role'), function ($query, $role) {
+                if ($role === 'admin') $query->where('is_super_admin', true);
+                elseif ($role === 'manager') $query->where('is_ehs_manager', true);
+                elseif ($role === 'employee') $query->where('is_super_admin', false)->where('is_ehs_manager', false);
+            })
+            ->when(request('status'), function ($query, $status) {
+                if ($status === 'verified') $query->whereNotNull('email_verified_at');
+                elseif ($status === 'pending') $query->whereNull('email_verified_at');
+            })
+            ->orderByDesc('created_at');
+
+            $data['users'] = $usersQuery->paginate(10)->withQueryString();
+
+            $data['filters'] = request()->only(['search', 'area', 'role', 'status']);
+
+            $data['filterAreas'] = User::select('area')->distinct()->whereNotNull('area')->pluck('area');
         }
 
         if (!$user->is_super_admin && !$user->is_ehs_manager) {
