@@ -8,10 +8,8 @@ export default function EmployeeView({
     categories,
     savedDraft,
 }) {
-    // Inicializa el estado basado en si existe un borrador
     const [showForm, setShowForm] = useState(!!savedDraft);
 
-    // Efecto para depuración: Abre la consola (F12) para ver esto
     useEffect(() => {
         console.log("Borrador recibido del backend:", savedDraft);
         if (savedDraft) setShowForm(true);

@@ -44,18 +44,21 @@ export default function Dashboard({
             <div className="py-6 sm:py-12">
                 <div className="px-4 mx-auto space-y-4 sm:space-y-6 max-w-7xl sm:px-6 lg:px-8">
                     {user.is_super_admin ? (
+                        //Vista para Super Administradores
                         <SuperAdminView
                             stats={stats}
                             users={users}
                             onUserClick={openEditModal}
                         />
                     ) : user.is_ehs_manager ? (
+                        //Vista para Gerentes EHS (Grecia Fuentes EHS)
                         <EmptyState
                             message="Panel de Gestión EHS"
                             submessage="Próximamente podrás gestionar todas las observaciones de seguridad desde aquí."
                         />
                     ) : (
                         <EmployeeView
+                            //Vista para Empleados
                             user={user}
                             userStats={userStats}
                             areas={areas}
