@@ -1,5 +1,8 @@
 import { useState, useEffect } from "react";
 import SafetyObservationForm from "@/Components/Observations/SafetyObservationForm";
+// Nuevos imports necesarios
+import MyReportsTable from "@/Components/Dashboard/MyReportsTable";
+import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 
 export default function EmployeeView({
     user,
@@ -7,11 +10,14 @@ export default function EmployeeView({
     areas,
     categories,
     savedDraft,
+    myObservations,
 }) {
     const [showForm, setShowForm] = useState(!!savedDraft);
 
+    const [selectedObservation, setSelectedObservation] = useState(null);
+
     useEffect(() => {
-        console.log("Borrador recibido del backend:", savedDraft);
+        console.log("Borrador recibido:", savedDraft);
         if (savedDraft) setShowForm(true);
     }, [savedDraft]);
 
@@ -129,18 +135,25 @@ export default function EmployeeView({
                                 d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
                             />
                         </svg>
-                        Mis Reportes
+                        Mis Reportes Recientes
                     </h3>
                     <span className="px-3 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">
                         {(userStats?.total || 0) + " Total"}
                     </span>
                 </div>
-                <div className="flex items-center justify-center h-24 text-gray-400 border-2 border-dashed rounded-lg sm:h-32 bg-gray-50">
-                    <span className="px-4 text-xs text-center sm:text-sm">
-                        Gráfica de actividad reciente (Próximamente)
-                    </span>
-                </div>
+
+                <MyReportsTable
+                    observations={myObservations}
+                    onRowClick={(obs) => setSelectedObservation(obs)}
+                />
             </div>
+
+            <ObservationDetailsModal
+                show={!!selectedObservation}
+                observation={selectedObservation}
+                onClose={() => setSelectedObservation(null)}
+                canClose={true}
+            />
         </div>
     );
 }

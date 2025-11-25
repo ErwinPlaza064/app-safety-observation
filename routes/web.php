@@ -36,6 +36,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
 
     Route::get('/observations/export/csv', [ObservationController::class, 'exportCsv'])->name('observations.export.csv');
 
+    Route::put('/observations/{observation}/close', [ObservationController::class, 'close'])->name('observations.close');
+
     Route::get('/observations/export/pdf', [ObservationController::class, 'exportPdf'])->name('observations.export.pdf');
 
     Route::put('/observations/{observation}', [ObservationController::class, 'update'])->name('observations.update');

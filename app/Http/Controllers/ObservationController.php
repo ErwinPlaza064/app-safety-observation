@@ -184,6 +184,21 @@ class ObservationController extends Controller
 
     public function close(Request $request, Observation $observation)
     {
+
+        if (Auth::user()->is_ehs_manager || $observation->user_id === Auth::id()) {
+
+        $observation->update([
+            'status' => 'cerrada',
+            'closed_at' => now(),
+            'closed_by' => Auth::id(),
+        ]);
+
+        return redirect()->back()->with('success', 'Observación cerrada exitosamente');
+        }
+
+        abort(403);
+
+
         $this->authorize('manage', Observation::class);
 
         $validated = $request->validate([

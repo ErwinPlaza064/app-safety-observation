@@ -47,6 +47,13 @@ class DashboardController extends Controller
                                     ->count(),
             ];
 
+            $data['myObservations'] = Observation::where('user_id', $user->id)
+                                        ->where('is_draft', false)
+                                        ->with('area','user', 'images', 'categories')
+                                        ->latest()
+                                        ->take(5)
+                                        ->get();
+
             $draft = Observation::where('user_id', $user->id)
                         ->where('is_draft', true)
                         ->latest()
@@ -95,7 +102,7 @@ class DashboardController extends Controller
                 $q->submitted();
             }])->orderByDesc('observations_count')->take(5)->get();
 
-            $recentObservations = Observation::with(['user', 'area', 'categories'])
+            $recentObservations = Observation::with(['user', 'area', 'categories', 'images'])
                                     ->submitted()
                                     ->latest('observation_date')
                                     ->take(10)

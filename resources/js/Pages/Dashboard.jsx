@@ -1,6 +1,7 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
+import WelcomeCard from "@/Components/Dashboard/WelcomeCard";
 import EditUserModal from "@/Components/Dashboard/EditUserModal";
 import DeleteUserModal from "@/Components/Dashboard/DeleteUserModal";
 import EmptyState from "@/Components/Dashboard/EmptyState";
@@ -16,6 +17,7 @@ export default function Dashboard({
     categories,
     savedDraft,
     ehsStats,
+    myObservations,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -42,27 +44,30 @@ export default function Dashboard({
 
     return (
         <AuthenticatedLayout>
-            <Head title="Dashboard" />
+            <Head title="Panel de Control" />
+
             <div className="py-6 sm:py-12">
                 <div className="px-4 mx-auto space-y-4 sm:space-y-6 max-w-7xl sm:px-6 lg:px-8">
                     {user.is_super_admin ? (
-                        //Vista para Super Administradores
                         <SuperAdminView
                             stats={stats}
                             users={users}
                             onUserClick={openEditModal}
                         />
                     ) : user.is_ehs_manager ? (
-                        //Vista para Jefa EHS
-                        <EhsManagerView user={user} stats={ehsStats} />
+                        ehsStats ? (
+                            <EhsManagerView user={user} stats={ehsStats} />
+                        ) : (
+                            <EmptyState message="Cargando..." submessage="" />
+                        )
                     ) : (
                         <EmployeeView
-                            //Vista para Empleados
                             user={user}
                             userStats={userStats}
                             areas={areas}
                             categories={categories}
                             savedDraft={savedDraft}
+                            myObservations={myObservations}
                         />
                     )}
                 </div>

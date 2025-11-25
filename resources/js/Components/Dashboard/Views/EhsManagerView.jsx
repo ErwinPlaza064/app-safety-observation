@@ -223,9 +223,9 @@ export default function EhsManagerView({ user, stats }) {
                     <table className="w-full text-sm text-left text-gray-500">
                         <thead className="text-xs text-gray-700 uppercase bg-gray-50">
                             <tr>
-                                <th className="px-6 py-3">ID</th>
+                                <th className="px-6 py-3">Observada</th>
                                 <th className="px-6 py-3">Descripción</th>
-                                <th className="px-6 py-3">Empleado</th>
+                                <th className="px-6 py-3">Observador</th>
                                 <th className="px-6 py-3">Ubicación</th>
                                 <th className="px-6 py-3">Estado</th>
                                 <th className="px-6 py-3">Fecha</th>
@@ -239,7 +239,7 @@ export default function EhsManagerView({ user, stats }) {
                                     className="transition-colors duration-150 bg-white cursor-pointer hover:bg-blue-50"
                                 >
                                     <td className="px-6 py-4 font-medium text-blue-600 whitespace-nowrap">
-                                        {obs.folio || `ID-${obs.id}`}
+                                        {obs.observed_person}
                                     </td>
                                     <td className="max-w-xs px-6 py-4 truncate">
                                         {obs.description}
@@ -247,6 +247,7 @@ export default function EhsManagerView({ user, stats }) {
                                     <td className="px-6 py-4">
                                         {obs.user?.name}
                                     </td>
+
                                     <td className="px-6 py-4">
                                         {obs.area?.name}
                                     </td>
