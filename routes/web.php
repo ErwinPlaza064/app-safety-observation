@@ -34,6 +34,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{observation}', [ObservationController::class, 'destroy'])->name('destroy');
     });
 
+    Route::get('/observations/export/csv', [ObservationController::class, 'exportCsv'])->name('observations.export.csv');
+
+    Route::get('/observations/export/pdf', [ObservationController::class, 'exportPdf'])->name('observations.export.pdf');
 
     Route::put('/observations/{observation}', [ObservationController::class, 'update'])->name('observations.update');
 

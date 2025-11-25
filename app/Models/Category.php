@@ -14,4 +14,9 @@ class Category extends Model
         'is_active',
         'sort_order',
     ];
+
+        public function observations()
+        {
+            return $this->belongsToMany(Observation::class, 'category_observation');
+        }
 }

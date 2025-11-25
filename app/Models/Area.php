@@ -18,4 +18,9 @@ class Area extends Model
     {
         return $query->where('is_active', true);
     }
+
+    public function observations()
+    {
+        return $this->hasMany(\App\Models\Observation::class, 'area_id');
+    }
 }

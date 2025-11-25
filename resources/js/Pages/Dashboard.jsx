@@ -6,6 +6,7 @@ import DeleteUserModal from "@/Components/Dashboard/DeleteUserModal";
 import EmptyState from "@/Components/Dashboard/EmptyState";
 import SuperAdminView from "@/Components/Dashboard/Views/SuperAdminView";
 import EmployeeView from "@/Components/Dashboard/Views/EmployeeView";
+import EhsManagerView from "@/Components/Dashboard/Views/EhsManagerView";
 
 export default function Dashboard({
     userStats,
@@ -14,6 +15,7 @@ export default function Dashboard({
     areas,
     categories,
     savedDraft,
+    ehsStats,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -51,11 +53,8 @@ export default function Dashboard({
                             onUserClick={openEditModal}
                         />
                     ) : user.is_ehs_manager ? (
-                        //Vista para Gerentes EHS (Grecia Fuentes EHS)
-                        <EmptyState
-                            message="Panel de Gestión EHS"
-                            submessage="Próximamente podrás gestionar todas las observaciones de seguridad desde aquí."
-                        />
+                        //Vista para Jefa EHS
+                        <EhsManagerView user={user} stats={ehsStats} />
                     ) : (
                         <EmployeeView
                             //Vista para Empleados

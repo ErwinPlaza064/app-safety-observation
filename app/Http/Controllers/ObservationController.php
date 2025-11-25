@@ -8,6 +8,9 @@ use App\Models\Area;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
+use App\Exports\ObservationsExport;
+use Maatwebsite\Excel\Facades\Excel;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 class ObservationController extends Controller
 {
@@ -224,5 +227,22 @@ class ObservationController extends Controller
         }
 
         abort(403, 'No autorizado');
+    }
+
+    public function exportCsv()
+    {
+        return Excel::download(new ObservationsExport, 'observaciones.csv');
+    }
+
+    public function exportPdf()
+    {
+        $observations = Observation::with(['user', 'area'])
+                        ->submitted()
+                        ->latest('observation_date')
+                        ->get();
+
+        $pdf = Pdf::loadView('exports.observations_pdf', compact('observations'));
+
+        return $pdf->download('reporte_seguridad.pdf');
     }
 }

@@ -8,6 +8,8 @@ use App\Models\Observation;
 use App\Models\User;
 use Illuminate\Support\Facades\Auth;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
@@ -58,6 +60,57 @@ class DashboardController extends Controller
         }
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
+            $totalMonth = Observation::whereMonth('observation_date', now()->month)
+                            ->whereYear('observation_date', now()->year)
+                            ->submitted()
+                            ->count();
+
+            $open = Observation::submitted()->where('status', 'en_progreso')->count();
+
+            $closed = Observation::submitted()->where('status', 'cerrada')->count();
+            $totalAll = Observation::submitted()->count();
+            $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
+
+            $highRisk = Observation::submitted()
+                            ->where('status', 'en_progreso')
+                            ->whereHas('categories', function($q) {
+                                $q->whereIn('categories.id', [8, 9]);
+                            })->count();
+
+            $repeatOffenders = Observation::submitted()
+                                ->select('observed_person')
+                                ->groupBy('observed_person')
+                                ->havingRaw('COUNT(*) > 1')
+                                ->get()
+                                ->count();
+
+
+            $observationsByPlant = Area::withCount(['observations' => function($q){
+                $q->submitted();
+            }])->get()->map(function($area){
+                return ['name' => $area->name, 'count' => $area->observations_count];
+            });
+
+            $topCategories = Category::withCount(['observations' => function($q){
+                $q->submitted();
+            }])->orderByDesc('observations_count')->take(5)->get();
+
+            $recentObservations = Observation::with(['user', 'area', 'categories'])
+                                    ->submitted()
+                                    ->latest('observation_date')
+                                    ->take(10)
+                                    ->get();
+
+            $data['ehsStats'] = [
+                'total_month' => $totalMonth,
+                'open' => $open,
+                'high_risk' => $highRisk,
+                'closed_rate' => $closedRate,
+                'recidivism' => $repeatOffenders,
+                'by_plant' => $observationsByPlant,
+                'top_categories' => $topCategories,
+                'recent' => $recentObservations
+            ];
         }
 
         return Inertia::render('Dashboard', $data);
