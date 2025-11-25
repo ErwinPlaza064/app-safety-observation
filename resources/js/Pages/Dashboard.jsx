@@ -60,7 +60,12 @@ export default function Dashboard({
                         />
                     ) : user.is_ehs_manager ? (
                         ehsStats ? (
-                            <EhsManagerView user={user} stats={ehsStats} />
+                            <EhsManagerView
+                                user={user}
+                                stats={ehsStats}
+                                areas={areas}
+                                filters={filters}
+                            />
                         ) : (
                             <EmptyState message="Cargando..." submessage="" />
                         )
