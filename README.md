@@ -1,66 +1,113 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# WASION Safety Observer
 
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <a href="https://laravel.com" target="_blank">
+    <img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="300" alt="Laravel Logo">
+  </a>
 </p>
 
-## About Laravel
+<p align="center">
+    <img src="https://img.shields.io/badge/Laravel-11-FF2D20?style=for-the-badge&logo=laravel&logoColor=white" alt="Laravel 11">
+    <img src="https://img.shields.io/badge/Inertia.js-React-8956FF?style=for-the-badge&logo=inertia&logoColor=white" alt="Inertia">
+    <img src="https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white" alt="Tailwind">
+    <img src="https://img.shields.io/badge/MySQL-4479A1?style=for-the-badge&logo=mysql&logoColor=white" alt="MySQL">
+</p>
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+## 📋 Descripción
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+**WASION Safety Observer** es una aplicación web integral diseñada para la gestión de seguridad industrial (EHS). Permite a los empleados reportar actos y condiciones inseguras en tiempo real, mientras proporciona a la gerencia herramientas analíticas para la toma de decisiones.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+El sistema está construido con una arquitectura moderna utilizando **Laravel 11** como API backend y **React** (vía Inertia.js) para una experiencia de usuario fluida y reactiva.
 
-## Learning Laravel
+## 🚀 Características Principales
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+### 👷 Para Empleados
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+-   **Reporte de Observaciones:** Formulario multi-pasos intuitivo para registrar actos inseguros, condiciones inseguras o actos seguros.
+-   **Autoguardado Inteligente:** Sistema de persistencia automática (drafts) que guarda el progreso cada 30 segundos o al detener la escritura, permitiendo retomar el reporte más tarde incluso tras recargar la página.
+-   **Evidencia Fotográfica:** Carga múltiple de imágenes para respaldar los reportes.
+-   **Historial Personal:** Visualización de estatus de reportes propios (Abiertos/Cerrados).
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 📊 Para Gerentes EHS
 
-## Laravel Sponsors
+-   **Dashboard Ejecutivo:** Vista centralizada con KPIs en tiempo real (Tasa de resolución, Reincidencia, Total del mes).
+-   **Análisis de Datos:** Gráficas de distribución por planta y top de categorías críticas.
+-   **Gestión de Reportes:** Tabla detallada de observaciones recientes con modales de vista rápida.
+-   **Exportación:** Generación de reportes en **PDF** y **CSV** (Excel) con un solo clic.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### 🛡️ Para Super Administradores
 
-### Premium Partners
+-   **Gestión de Usuarios:** CRUD completo de usuarios con asignación de roles (Empleado, EHS Manager, Super Admin).
+-   **Control Total:** Capacidad de eliminar o editar cualquier registro del sistema.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+## 🛠️ Tecnologías Utilizadas
 
-## Contributing
+-   **Backend:** Laravel 11, PHP 8.2+
+-   **Frontend:** React 18, Inertia.js
+-   **Estilos:** Tailwind CSS
+-   **Base de Datos:** MySQL / MariaDB
+-   **Paquetes Clave:**
+    -   `maatwebsite/excel`: Exportación a Excel/CSV.
+    -   `barryvdh/laravel-dompdf`: Generación de reportes PDF.
+    -   `react-icons`: Iconografía dinámica.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## ⚙️ Instalación y Configuración
 
-## Code of Conduct
+Sigue estos pasos para desplegar el proyecto en tu entorno local:
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+1.  **Clonar el repositorio**
 
-## Security Vulnerabilities
+    ```bash
+    git clone [https://github.com/tu-usuario/safety-observation.git](https://github.com/tu-usuario/safety-observation.git)
+    cd safety-observation
+    ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+2.  **Instalar dependencias de PHP**
 
-## License
+    ```bash
+    composer install
+    ```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+3.  **Instalar dependencias de JavaScript**
+
+    ```bash
+    npm install
+    ```
+
+4.  **Configurar entorno**
+    Copia el archivo de ejemplo y genera la clave de la aplicación:
+
+    ```bash
+    cp .env.example .env
+    php artisan key:generate
+    ```
+
+    _Configura tus credenciales de base de datos en el archivo `.env`._
+
+5.  **Crear enlace simbólico para imágenes**
+    Este paso es crucial para visualizar las evidencias fotográficas:
+
+    ```bash
+    php artisan storage:link
+    ```
+
+6.  **Ejecutar migraciones**
+
+    ```bash
+    php artisan migrate --seed
+    ```
+
+7.  **Habilitar extensión GD (Para Excel)**
+    Asegúrate de tener descomentada la línea `extension=gd` en tu `php.ini`.
+
+## ▶️ Ejecución
+
+Para correr el proyecto en desarrollo, necesitas dos terminales:
+
+**Terminal 1 (Laravel):**
+
+```bash
+php artisan serve
+# O para acceso en red local:
+php artisan serve --host=0.0.0.0 --port=8000
+```
