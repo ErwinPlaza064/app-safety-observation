@@ -80,6 +80,17 @@ export default function SafetyObservationForm({
         }
     }, [toast.show]);
 
+    const handleKeyDown = (e) => {
+        if (e.key === "Enter") {
+            if (e.target.tagName === "TEXTAREA") return;
+
+            e.preventDefault();
+            if (currentStep < 4) {
+                handleNext();
+            }
+        }
+    };
+
     const showToast = (message, type = "success") => {
         setToast({ show: true, message, type });
     };
@@ -145,29 +156,46 @@ export default function SafetyObservationForm({
 
     const handleAutoSave = () => {
         setIsSaving(true);
-        router.post(
-            route("observations.draft"),
-            { ...formData, is_draft: true },
-            {
-                preserveState: true,
-                preserveScroll: true,
-                onSuccess: (page) => {
-                    setLastSaved(new Date());
-                    setIsSaving(false);
 
-                    if (!formData.id && page.props.savedDraft) {
-                        setFormData((prev) => ({
-                            ...prev,
-                            id: page.props.savedDraft.id,
-                        }));
-                    }
-                },
-                onError: (errors) => {
-                    console.error("Error autoguardado", errors);
-                    setIsSaving(false);
-                },
-            }
-        );
+        if (formData.id) {
+            router.put(
+                route("observations.update", formData.id),
+                { ...formData, is_draft: true },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: () => {
+                        setLastSaved(new Date());
+                        setIsSaving(false);
+                    },
+                    onError: () => setIsSaving(false),
+                }
+            );
+        } else {
+            router.post(
+                route("observations.store"),
+                { ...formData, is_draft: true },
+                {
+                    preserveState: true,
+                    preserveScroll: true,
+                    onSuccess: (page) => {
+                        setLastSaved(new Date());
+                        setIsSaving(false);
+
+                        if (!formData.id && page.props.savedDraft) {
+                            setFormData((prev) => ({
+                                ...prev,
+                                id: page.props.savedDraft.id,
+                            }));
+                        }
+                    },
+                    onError: (errors) => {
+                        console.error("Error autoguardado", errors);
+                        setIsSaving(false);
+                    },
+                }
+            );
+        }
     };
 
     const handleSaveDraft = () => {
@@ -209,7 +237,10 @@ export default function SafetyObservationForm({
     };
 
     return (
-        <div className="relative overflow-hidden bg-white shadow-sm sm:rounded-lg">
+        <div
+            className="relative overflow-hidden bg-white shadow-sm sm:rounded-lg"
+            onKeyDown={handleKeyDown}
+        >
             {toast.show && (
                 <div className="fixed z-50 flex items-center justify-center bottom-4 left-4 right-4 md:left-auto md:right-4 md:bottom-4 md:justify-end">
                     <div
@@ -220,6 +251,14 @@ export default function SafetyObservationForm({
                         }`}
                     >
                         <span className="font-medium">{toast.message}</span>
+                        <button
+                            onClick={() =>
+                                setToast((prev) => ({ ...prev, show: false }))
+                            }
+                            className="ml-4 focus:outline-none"
+                        >
+                            x
+                        </button>
                     </div>
                 </div>
             )}
@@ -247,9 +286,9 @@ export default function SafetyObservationForm({
                             <path
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
-                                strokeWidth="2"
+                                strokeWidth={2}
                                 d="M6 18L18 6M6 6l12 12"
-                            />
+                            ></path>
                         </svg>
                     </button>
                 </div>
@@ -307,6 +346,19 @@ export default function SafetyObservationForm({
                             className="flex items-center justify-center w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 hover:scale-105 active:scale-95"
                         >
                             Siguiente
+                            <svg
+                                className="w-5 h-5 ml-2"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 5l7 7-7 7"
+                                />
+                            </svg>
                         </button>
                     ) : (
                         <div className="flex flex-col w-full gap-3 md:flex-row md:w-auto">

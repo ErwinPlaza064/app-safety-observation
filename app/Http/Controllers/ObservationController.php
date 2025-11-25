@@ -80,6 +80,57 @@ class ObservationController extends Controller
                 : 'Observación enviada exitosamente'
         );
     }
+    public function update(Request $request, Observation $observation)
+    {
+        if ($observation->user_id !== Auth::id() && !Auth::user()->is_super_admin) {
+            abort(403);
+        }
+
+        $validated = $request->validate([
+            'observation_date' => 'required|date',
+            'observed_person' => 'nullable|string|max:255',
+            'area_id' => 'required|exists:areas,id',
+            'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
+            'category_ids' => 'required|array|min:1',
+            'category_ids.*' => 'exists:categories,id',
+            'description' => 'required|string|min:20',
+            'is_draft' => 'boolean',
+            'photos' => 'nullable|array|max:5',
+        ]);
+
+        $observation->update([
+            'observation_date' => $validated['observation_date'],
+            'observed_person' => $validated['observed_person'],
+            'area_id' => $validated['area_id'],
+            'observation_type' => $validated['observation_type'],
+            'description' => $validated['description'],
+            'status' => $request->boolean('is_draft') ? 'borrador' : 'en_progreso',
+            'is_draft' => $request->boolean('is_draft'),
+        ]);
+
+        $observation->categories()->sync($validated['category_ids']);
+
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $photo->store('observations/' . $observation->id, 'public');
+
+                $nextOrder = $observation->images()->max('sort_order') + 1;
+
+                $observation->images()->create([
+                    'path' => $path,
+                    'original_name' => $photo->getClientOriginalName(),
+                    'size' => $photo->getSize(),
+                    'sort_order' => $nextOrder + $index,
+                ]);
+            }
+        }
+
+        return redirect()->back()->with('success',
+            $request->boolean('is_draft')
+                ? 'Borrador actualizado exitosamente'
+                : 'Observación actualizada y enviada'
+        );
+    }
 
     public function draft(Request $request)
     {

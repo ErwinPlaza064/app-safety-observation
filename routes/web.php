@@ -26,7 +26,6 @@ Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // Todas las rutas de observaciones apuntan solo a ObservationController
     Route::prefix('observations')->name('observations.')->group(function () {
         Route::get('/', [ObservationController::class, 'index'])->name('index');
         Route::post('/', [ObservationController::class, 'store'])->name('store');
@@ -35,6 +34,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
         Route::delete('/{observation}', [ObservationController::class, 'destroy'])->name('destroy');
     });
 
+
+    Route::put('/observations/{observation}', [ObservationController::class, 'update'])->name('observations.update');
 
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
