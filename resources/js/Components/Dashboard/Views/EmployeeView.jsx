@@ -94,7 +94,7 @@ export default function EmployeeView({
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                 <div
                     onClick={() => handleCardClick("en_progreso")}
-                    className="p-4 bg-white border-l-4 border-blue-500 shadow-sm sm:p-6 rounded-xl"
+                    className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 sm:text-lg">
@@ -124,11 +124,11 @@ export default function EmployeeView({
                     </div>
                 </div>
 
-                <div className="p-4 bg-white border-l-4 border-green-500 shadow-sm sm:p-6 rounded-xl">
-                    <div
-                        onClick={() => handleCardClick("cerrada")}
-                        className="flex items-center justify-between mb-4"
-                    >
+                <div
+                    onClick={() => handleCardClick("cerrada")}
+                    className="p-4 bg-white border-l-4 border-green-500 shadow-sm hover:cursor-pointer hover:bg-gray-200 sm:p-6 rounded-xl"
+                >
+                    <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 sm:text-lg">
                             Cerradas
                         </h3>
