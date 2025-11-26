@@ -40,8 +40,8 @@ export default function UpdateProfileInformation({
                     <h2 className="text-lg font-medium text-gray-900">
                         Información del Perfil
                     </h2>
-                    <div className="flex items-center gap-4 mr-6 lg:ml-14 lg:mt-4">
-                        <div className="h-14 w-14  rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
+                    <div className="flex items-center gap-4 mr-6 lg:ml-14 lg:py-4">
+                        <div className="h-14 w-14 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
                             {getInitials(user.name)}{" "}
                         </div>
                     </div>
