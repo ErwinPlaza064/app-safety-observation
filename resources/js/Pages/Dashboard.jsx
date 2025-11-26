@@ -1,7 +1,6 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
-import WelcomeCard from "@/Components/Dashboard/WelcomeCard";
 import EditUserModal from "@/Components/Dashboard/EditUserModal";
 import DeleteUserModal from "@/Components/Dashboard/DeleteUserModal";
 import EmptyState from "@/Components/Dashboard/EmptyState";

@@ -49,12 +49,12 @@ export default function UpdateProfileInformation({
 
                 <div className="mt-2 space-y-6">
                     <p className="mt-1 text-sm text-gray-600">
-                        ¿Necesitas actualizar tu información? Contacta{" "}
+                        ¿Necesitas actualizar <br /> tu información? <br />
                         <a
                             href="https://wasionithelp.freshservice.com"
                             className="text-wasion hover:underline"
                         >
-                            IT Support
+                            Contacta a IT
                         </a>
                     </p>
                     <div>
