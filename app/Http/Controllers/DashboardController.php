@@ -16,11 +16,12 @@ class DashboardController extends Controller
 {
     public function index()
     {
-        /** @var \App\Models\User $user */
         $user = Auth::user();
-
         $data = [];
 
+        // ==========================================
+        // 1. LÓGICA PARA SUPER ADMIN
+        // ==========================================
         if ($user->is_super_admin) {
             $data['stats'] = [
                 'total_users' => User::count(),
@@ -58,26 +59,33 @@ class DashboardController extends Controller
                 ->orderByDesc('created_at');
 
             $data['users'] = $usersQuery->paginate(10)->withQueryString();
+
+            $data['filters'] = request()->only(['search', 'area', 'role', 'status']);
             $data['filterAreas'] = User::select('area')->distinct()->whereNotNull('area')->pluck('area');
+
         }
 
-
+        // ==========================================
+        // 2. LÓGICA PARA EMPLEADO REGULAR
+        // ==========================================
         if (!$user->is_super_admin && !$user->is_ehs_manager) {
-
             $data['areas'] = Area::where('is_active', true)->get();
             $data['categories'] = Category::where('is_active', true)->get();
 
             $data['userStats'] = [
-                'in_progress' => Observation::where('user_id', $user->id)
-                                    ->where('status', 'en_progreso')
-                                    ->count(),
-                'completed'   => Observation::where('user_id', $user->id)
-                                    ->where('status', 'cerrada')
-                                    ->count(),
-                'total'       => Observation::where('user_id', $user->id)
-                                    ->where('is_draft', false)
-                                    ->count(),
+                'in_progress' => Observation::where('user_id', $user->id)->where('status', 'en_progreso')->count(),
+                'completed'   => Observation::where('user_id', $user->id)->where('status', 'cerrada')->count(),
+                'total'       => Observation::where('user_id', $user->id)->where('is_draft', false)->count(),
             ];
+
+            if (request('filter_status')) {
+                $data['filteredReports'] = Observation::where('user_id', $user->id)
+                    ->where('is_draft', false)
+                    ->where('status', request('filter_status'))
+                    ->with(['area', 'user'])
+                    ->latest()
+                    ->get();
+            }
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                                         ->where('is_draft', false)
@@ -98,8 +106,10 @@ class DashboardController extends Controller
             $data['savedDraft'] = $draft;
         }
 
+        // ==========================================
+        // 3. LÓGICA PARA EHS MANAGER
+        // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
-
             $query = Observation::with(['user', 'area', 'categories', 'images'])
                 ->submitted();
 
@@ -127,11 +137,10 @@ class DashboardController extends Controller
                                     ->take(20)
                                     ->get();
 
+            // Cálculos de Métricas Totales (sin filtros para mostrar panorama general)
             $totalMonth = Observation::whereMonth('observation_date', now()->month)
                             ->whereYear('observation_date', now()->year)
-                            ->submitted()
-                            ->count();
-
+                            ->submitted()->count();
             $open = Observation::submitted()->where('status', 'en_progreso')->count();
             $closed = Observation::submitted()->where('status', 'cerrada')->count();
             $totalAll = Observation::submitted()->count();
@@ -147,8 +156,7 @@ class DashboardController extends Controller
                                 ->select('observed_person')
                                 ->groupBy('observed_person')
                                 ->havingRaw('COUNT(*) > 1')
-                                ->get()
-                                ->count();
+                                ->get()->count();
 
             $observationsByPlant = Area::withCount(['observations' => function($q){
                 $q->submitted();
@@ -170,11 +178,9 @@ class DashboardController extends Controller
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations
             ];
-        }
 
-        $data['filters'] = request()->only(['search', 'area_id', 'status', 'area', 'role']);
-
-        if (!isset($data['areas'])) {
+            // Datos para filtros del EHS Manager
+            $data['filters'] = request()->only(['search', 'area_id', 'status']);
             $data['areas'] = Area::where('is_active', true)->get();
         }
 

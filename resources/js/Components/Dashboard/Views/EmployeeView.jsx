@@ -1,8 +1,9 @@
 import { useState, useEffect } from "react";
 import SafetyObservationForm from "@/Components/Observations/SafetyObservationForm";
-// Nuevos imports necesarios
 import MyReportsTable from "@/Components/Dashboard/MyReportsTable";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
+import StatusListModal from "@/Components/Dashboard/StatusListModal";
+import { router } from "@inertiajs/react";
 
 export default function EmployeeView({
     user,
@@ -11,15 +12,46 @@ export default function EmployeeView({
     categories,
     savedDraft,
     myObservations,
+    filteredReports,
 }) {
     const [showForm, setShowForm] = useState(!!savedDraft);
 
     const [selectedObservation, setSelectedObservation] = useState(null);
 
+    const [showStatusModal, setShowStatusModal] = useState(false);
+
+    const [currentStatusFilter, setCurrentStatusFilter] = useState(null);
+
     useEffect(() => {
         console.log("Borrador recibido:", savedDraft);
         if (savedDraft) setShowForm(true);
     }, [savedDraft]);
+
+    useEffect(() => {
+        if (filteredReports && currentStatusFilter) {
+            setShowStatusModal(true);
+        }
+    }, [filteredReports]);
+
+    const handleCardClick = (status) => {
+        setCurrentStatusFilter(status);
+
+        router.get(
+            route("dashboard"),
+            { filter_status: status },
+            {
+                preserveState: true,
+                preserveScroll: true,
+                only: ["filteredReports"],
+                onSuccess: () => {},
+            }
+        );
+    };
+
+    const handleModalRowClick = (obs) => {
+        setShowStatusModal(false);
+        setSelectedObservation(obs);
+    };
 
     if (showForm) {
         return (
@@ -60,7 +92,10 @@ export default function EmployeeView({
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
-                <div className="p-4 bg-white border-l-4 border-blue-500 shadow-sm sm:p-6 rounded-xl">
+                <div
+                    onClick={() => handleCardClick("en_progreso")}
+                    className="p-4 bg-white border-l-4 border-blue-500 shadow-sm sm:p-6 rounded-xl"
+                >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 sm:text-lg">
                             En Progreso
@@ -90,7 +125,10 @@ export default function EmployeeView({
                 </div>
 
                 <div className="p-4 bg-white border-l-4 border-green-500 shadow-sm sm:p-6 rounded-xl">
-                    <div className="flex items-center justify-between mb-4">
+                    <div
+                        onClick={() => handleCardClick("cerrada")}
+                        className="flex items-center justify-between mb-4"
+                    >
                         <h3 className="text-base font-medium text-gray-600 sm:text-lg">
                             Cerradas
                         </h3>
@@ -147,6 +185,14 @@ export default function EmployeeView({
                     onRowClick={(obs) => setSelectedObservation(obs)}
                 />
             </div>
+
+            <StatusListModal
+                show={showStatusModal}
+                status={currentStatusFilter}
+                reports={filteredReports}
+                onClose={() => setShowStatusModal(false)}
+                onRowClick={handleModalRowClick}
+            />
 
             <ObservationDetailsModal
                 show={!!selectedObservation}

@@ -20,6 +20,7 @@ export default function Dashboard({
     myObservations,
     filters,
     filterAreas,
+    filteredReports,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -77,6 +78,7 @@ export default function Dashboard({
                             categories={categories}
                             savedDraft={savedDraft}
                             myObservations={myObservations}
+                            filteredReports={filteredReports}
                         />
                     )}
                 </div>
