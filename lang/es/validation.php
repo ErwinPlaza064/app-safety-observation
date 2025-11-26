@@ -151,5 +151,11 @@ return [
     'uploaded'               => 'Subir :attribute ha fallado.',
     'uppercase'              => 'El campo :attribute debe estar en mayúscula.',
     'url'                    => 'El campo :attribute debe ser una URL válida.',
-    'uuid'                   => 'El campo :attribute debe ser un UUID válido.',
-];
+    	'uuid'                   => 'El campo :attribute debe ser un UUID válido.',
+
+        'attributes' => [
+            'current_password' => 'contraseña actual',
+            'password' => 'contraseña',
+            'password_confirmation' => 'confirmar contraseña',
+        ],
+    ];
