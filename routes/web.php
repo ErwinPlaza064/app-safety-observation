@@ -5,9 +5,23 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\Admin\UserManagementController;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Mail;
 
 Route::get('/', function () {
     return redirect()->route('login');
+});
+
+Route::get('/test-email', function () {
+    try {
+        Mail::raw('Hola, si lees esto, la conexión SMTP funciona correctamente desde XAMPP.', function ($message) {
+            $message->to('erwin.martinez@wasionmx.onmicrosoft.com')
+                    ->subject('Prueba de Conexión SMTP Wasion');
+        });
+
+        return 'El correo se envió correctamente (o al menos Laravel lo entregó al servidor SMTP). Revisa tu bandeja.';
+    } catch (\Exception $e) {
+        return 'Error al enviar el correo: ' . $e->getMessage();
+    }
 });
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
