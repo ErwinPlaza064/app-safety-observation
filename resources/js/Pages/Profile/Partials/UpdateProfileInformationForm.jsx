@@ -40,16 +40,22 @@ export default function UpdateProfileInformation({
                     <h2 className="text-lg font-medium text-gray-900">
                         Información del Perfil
                     </h2>
-                    <div className="flex items-center gap-4 mr-6 lg:mr-0">
-                        <div className="h-14 w-14 lg:w-20 lg:h-20 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
+                    <div className="flex items-center gap-4 mr-6 lg:ml-14 lg:mt-4">
+                        <div className="h-14 w-14  rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
                             {getInitials(user.name)}{" "}
                         </div>
                     </div>
                 </header>
 
-                <div className="mt-6 space-y-6">
+                <div className="mt-2 space-y-6">
                     <p className="mt-1 text-sm text-gray-600">
-                        Información de tu perfil.
+                        ¿Necesitas actualizar tu información? Contacta{" "}
+                        <a
+                            href="https://wasionithelp.freshservice.com"
+                            className="text-wasion hover:underline"
+                        >
+                            IT Support
+                        </a>
                     </p>
                     <div>
                         <InputLabel htmlFor="name" value="Nombre" />
@@ -72,7 +78,6 @@ export default function UpdateProfileInformation({
         );
     }
 
-    // Administradores sí pueden editar
     return (
         <section className={className}>
             <header>
