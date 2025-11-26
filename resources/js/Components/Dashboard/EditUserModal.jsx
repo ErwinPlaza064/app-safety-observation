@@ -4,6 +4,7 @@ import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
 import DangerButton from "@/Components/DangerButton";
+import { router } from "@inertiajs/react";
 import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
@@ -39,6 +40,16 @@ export default function EditUserModal({
             reset();
         }
     }, [user]);
+
+    const resendVerification = () => {
+        router.post(
+            route("admin.users.resend-verification", user.id),
+            {},
+            {
+                onSuccess: () => {},
+            }
+        );
+    };
 
     const submit = (e) => {
         e.preventDefault();
@@ -210,6 +221,16 @@ export default function EditUserModal({
                                         Eliminar este usuario
                                     </button>
                                 )}
+
+                            {user && !user.email_verified_at && (
+                                <button
+                                    type="button"
+                                    onClick={resendVerification}
+                                    className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-800 hover:underline focus:outline-none sm:ml-4"
+                                >
+                                    Reenviar verificación
+                                </button>
+                            )}
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row sm:w-auto">
                             <SecondaryButton

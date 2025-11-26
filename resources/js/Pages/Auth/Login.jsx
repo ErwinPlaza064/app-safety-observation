@@ -38,13 +38,6 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Iniciar Sesión" />
-
-            {status && (
-                <div className="mb-4 text-sm font-medium text-green-600">
-                    {status}
-                </div>
-            )}
-
             <form onSubmit={submit}>
                 <h2 className="mb-6 text-lg text-center text-blue-900">
                     Iniciar Sesión
@@ -155,6 +148,11 @@ export default function Login({ status, canResetPassword }) {
                         ¿No tiene cuenta? <hr /> <b>Regístrate</b>
                     </Link>
                 </div>
+                {status && (
+                    <div className="mt-2 text-sm font-medium text-center text-green-600">
+                        {status}
+                    </div>
+                )}
 
                 <PrimaryButton
                     className="w-full mt-6"

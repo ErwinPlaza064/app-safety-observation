@@ -41,7 +41,7 @@ export default function UpdateProfileInformation({
                         Información del Perfil
                     </h2>
                     <div className="flex items-center gap-4 mr-6 lg:ml-14 lg:py-4">
-                        <div className="h-14 w-14 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
+                        <div className="h-16 w-16 lg:h-14 lg:w-14 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
                             {getInitials(user.name)}{" "}
                         </div>
                     </div>

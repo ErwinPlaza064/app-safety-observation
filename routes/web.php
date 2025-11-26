@@ -40,6 +40,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
     Route::middleware(['verified'])->prefix('admin')->name('admin.')->group(function () {
         Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
+        Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])
+        ->name('users.resend-verification');
     });
 
     // --- OBSERVACIONES (Rutas limpias y agrupadas) ---

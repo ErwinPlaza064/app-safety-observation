@@ -4,13 +4,15 @@ import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useState, useMemo, useEffect } from "react";
+import { useState, useMemo } from "react";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         employee_number: "",
         name: "",
         email: "",
+        area: "", // <--- Nuevo campo
+        position: "", // <--- Nuevo campo
         password: "",
         password_confirmation: "",
     });
@@ -19,6 +21,24 @@ export default function Register() {
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
     const [showToast, setShowToast] = useState(false);
+
+    // --- FUNCIÓN DE TRADUCCIÓN ---
+    const translateError = (errorMsg) => {
+        if (!errorMsg) return null;
+
+        if (errorMsg.includes("field is required"))
+            return "Este campo es obligatorio.";
+        if (errorMsg.includes("has already been taken"))
+            return "Este dato ya está registrado en el sistema.";
+        if (errorMsg.includes("must be at least"))
+            return "Debe tener al menos 8 caracteres.";
+        if (errorMsg.includes("confirmation does not match"))
+            return "Las contraseñas no coinciden.";
+        if (errorMsg.includes("must be a valid email"))
+            return "Ingresa un correo electrónico válido.";
+
+        return errorMsg;
+    };
 
     const passwordStrength = useMemo(() => {
         const password = data.password;
@@ -36,16 +56,16 @@ export default function Register() {
 
         if (strength <= 2) {
             label = "Débil";
-            color = "bg-red-500";
+            color = "bg-red-500 text-red-600";
         } else if (strength === 3) {
             label = "Media";
-            color = "bg-orange-500";
+            color = "bg-orange-500 text-orange-600";
         } else if (strength === 4) {
             label = "Fuerte";
-            color = "bg-yellow-500";
+            color = "bg-yellow-500 text-yellow-600";
         } else {
             label = "Muy Segura";
-            color = "bg-green-500";
+            color = "bg-green-500 text-green-600";
         }
 
         return { strength, label, color, percentage: (strength / 5) * 100 };
@@ -69,7 +89,7 @@ export default function Register() {
 
             {showToast && (
                 <div className="fixed z-50 top-4 right-4 animate-slide-in">
-                    <div className="flex items-center max-w-md gap-3 px-6 py-4 text-white bg-green-500 rounded-lg shadow-lg">
+                    <div className="flex items-center max-w-md gap-3 px-6 py-4 text-white bg-green-600 rounded-lg shadow-lg">
                         <svg
                             className="flex-shrink-0 w-6 h-6"
                             fill="none"
@@ -85,7 +105,6 @@ export default function Register() {
                             <p className="font-semibold">Registro Exitoso</p>
                             <p className="text-sm">
                                 Te hemos enviado un correo de verificación.
-                                Revisa tu bandeja de entrada.
                             </p>
                         </div>
                         <button
@@ -113,12 +132,12 @@ export default function Register() {
             </h2>
 
             <form onSubmit={submit}>
+                {/* NÚMERO DE EMPLEADO */}
                 <div>
                     <InputLabel
                         htmlFor="employee_number"
                         value="Número de Nómina"
                     />
-
                     <TextInput
                         id="employee_number"
                         name="employee_number"
@@ -131,16 +150,15 @@ export default function Register() {
                         }
                         placeholder="Ej: 09015"
                     />
-
                     <InputError
-                        message={errors.employee_number}
+                        message={translateError(errors.employee_number)}
                         className="mt-2"
                     />
                 </div>
 
+                {/* NOMBRE COMPLETO */}
                 <div className="mt-4">
                     <InputLabel htmlFor="name" value="Nombre Completo" />
-
                     <TextInput
                         id="name"
                         name="name"
@@ -150,13 +168,56 @@ export default function Register() {
                         onChange={(e) => setData("name", e.target.value)}
                         placeholder="Ej: Juan Pérez Martinez"
                     />
-
-                    <InputError message={errors.name} className="mt-2" />
+                    <InputError
+                        message={translateError(errors.name)}
+                        className="mt-2"
+                    />
                 </div>
 
+                {/* --- NUEVOS CAMPOS: ÁREA Y PUESTO --- */}
+                <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
+                    <div>
+                        <InputLabel
+                            htmlFor="area"
+                            value="Área / Departamento"
+                        />
+                        <TextInput
+                            id="area"
+                            name="area"
+                            value={data.area}
+                            className="block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm"
+                            autoComplete="organization-title"
+                            onChange={(e) => setData("area", e.target.value)}
+                            placeholder="Ej: Almacén"
+                        />
+                        <InputError
+                            message={translateError(errors.area)}
+                            className="mt-2"
+                        />
+                    </div>
+                    <div>
+                        <InputLabel htmlFor="position" value="Puesto / Cargo" />
+                        <TextInput
+                            id="position"
+                            name="position"
+                            value={data.position}
+                            className="block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm"
+                            autoComplete="organization-job"
+                            onChange={(e) =>
+                                setData("position", e.target.value)
+                            }
+                            placeholder="Ej: Supervisor"
+                        />
+                        <InputError
+                            message={translateError(errors.position)}
+                            className="mt-2"
+                        />
+                    </div>
+                </div>
+
+                {/* EMAIL */}
                 <div className="mt-4">
                     <InputLabel htmlFor="email" value="Correo Corporativo" />
-
                     <TextInput
                         id="email"
                         type="email"
@@ -167,16 +228,18 @@ export default function Register() {
                         onChange={(e) => setData("email", e.target.value)}
                         placeholder="ejemplo@wasion.com"
                     />
-
-                    <InputError message={errors.email} className="mt-2" />
+                    <InputError
+                        message={translateError(errors.email)}
+                        className="mt-2"
+                    />
                     <p className="mt-1 text-xs text-gray-500">
                         Solo se permiten correos @wasion.cn o @wasion.com
                     </p>
                 </div>
 
+                {/* CONTRASEÑA */}
                 <div className="mt-4">
                     <InputLabel htmlFor="password" value="Contraseña" />
-
                     <div className="relative">
                         <TextInput
                             id="password"
@@ -195,6 +258,7 @@ export default function Register() {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                         >
+                            {/* Iconos de ojo (sin cambios) */}
                             {showPassword ? (
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -234,51 +298,49 @@ export default function Register() {
                         </button>
                     </div>
 
+                    {/* BARRA DE FORTALEZA */}
                     {passwordStrength && (
-                        <div className="mt-2">
+                        <div className="mt-2 animate-fade-in">
                             <div className="flex items-center justify-between mb-1">
                                 <span className="text-xs text-gray-600">
-                                    Fortaleza de la contraseña:
+                                    Fortaleza:
                                 </span>
                                 <span
-                                    className={`text-xs font-semibold ${
-                                        passwordStrength.label === "Débil"
-                                            ? "text-red-600"
-                                            : passwordStrength.label === "Media"
-                                            ? "text-orange-600"
-                                            : passwordStrength.label ===
-                                              "Fuerte"
-                                            ? "text-yellow-600"
-                                            : "text-green-600"
+                                    className={`text-xs font-bold ${
+                                        passwordStrength.color.split(" ")[1]
                                     }`}
                                 >
                                     {passwordStrength.label}
                                 </span>
                             </div>
-                            <div className="w-full h-2 overflow-hidden bg-gray-200 rounded-full">
+                            <div className="w-full h-1.5 overflow-hidden bg-gray-200 rounded-full">
                                 <div
-                                    className={`h-full transition-all duration-300 ${passwordStrength.color}`}
+                                    className={`h-full transition-all duration-300 ${
+                                        passwordStrength.color.split(" ")[0]
+                                    }`}
                                     style={{
                                         width: `${passwordStrength.percentage}%`,
                                     }}
                                 ></div>
                             </div>
-                            <p className="mt-1 text-xs text-gray-500">
-                                Use mayúsculas, minúsculas, números y símbolos
-                                para una contraseña más segura.
+                            <p className="mt-1 text-[10px] text-gray-400">
+                                Usa 8+ caracteres, mayúsculas, números y
+                                símbolos.
                             </p>
                         </div>
                     )}
-
-                    <InputError message={errors.password} className="mt-2" />
+                    <InputError
+                        message={translateError(errors.password)}
+                        className="mt-2"
+                    />
                 </div>
 
+                {/* CONFIRMACIÓN CONTRASEÑA */}
                 <div className="mt-4">
                     <InputLabel
                         htmlFor="password_confirmation"
                         value="Confirmar Contraseña"
                     />
-
                     <div className="relative">
                         <TextInput
                             id="password_confirmation"
@@ -340,9 +402,8 @@ export default function Register() {
                             )}
                         </button>
                     </div>
-
                     <InputError
-                        message={errors.password_confirmation}
+                        message={translateError(errors.password_confirmation)}
                         className="mt-2"
                     />
                 </div>

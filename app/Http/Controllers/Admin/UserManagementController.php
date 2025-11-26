@@ -33,6 +33,17 @@ class UserManagementController extends Controller
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }
 
+    public function resendVerification(User $user)
+    {
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('error', 'El usuario ya verificó su correo.');
+        }
+
+        $user->sendEmailVerificationNotification();
+
+        return back()->with('success', 'Correo de verificación reenviado exitosamente.');
+    }
+
     public function destroy(Request $request, User $user)
     {
         if ($user->id === $request->user()->id) {

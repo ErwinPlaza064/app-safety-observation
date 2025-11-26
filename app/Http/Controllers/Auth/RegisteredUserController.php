@@ -32,14 +32,13 @@ class RegisteredUserController extends Controller
             'employee_number' => $request->employee_number,
             'name' => $request->name,
             'email' => $request->email,
-            'password' => Hash::make($request->password),
             'area' => $request->area,
             'position' => $request->position,
+            'password' => Hash::make($request->password),
         ]);
 
         event(new Registered($user));
 
-        // No login automático - requiere verificación de email
         return redirect()->route('login')->with('status', 'Te hemos enviado un enlace de verificación a tu correo electrónico. Por favor, verifica tu cuenta antes de iniciar sesión.');
     }
 }
