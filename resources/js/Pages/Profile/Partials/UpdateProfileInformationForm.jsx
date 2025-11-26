@@ -24,22 +24,33 @@ export default function UpdateProfileInformation({
         patch(route("profile.update"));
     };
 
-    // Empleados normales solo ven su información, no pueden editarla
-    // EHS Manager y Super Admin sí pueden editar
+    const getInitials = (name) => {
+        if (!name) return "";
+        const parts = name.trim().split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (
+            parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
+        ).toUpperCase();
+    };
+
     if (!user.is_ehs_manager && !user.is_super_admin) {
         return (
             <section className={className}>
-                <header>
+                <header className="flex items-center justify-between lg:items-start lg:flex-col lg:justify-start">
                     <h2 className="text-lg font-medium text-gray-900">
                         Información del Perfil
                     </h2>
-
-                    <p className="mt-1 text-sm text-gray-600">
-                        Información de tu perfil.
-                    </p>
+                    <div className="flex items-center gap-4 mr-6 lg:mr-0">
+                        <div className="h-14 w-14 lg:w-20 lg:h-20 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
+                            {getInitials(user.name)}{" "}
+                        </div>
+                    </div>
                 </header>
 
                 <div className="mt-6 space-y-6">
+                    <p className="mt-1 text-sm text-gray-600">
+                        Información de tu perfil.
+                    </p>
                     <div>
                         <InputLabel htmlFor="name" value="Nombre" />
                         <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md">

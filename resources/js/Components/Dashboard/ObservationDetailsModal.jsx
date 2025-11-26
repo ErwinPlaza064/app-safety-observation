@@ -22,6 +22,15 @@ export default function ObservationDetailsModal({
         });
     };
 
+    const getInitials = (name) => {
+        if (!name) return "";
+        const parts = name.trim().split(" ");
+        if (parts.length === 1) return parts[0].charAt(0).toUpperCase();
+        return (
+            parts[0].charAt(0) + parts[parts.length - 1].charAt(0)
+        ).toUpperCase();
+    };
+
     const handleCloseReport = () => {
         if (
             confirm(
@@ -125,7 +134,7 @@ export default function ObservationDetailsModal({
                             </h3>
                             <div className="flex items-center gap-4">
                                 <div className="h-12 w-20 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md lg:w-12">
-                                    {observation.user?.name?.charAt(0)}
+                                    {getInitials(observation.user?.name)}{" "}
                                 </div>
                                 <div>
                                     <p className="text-base font-bold text-gray-900">
