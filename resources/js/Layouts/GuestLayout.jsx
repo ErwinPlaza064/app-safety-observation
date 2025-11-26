@@ -1,4 +1,5 @@
 import WasionLogo from "@/Components/WasionLogo";
+import Footer from "@/Components/Common/Footer";
 
 export default function GuestLayout({ children }) {
     return (
@@ -14,9 +15,7 @@ export default function GuestLayout({ children }) {
                 {children}
             </div>
 
-            <div className="mt-3 text-xs text-center text-gray-500">
-                <p>© 2025 Wasion México. Todos los derechos reservados.</p>
-            </div>
+            <Footer className="mt-3" />
         </div>
     );
 }
