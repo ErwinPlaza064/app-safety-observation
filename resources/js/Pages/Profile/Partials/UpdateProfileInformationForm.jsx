@@ -47,16 +47,18 @@ export default function UpdateProfileInformation({
                     </div>
                 </header>
 
-                <div className="mt-2 space-y-6">
-                    <p className="mt-1 text-sm text-gray-600">
-                        ¿Necesitas actualizar <br /> tu información? <br />
-                        <a
-                            href="https://wasionithelp.freshservice.com"
-                            className="text-wasion hover:underline"
-                        >
-                            Contacta a IT
-                        </a>
-                    </p>
+                <div className="mt-2 space-y-6 ">
+                    <div className="lg:text-center lg:w-40">
+                        <p className="mt-1 text-sm text-gray-600">
+                            ¿Necesitas actualizar <br /> tu información? <br />
+                            <a
+                                href="https://wasionithelp.freshservice.com"
+                                className="text-wasion hover:underline"
+                            >
+                                Contacta a IT
+                            </a>
+                        </p>
+                    </div>
                     <div>
                         <InputLabel htmlFor="name" value="Nombre" />
                         <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md">
