@@ -83,6 +83,7 @@ class ObservationController extends Controller
                 : 'Observación enviada exitosamente'
         );
     }
+
     public function update(Request $request, Observation $observation)
     {
         if ($observation->user_id !== Auth::id() && !Auth::user()->is_super_admin) {
@@ -184,33 +185,15 @@ class ObservationController extends Controller
 
     public function close(Request $request, Observation $observation)
     {
-
         if (Auth::user()->is_ehs_manager || $observation->user_id === Auth::id()) {
-
-        $observation->update([
-            'status' => 'cerrada',
-            'closed_at' => now(),
-            'closed_by' => Auth::id(),
-        ]);
-
-        return redirect()->back()->with('success', 'Observación cerrada exitosamente');
+            $observation->update([
+                'status' => 'cerrada',
+                'closed_at' => now(),
+                'closed_by' => Auth::id(),
+            ]);
+            return redirect()->back()->with('success', 'Observación cerrada exitosamente');
         }
-
         abort(403);
-
-
-        $this->authorize('manage', Observation::class);
-
-        $validated = $request->validate([
-            'closure_notes' => 'nullable|string|max:1000',
-        ]);
-
-        $observation->close(
-            $validated['closure_notes'] ?? null,
-            Auth::id()
-        );
-
-        return redirect()->back()->with('success', 'Observación cerrada exitosamente');
     }
 
     public function reopen(Observation $observation)
@@ -244,17 +227,59 @@ class ObservationController extends Controller
         abort(403, 'No autorizado');
     }
 
-    public function exportCsv()
+
+    /**
+     * Helper para construir la consulta filtrada según rol y parámetros.
+     */
+    private function getFilteredQuery()
     {
-        return Excel::download(new ObservationsExport, 'observaciones.csv');
+        $user = Auth::user();
+
+        $query = Observation::with(['user', 'area', 'categories'])->submitted();
+
+        if ($user->is_ehs_manager && !$user->is_super_admin) {
+            $managerArea = Area::where('name', $user->area)->first();
+            $managerAreaId = $managerArea ? $managerArea->id : null;
+
+            if ($managerAreaId) {
+                $query->where('area_id', $managerAreaId);
+            } else {
+
+                $query->when(request('area_id'), function ($q, $areaId) {
+                    $q->where('area_id', $areaId);
+                });
+            }
+        } else {
+            $query->when(request('area_id'), function ($q, $areaId) {
+                $q->where('area_id', $areaId);
+            });
+        }
+
+        $query->when(request('search'), function ($q, $search) {
+            $q->where(function ($subQ) use ($search) {
+                $subQ->where('folio', 'like', "%{$search}%")
+                     ->orWhere('description', 'like', "%{$search}%")
+                     ->orWhere('observed_person', 'like', "%{$search}%")
+                     ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"));
+            });
+        });
+
+        $query->when(request('status'), function ($q, $status) {
+            $q->where('status', $status);
+        });
+
+        return $query->latest('observation_date');
     }
 
-    public function exportPdf()
+    public function exportCsv(Request $request)
     {
-        $observations = Observation::with(['user', 'area'])
-                        ->submitted()
-                        ->latest('observation_date')
-                        ->get();
+        $query = $this->getFilteredQuery();
+        return Excel::download(new ObservationsExport($query), 'observaciones.csv');
+    }
+
+    public function exportPdf(Request $request)
+    {
+        $observations = $this->getFilteredQuery()->get();
 
         $pdf = Pdf::loadView('exports.observations_pdf', compact('observations'));
 

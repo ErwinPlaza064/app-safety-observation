@@ -109,10 +109,32 @@ class DashboardController extends Controller
         // ==========================================
         // 3. LÓGICA PARA EHS MANAGER
         // ==========================================
+        // ==========================================
+        // ==========================================
+       // ==========================================
+        // 3. LÓGICA PARA EHS MANAGER
+        // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
+
+            // A) CONFIGURACIÓN DE ÁREAS
+            // 1. Le mandamos TODAS las áreas para que pueda cambiar si quiere
+            $data['areas'] = Area::where('is_active', true)->get();
+
+            // 2. Detectamos cuál es "Su Planta" según su perfil
+            $userPlant = Area::where('name', $user->area)->first();
+            $defaultAreaId = $userPlant ? $userPlant->id : null;
+
+            // 3. DEFINIR EL FILTRO ACTIVO:
+            // - Si el request trae 'area_id' (aunque sea vacío para "Todas"), usamos el request.
+            // - Si NO trae 'area_id' (es la primera carga/login), usamos su planta por defecto.
+            $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
+
+
+            // B) PREPARAR CONSULTA PRINCIPAL
             $query = Observation::with(['user', 'area', 'categories', 'images'])
                 ->submitted();
 
+            // Aplicar filtro de Búsqueda
             if (request('search')) {
                 $search = request('search');
                 $query->where(function($q) use ($search) {
@@ -125,48 +147,67 @@ class DashboardController extends Controller
                 });
             }
 
-            if (request('area_id')) {
-                $query->where('area_id', request('area_id'));
+            // Aplicar Filtro de Área (El calculado arriba)
+            if ($currentAreaId) {
+                $query->where('area_id', $currentAreaId);
             }
 
+            // Aplicar Filtro de Estado
             if (request('status')) {
                 $query->where('status', request('status'));
             }
 
-            $recentObservations = $query->latest('observation_date')
-                                    ->take(20)
-                                    ->get();
+            $recentObservations = $query->latest('observation_date')->take(20)->get();
 
-            // Cálculos de Métricas Totales (sin filtros para mostrar panorama general)
-            $totalMonth = Observation::whereMonth('observation_date', now()->month)
+
+            // C) HELPER PARA MÉTRICAS (Para que las tarjetas también cambien)
+            $applyFilters = function($q) use ($currentAreaId) {
+                $q->submitted();
+
+                // Si hay un área seleccionada (por defecto o manual), filtramos
+                if ($currentAreaId) {
+                    $q->where('area_id', $currentAreaId);
+                }
+                // Nota: Si $currentAreaId es null o vacío, trae todo (comportamiento deseado)
+
+                return $q;
+            };
+
+            // D) CÁLCULO DE MÉTRICAS
+            $totalMonth = $applyFilters(Observation::query())
+                            ->whereMonth('observation_date', now()->month)
                             ->whereYear('observation_date', now()->year)
-                            ->submitted()->count();
-            $open = Observation::submitted()->where('status', 'en_progreso')->count();
-            $closed = Observation::submitted()->where('status', 'cerrada')->count();
-            $totalAll = Observation::submitted()->count();
+                            ->count();
+
+            $open = $applyFilters(Observation::query())->where('status', 'en_progreso')->count();
+            $closed = $applyFilters(Observation::query())->where('status', 'cerrada')->count();
+            $totalAll = $applyFilters(Observation::query())->count();
             $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
 
-            $highRisk = Observation::submitted()
+            $highRisk = $applyFilters(Observation::query())
                             ->where('status', 'en_progreso')
                             ->whereHas('categories', function($q) {
                                 $q->whereIn('categories.id', [8, 9]);
                             })->count();
 
-            $repeatOffenders = Observation::submitted()
+            $repeatOffenders = $applyFilters(Observation::query())
                                 ->select('observed_person')
                                 ->groupBy('observed_person')
                                 ->havingRaw('COUNT(*) > 1')
-                                ->get()->count();
+                                ->get()
+                                ->count();
 
-            $observationsByPlant = Area::withCount(['observations' => function($q){
+            // Gráfica Distribución (Esta siempre muestra todas para comparar, a menos que quieras filtrar)
+            $observationsByPlant = Area::withCount(['observations' => function($q) {
                 $q->submitted();
             }])->get()->map(function($area){
                 return ['name' => $area->name, 'count' => $area->observations_count];
             });
 
-            $topCategories = Category::withCount(['observations' => function($q){
-                $q->submitted();
+            $topCategories = Category::withCount(['observations' => function($q) use ($applyFilters) {
+                 $applyFilters($q);
             }])->orderByDesc('observations_count')->take(5)->get();
+
 
             $data['ehsStats'] = [
                 'total_month' => $totalMonth,
@@ -179,11 +220,13 @@ class DashboardController extends Controller
                 'recent' => $recentObservations
             ];
 
-            // Datos para filtros del EHS Manager
-            $data['filters'] = request()->only(['search', 'area_id', 'status']);
-            $data['areas'] = Area::where('is_active', true)->get();
-        }
+            $data['filters'] = request()->only(['search', 'status']);
+            $data['filters']['area_id'] = $currentAreaId;
 
+            $data['managerPlantName'] = $currentAreaId
+                ? Area::find($currentAreaId)->name
+                : 'General';
+        }
         return Inertia::render('Dashboard', $data);
     }
 }

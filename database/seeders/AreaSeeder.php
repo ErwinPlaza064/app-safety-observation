@@ -2,25 +2,28 @@
 
 namespace Database\Seeders;
 
+use App\Models\Area;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Facades\DB;
 
 class AreaSeeder extends Seeder
 {
+    /**
+     * Run the database seeds.
+     */
     public function run(): void
     {
         $areas = [
-            'Planta 1', 'Planta 2', 'Planta 3', 'Planta 4', 'Planta 5',
-            'Planta 6', 'Planta 7', 'Almacén', 'Oficinas', 'Comedor', 'Estacionamiento'
+            'Planta 1',
+            'Planta 3',
+            'Planta 5',
+            'Planta 7',
         ];
 
-        foreach ($areas as $area) {
-            DB::table('areas')->insert([
-                'name' => $area,
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+        foreach ($areas as $areaName) {
+            Area::firstOrCreate(
+                ['name' => $areaName],
+                ['is_active' => true]
+            );
         }
     }
 }

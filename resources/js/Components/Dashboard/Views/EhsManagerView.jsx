@@ -8,7 +8,6 @@ import { BiPulse, BiTrendingUp } from "react-icons/bi";
 export default function EhsManagerView({ user, stats, areas, filters }) {
     const [selectedObservation, setSelectedObservation] = useState(null);
 
-    // 1. ESTADO PARA LOS FILTROS
     const [params, setParams] = useState({
         search: filters?.search || "",
         area_id: filters?.area_id || "",
@@ -17,7 +16,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
 
     const isFirstRender = useRef(true);
 
-    // 2. EFECTO DE RECARGA AUTOMÁTICA (DEBOUNCE)
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -28,15 +26,14 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
             router.get(route("dashboard"), params, {
                 preserveState: true,
                 preserveScroll: true,
-                only: ["ehsStats", "filters"], // Recarga parcial para optimizar
+                only: ["ehsStats", "filters"],
                 replace: true,
             });
-        }, 300); // Espera 300ms al escribir
+        }, 300);
 
         return () => clearTimeout(timer);
     }, [params]);
 
-    // 3. MANEJADOR DE CAMBIOS EN INPUTS
     const handleFilterChange = (e) => {
         setParams({ ...params, [e.target.name]: e.target.value });
     };
@@ -57,7 +54,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
 
     return (
         <div className="space-y-8 animate-fade-in">
-            {/* Header */}
             <div className="flex flex-col items-center justify-between md:flex-row">
                 <div>
                     <h2 className="text-2xl font-bold text-gray-800">
@@ -67,26 +63,30 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         Estadísticas y Métricas de Seguridad
                     </p>
                 </div>
-                {/* Botones de exportación */}
                 <div className="flex gap-3 mt-4 md:mt-0">
-                    <a
-                        href={route("observations.export.csv")}
-                        target="_blank"
-                        className="flex items-center px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg hover:bg-gray-50"
-                    >
-                        Exportar CSV
-                    </a>
                     <a
                         href={route("observations.export.pdf")}
                         target="_blank"
                         className="px-4 py-2 bg-[#1e3a8a] text-white rounded-lg text-sm font-medium hover:bg-blue-900 flex items-center"
                     >
+                        <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                        </svg>
                         Exportar PDF
                     </a>
                 </div>
             </div>
 
-            {/* Tarjetas de Métricas */}
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <EhsMetricCard
                     title="Total"
@@ -118,13 +118,118 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 />
             </div>
 
-            {/* Gráficas (Omitidas por brevedad, mantenlas igual que antes) */}
-            {/* ... código de grid de gráficas ... */}
+            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
+                <div className="p-6 bg-white shadow-sm rounded-xl">
+                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800">
+                        <svg
+                            className="w-5 h-5 mr-2 text-[#1e3a8a]"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                            />
+                        </svg>
+                        Distribución por Planta
+                    </h3>
+                    <div className="space-y-4">
+                        {stats.by_plant.map((plant, index) => (
+                            <div key={index}>
+                                <div className="flex justify-between mb-1 text-sm">
+                                    <span className="text-gray-600">
+                                        {plant.name}
+                                    </span>
+                                    <span className="font-semibold text-gray-800">
+                                        {plant.count}
+                                    </span>
+                                </div>
+                                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                                    <div
+                                        className="bg-[#1e3a8a] h-2.5 rounded-full"
+                                        style={{
+                                            width: `${
+                                                (plant.count /
+                                                    Math.max(
+                                                        ...stats.by_plant.map(
+                                                            (p) => p.count
+                                                        ),
+                                                        1
+                                                    )) *
+                                                100
+                                            }%`,
+                                        }}
+                                    ></div>
+                                </div>
+                            </div>
+                        ))}
+                    </div>
+                </div>
 
-            {/* --- BARRA DE HERRAMIENTAS FUNCIONAL --- */}
+                <div className="p-6 bg-white shadow-sm rounded-xl">
+                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800">
+                        <CgDanger className="w-5 h-5 mr-2 text-[#1e3a8a]" /> Top
+                        Categorías
+                    </h3>
+                    <div className="space-y-3">
+                        {stats.top_categories.map((cat, index) => (
+                            <div
+                                key={cat.id}
+                                className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
+                            >
+                                <div className="flex items-center">
+                                    <span
+                                        className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${getCategoryColor(
+                                            index
+                                        )}`}
+                                    >
+                                        {index + 1}
+                                    </span>
+                                    <span className="text-sm font-medium text-gray-700">
+                                        {cat.name}
+                                    </span>
+                                </div>
+                                <span className="px-2 py-1 text-sm font-bold text-gray-900 bg-white border rounded shadow-sm">
+                                    {cat.observations_count}
+                                </span>
+                            </div>
+                        ))}
+                    </div>
+                </div>
+
+                <div className="flex flex-col items-center justify-center p-6 text-center bg-white border-l-4 border-purple-600 shadow-sm rounded-xl">
+                    <div className="p-4 mb-4 rounded-full bg-purple-50">
+                        <svg
+                            className="w-10 h-10 text-purple-600"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z"
+                            />
+                        </svg>
+                    </div>
+                    <h3 className="mb-2 font-medium text-gray-500">
+                        Personas Reincidentes
+                    </h3>
+                    <span className="mb-2 text-5xl font-bold text-gray-800">
+                        {stats.recidivism}
+                    </span>
+                    <p className="text-sm text-gray-400">
+                        Empleados con &gt;1 reporte
+                    </p>
+                </div>
+            </div>
+
             <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-                    {/* Buscador */}
                     <div className="relative w-full md:w-1/3">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg
@@ -151,7 +256,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         />
                     </div>
 
-                    {/* Filtros */}
                     <div className="flex flex-col w-full gap-2 sm:flex-row md:w-auto">
                         <select
                             name="area_id"
@@ -182,7 +286,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 </div>
             </div>
 
-            {/* Tabla de Resultados Filtrados */}
             <div className="overflow-hidden bg-white shadow-sm rounded-xl">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-800">
@@ -229,12 +332,15 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                                 className={`px-2 py-1 rounded-full text-xs font-semibold ${
                                                     obs.status === "en_progreso"
                                                         ? "bg-blue-100 text-blue-800"
-                                                        : "bg-green-100 text-green-800"
+                                                        : obs.status ===
+                                                          "cerrada"
+                                                        ? "bg-green-100 text-green-800"
+                                                        : "bg-gray-100 text-gray-800"
                                                 }`}
                                             >
                                                 {obs.status === "en_progreso"
                                                     ? "Abierta"
-                                                    : "Cerrada"}
+                                                    : obs.status}
                                             </span>
                                         </td>
                                         <td className="px-6 py-4">

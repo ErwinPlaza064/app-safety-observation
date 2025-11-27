@@ -13,26 +13,46 @@ class AdminUserSeeder extends Seeder
      */
     public function run(): void
     {
-        // Verificar si ya existe un usuario EHS Manager
-        $ehsManagerExists = User::where('email', 'ehsmanager@wasion.com')->exists();
+        $managers = [
+            [
+                'email' => 'ehsplanta1@wasion.com',
+                'name' => 'EHS Planta 1',
+                'area' => 'Planta 1',
+                'position' => 'Ingeniero de Seguridad',
+            ],
+            [
+                'email' => 'ehsplanta3@wasion.com',
+                'name' => 'EHS Planta 3',
+                'area' => 'Planta 3',
+                'position' => 'Ingeniero de Seguridad',
+            ],
+            [
+                'email' => 'ehsplanta5@wasion.com',
+                'name' => 'EHS Planta 5',
+                'area' => 'Planta 5',
+                'position' => 'Ingeniero de Seguridad',
+            ],
+        ];
 
-        if (!$ehsManagerExists) {
-            User::create([
-                'employee_number' => 'EHSMANAGER001',
-                'name' => 'EHS Manager',
-                'email' => 'ehsmanager@wasion.com',
-                'password' => Hash::make('EhsManager@2025'),
-                'area' => 'Seguridad e Higiene',
-                'position' => 'Manager EHS',
-                'is_ehs_manager' => true,
-                'email_verified_at' => now(),
-            ]);
+        foreach ($managers as $manager) {
+            $exists = User::where('email', $manager['email'])->exists();
 
-            $this->command->info('Usuario EHS Manager creado exitosamente');
-            $this->command->info('Email: ehsmanager@wasion.com');
-            $this->command->info('Password: EhsManager@2025');
-        } else {
-            $this->command->warn('El usuario EHS Manager ya existe, saltando creación...');
+            if (!$exists) {
+                User::create([
+                    'employee_number' => 'EHS-' . strtoupper(str_replace(' ', '', $manager['area'])),
+                    'name' => $manager['name'],
+                    'email' => $manager['email'],
+                    'password' => Hash::make('Wasion2025'),
+                    'area' => $manager['area'],
+                    'position' => $manager['position'],
+                    'is_ehs_manager' => true,
+                    'email_verified_at' => now(),
+                ]);
+                $this->command->info("Usuario creado: {$manager['email']}");
+            } else {
+                $this->command->warn("El usuario {$manager['email']} ya existe.");
+            }
         }
+
     }
 }

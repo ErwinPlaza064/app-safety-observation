@@ -2,16 +2,25 @@
 
 namespace App\Exports;
 
-use App\Models\Observation;
-use Maatwebsite\Excel\Concerns\FromCollection;
+use Maatwebsite\Excel\Concerns\FromQuery;
 use Maatwebsite\Excel\Concerns\WithHeadings;
 use Maatwebsite\Excel\Concerns\WithMapping;
+use Maatwebsite\Excel\Concerns\Exportable;
 
-class ObservationsExport implements FromCollection, WithHeadings, WithMapping
+class ObservationsExport implements FromQuery, WithHeadings, WithMapping
 {
-    public function collection()
+    use Exportable;
+
+    protected $query;
+
+    public function __construct($query)
     {
-        return Observation::with(['user', 'area', 'categories'])->submitted()->get();
+        $this->query = $query;
+    }
+
+    public function query()
+    {
+        return $this->query;
     }
 
     public function headings(): array
