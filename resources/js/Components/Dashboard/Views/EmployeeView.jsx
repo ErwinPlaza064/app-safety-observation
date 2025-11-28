@@ -23,7 +23,6 @@ export default function EmployeeView({
     const [currentStatusFilter, setCurrentStatusFilter] = useState(null);
 
     useEffect(() => {
-        console.log("Borrador recibido:", savedDraft);
         if (savedDraft) setShowForm(true);
     }, [savedDraft]);
 

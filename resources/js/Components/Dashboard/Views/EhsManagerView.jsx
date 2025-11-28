@@ -1,12 +1,15 @@
 import { useState, useEffect, useRef } from "react";
-import { router } from "@inertiajs/react"; // Importar router
+import { router } from "@inertiajs/react";
 import EhsMetricCard from "@/Components/Dashboard/EhsMetricCard";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 import { CgFileDocument, CgDanger } from "react-icons/cg";
 import { BiPulse, BiTrendingUp } from "react-icons/bi";
+import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
 
 export default function EhsManagerView({ user, stats, areas, filters }) {
     const [selectedObservation, setSelectedObservation] = useState(null);
+
+    const [activeMetric, setActiveMetric] = useState(null);
 
     const [params, setParams] = useState({
         search: filters?.search || "",
@@ -200,7 +203,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </div>
                 </div>
 
-                <div className="flex flex-col items-center justify-center p-6 text-center bg-white border-l-4 border-purple-600 shadow-sm rounded-xl">
+                <div
+                    onClick={() => setActiveMetric("recidivism")}
+                    className="flex flex-col items-center justify-center p-6 text-center transition-all bg-white border-l-4 border-purple-600 shadow-sm cursor-pointer rounded-xl hover:shadow-md hover:bg-purple-50/30"
+                >
                     <div className="p-4 mb-4 rounded-full bg-purple-50">
                         <svg
                             className="w-10 h-10 text-purple-600"
@@ -224,6 +230,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </span>
                     <p className="text-sm text-gray-400">
                         Empleados con &gt;1 reporte
+                        <br />
+                        <span className="text-xs font-semibold text-purple-600">
+                            (Ver detalles)
+                        </span>
                     </p>
                 </div>
             </div>
@@ -365,6 +375,13 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </table>
                 </div>
             </div>
+
+            <DrillDownModal
+                show={activeMetric === "recidivism"}
+                title="Detalle: Personas Reincidentes"
+                data={stats.recidivism_list}
+                onClose={() => setActiveMetric(null)}
+            />
 
             <ObservationDetailsModal
                 show={!!selectedObservation}

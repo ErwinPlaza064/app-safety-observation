@@ -19,7 +19,6 @@ class DashboardController extends Controller
         $user = Auth::user();
         $data = [];
 
-        // ==========================================
         // 1. LÓGICA PARA SUPER ADMIN
         // ==========================================
         if ($user->is_super_admin) {
@@ -106,35 +105,21 @@ class DashboardController extends Controller
             $data['savedDraft'] = $draft;
         }
 
-        // ==========================================
-        // 3. LÓGICA PARA EHS MANAGER
-        // ==========================================
-        // ==========================================
-        // ==========================================
-       // ==========================================
         // 3. LÓGICA PARA EHS MANAGER
         // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
 
-            // A) CONFIGURACIÓN DE ÁREAS
-            // 1. Le mandamos TODAS las áreas para que pueda cambiar si quiere
             $data['areas'] = Area::where('is_active', true)->get();
 
-            // 2. Detectamos cuál es "Su Planta" según su perfil
             $userPlant = Area::where('name', $user->area)->first();
             $defaultAreaId = $userPlant ? $userPlant->id : null;
 
-            // 3. DEFINIR EL FILTRO ACTIVO:
-            // - Si el request trae 'area_id' (aunque sea vacío para "Todas"), usamos el request.
-            // - Si NO trae 'area_id' (es la primera carga/login), usamos su planta por defecto.
             $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
 
 
-            // B) PREPARAR CONSULTA PRINCIPAL
             $query = Observation::with(['user', 'area', 'categories', 'images'])
                 ->submitted();
 
-            // Aplicar filtro de Búsqueda
             if (request('search')) {
                 $search = request('search');
                 $query->where(function($q) use ($search) {
@@ -147,12 +132,10 @@ class DashboardController extends Controller
                 });
             }
 
-            // Aplicar Filtro de Área (El calculado arriba)
             if ($currentAreaId) {
                 $query->where('area_id', $currentAreaId);
             }
 
-            // Aplicar Filtro de Estado
             if (request('status')) {
                 $query->where('status', request('status'));
             }
@@ -160,20 +143,16 @@ class DashboardController extends Controller
             $recentObservations = $query->latest('observation_date')->take(20)->get();
 
 
-            // C) HELPER PARA MÉTRICAS (Para que las tarjetas también cambien)
             $applyFilters = function($q) use ($currentAreaId) {
                 $q->submitted();
 
-                // Si hay un área seleccionada (por defecto o manual), filtramos
                 if ($currentAreaId) {
                     $q->where('area_id', $currentAreaId);
                 }
-                // Nota: Si $currentAreaId es null o vacío, trae todo (comportamiento deseado)
 
                 return $q;
             };
 
-            // D) CÁLCULO DE MÉTRICAS
             $totalMonth = $applyFilters(Observation::query())
                             ->whereMonth('observation_date', now()->month)
                             ->whereYear('observation_date', now()->year)
@@ -190,14 +169,15 @@ class DashboardController extends Controller
                                 $q->whereIn('categories.id', [8, 9]);
                             })->count();
 
-            $repeatOffenders = $applyFilters(Observation::query())
-                                ->select('observed_person')
-                                ->groupBy('observed_person')
-                                ->havingRaw('COUNT(*) > 1')
-                                ->get()
-                                ->count();
+            $repeatOffendersList = $applyFilters(Observation::query())
+                ->select('observed_person', DB::raw('count(*) as total'))
+                ->groupBy('observed_person')
+                ->having('total', '>', 1)
+                ->orderByDesc('total')
+                ->get();
 
-            // Gráfica Distribución (Esta siempre muestra todas para comparar, a menos que quieras filtrar)
+            $repeatOffendersCount = $repeatOffendersList->count();
+
             $observationsByPlant = Area::withCount(['observations' => function($q) {
                 $q->submitted();
             }])->get()->map(function($area){
@@ -205,16 +185,17 @@ class DashboardController extends Controller
             });
 
             $topCategories = Category::withCount(['observations' => function($q) use ($applyFilters) {
-                 $applyFilters($q);
+                $applyFilters($q);
             }])->orderByDesc('observations_count')->take(5)->get();
 
 
-            $data['ehsStats'] = [
+                $data['ehsStats'] = [
                 'total_month' => $totalMonth,
                 'open' => $open,
                 'high_risk' => $highRisk,
                 'closed_rate' => $closedRate,
-                'recidivism' => $repeatOffenders,
+                'recidivism' => $repeatOffendersCount,
+                'recidivism_list' => $repeatOffendersList,
                 'by_plant' => $observationsByPlant,
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations
