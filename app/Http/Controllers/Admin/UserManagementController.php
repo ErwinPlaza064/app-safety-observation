@@ -7,9 +7,36 @@ use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
+use Illuminate\Support\Facades\Hash;
 
 class UserManagementController extends Controller
 {
+    public function store(Request $request)
+    {
+        $validated = $request->validate([
+            'name' => ['required', 'string', 'max:255'],
+            'email' => ['required', 'email', 'max:255', 'unique:users'],
+            'employee_number' => ['required', 'string', 'max:50', 'unique:users'],
+            'area' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'string', 'max:255'],
+            'password' => ['required', 'string', 'min:8'],
+            'is_ehs_manager' => ['boolean'],
+        ]);
+
+        User::create([
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'employee_number' => $validated['employee_number'],
+            'area' => $validated['area'],
+            'position' => $validated['position'],
+            'password' => Hash::make($validated['password']),
+            'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+            'email_verified_at' => now(),
+        ]);
+
+        return Redirect::route('dashboard')->with('success', 'Usuario creado y verificado exitosamente.');
+    }
+
     public function update(Request $request, User $user)
     {
         $validated = $request->validate([

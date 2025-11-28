@@ -2,6 +2,8 @@ import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
+import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
+import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function SuperAdminView({
     stats,
@@ -10,6 +12,8 @@ export default function SuperAdminView({
     filters,
     filterAreas,
 }) {
+    const [showCreateModal, setShowCreateModal] = useState(false);
+
     const [params, setParams] = useState({
         search: filters?.search || "",
         area: filters?.area || "",
@@ -43,6 +47,32 @@ export default function SuperAdminView({
     return (
         <div className="space-y-6">
             {stats && <StatsCards stats={stats} />}
+
+            <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+                <h3 className="text-xl font-bold text-gray-800">
+                    Administración de Usuarios
+                </h3>
+
+                <PrimaryButton
+                    onClick={() => setShowCreateModal(true)}
+                    className="justify-center"
+                >
+                    <svg
+                        className="w-5 h-5 mr-2"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
+                            d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                        />
+                    </svg>
+                    Crear Cuenta
+                </PrimaryButton>
+            </div>
 
             <div className="p-4 bg-white shadow-sm sm:rounded-lg">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
@@ -115,6 +145,11 @@ export default function SuperAdminView({
             </div>
 
             {users && <UsersTable users={users} onUserClick={onUserClick} />}
+
+            <CreateUserModal
+                show={showCreateModal}
+                onClose={() => setShowCreateModal(false)}
+            />
         </div>
     );
 }

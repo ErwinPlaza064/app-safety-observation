@@ -26,6 +26,8 @@ Route::get('/test-email', function () {
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
+
+
     // --- DASHBOARD ---
     Route::get('/dashboard', [DashboardController::class, 'index'])
         ->middleware(['verified']) // Si usas verificación de email
@@ -33,11 +35,15 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     // --- PERFIL DE USUARIO ---
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+
+
+
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // --- ADMINISTRACIÓN DE USUARIOS (Super Admin) ---
     Route::middleware(['verified'])->prefix('admin')->name('admin.')->group(function () {
+        Route::post('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('users.store');
         Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])
