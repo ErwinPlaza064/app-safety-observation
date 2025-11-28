@@ -163,11 +163,23 @@ class DashboardController extends Controller
             $totalAll = $applyFilters(Observation::query())->count();
             $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
 
-            $highRisk = $applyFilters(Observation::query())
-                            ->where('status', 'en_progreso')
-                            ->whereHas('categories', function($q) {
-                                $q->whereIn('categories.id', [8, 9]);
-                            })->count();
+                    $highRiskCategories = [
+            'Manejo de SQP',
+            'Ingesta de sustancias',
+            'Trabajos Eléctricos',
+            'Mal uso de herramientas'
+        ];
+
+        $highRiskQuery = $applyFilters(Observation::query())
+            ->where('status', 'en_progreso')
+            ->whereHas('categories', function($q) use ($highRiskCategories) {
+                $q->whereIn('name', $highRiskCategories);
+            })
+            ->with(['area', 'user']);
+
+        // 3. Obtenemos la lista y la cuenta
+        $highRiskList = $highRiskQuery->latest('observation_date')->get();
+        $highRiskCount = $highRiskList->count();
 
             $repeatOffendersList = $applyFilters(Observation::query())
                 ->select('observed_person', DB::raw('count(*) as total'))
@@ -189,10 +201,11 @@ class DashboardController extends Controller
             }])->orderByDesc('observations_count')->take(5)->get();
 
 
-                $data['ehsStats'] = [
+            $data['ehsStats'] = [
                 'total_month' => $totalMonth,
                 'open' => $open,
-                'high_risk' => $highRisk,
+                'high_risk' => $highRiskCount,
+                'high_risk_list' => $highRiskList,
                 'closed_rate' => $closedRate,
                 'recidivism' => $repeatOffendersCount,
                 'recidivism_list' => $repeatOffendersList,

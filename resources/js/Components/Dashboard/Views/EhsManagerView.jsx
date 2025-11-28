@@ -105,13 +105,18 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     color="orange"
                     icon={<BiPulse className="w-6 h-6 text-orange-500" />}
                 />
-                <EhsMetricCard
-                    title="Riesgo Alto"
-                    value={stats.high_risk}
-                    subtitle="Acción inmediata"
-                    color="red"
-                    icon={<CgDanger className="w-6 h-6 text-red-600" />}
-                />
+                <div
+                    onClick={() => setActiveMetric("high_risk")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                >
+                    <EhsMetricCard
+                        title="Riesgo Alto"
+                        value={stats.high_risk}
+                        subtitle="Acción inmediata"
+                        color="red"
+                        icon={<CgDanger className="w-6 h-6 text-red-600" />}
+                    />
+                </div>
                 <EhsMetricCard
                     title="Cerradas"
                     value={`${stats.closed_rate}%`}
@@ -375,12 +380,35 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </table>
                 </div>
             </div>
-
             <DrillDownModal
-                show={activeMetric === "recidivism"}
-                title="Detalle: Personas Reincidentes"
-                data={stats.recidivism_list}
+                show={!!activeMetric}
                 onClose={() => setActiveMetric(null)}
+                title={
+                    activeMetric === "recidivism"
+                        ? "Detalle: Personas Reincidentes"
+                        : activeMetric === "high_risk"
+                        ? "Atención Inmediata: Riesgo Alto"
+                        : ""
+                }
+                data={
+                    activeMetric === "recidivism"
+                        ? stats.recidivism_list
+                        : activeMetric === "high_risk"
+                        ? stats.high_risk_list
+                        : []
+                }
+                type={activeMetric}
+                // --- AGREGAMOS ESTA FUNCIÓN ---
+                onItemClick={(observation) => {
+                    // 1. Cerramos el modal de lista
+                    setActiveMetric(null);
+
+                    // 2. Abrimos el modal de detalles (el que ya tienes programado)
+                    // Pequeño delay para que la transición se vea suave (opcional)
+                    setTimeout(() => {
+                        setSelectedObservation(observation);
+                    }, 100);
+                }}
             />
 
             <ObservationDetailsModal
