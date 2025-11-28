@@ -53,7 +53,11 @@ export default function DrillDownModal({
                                         {data.map((item, index) => (
                                             <tr
                                                 key={index}
-                                                className="transition-colors hover:bg-purple-50/50"
+                                                onClick={() =>
+                                                    onItemClick &&
+                                                    onItemClick(item)
+                                                }
+                                                className="transition-colors border-l-4 border-transparent cursor-pointer hover:bg-purple-50 hover:border-purple-500"
                                             >
                                                 <td className="px-4 py-3 font-medium text-gray-900">
                                                     {item.observed_person ||

@@ -89,7 +89,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </a>
                 </div>
             </div>
-
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
                 <EhsMetricCard
                     title="Total"
@@ -125,7 +124,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     icon={<BiTrendingUp className="w-6 h-6 text-green-600" />}
                 />
             </div>
-
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="p-6 bg-white shadow-sm rounded-xl">
                     <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800">
@@ -242,7 +240,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </p>
                 </div>
             </div>
-
             <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="relative w-full md:w-1/3">
@@ -300,7 +297,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </div>
                 </div>
             </div>
-
             <div className="overflow-hidden bg-white shadow-sm rounded-xl">
                 <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
                     <h3 className="text-lg font-semibold text-gray-800">
@@ -380,6 +376,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </table>
                 </div>
             </div>
+
             <DrillDownModal
                 show={!!activeMetric}
                 onClose={() => setActiveMetric(null)}
@@ -398,19 +395,19 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         : []
                 }
                 type={activeMetric}
-                // --- AGREGAMOS ESTA FUNCIÓN ---
-                onItemClick={(observation) => {
-                    // 1. Cerramos el modal de lista
+                onItemClick={(item) => {
                     setActiveMetric(null);
 
-                    // 2. Abrimos el modal de detalles (el que ya tienes programado)
-                    // Pequeño delay para que la transición se vea suave (opcional)
-                    setTimeout(() => {
-                        setSelectedObservation(observation);
-                    }, 100);
+                    if (activeMetric === "high_risk") {
+                        setTimeout(() => setSelectedObservation(item), 100);
+                    } else if (activeMetric === "recidivism") {
+                        setParams({
+                            ...params,
+                            search: item.observed_person,
+                        });
+                    }
                 }}
             />
-
             <ObservationDetailsModal
                 show={!!selectedObservation}
                 observation={selectedObservation}
