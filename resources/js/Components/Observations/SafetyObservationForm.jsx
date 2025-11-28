@@ -253,6 +253,7 @@ export default function SafetyObservationForm({
 
     const isFirstRender = useRef(true);
 
+    // ✅ CORRECCIÓN: useEffect con dependencias específicas para evitar guardado duplicado
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -271,7 +272,19 @@ export default function SafetyObservationForm({
         }, 2000);
 
         return () => clearTimeout(timeoutId);
-    }, [formData]);
+    }, [
+        // Solo incluir campos que deben disparar el autoguardado
+        // NO incluir formData.id para evitar guardado duplicado
+        formData.description,
+        formData.category_ids,
+        formData.observation_type,
+        formData.observed_person,
+        formData.area_id,
+        formData.observation_date,
+        formData.observer_name,
+        formData.employee_id,
+        formData.department,
+    ]);
 
     useEffect(() => {
         if (toast.show) {
