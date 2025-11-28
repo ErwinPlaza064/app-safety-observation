@@ -5,6 +5,12 @@ import { createInertiaApp } from "@inertiajs/react";
 import { resolvePageComponent } from "laravel-vite-plugin/inertia-helpers";
 import { createRoot } from "react-dom/client";
 
+window.addEventListener("pageshow", (event) => {
+    if (event.persisted) {
+        window.location.reload();
+    }
+});
+
 const appName = import.meta.env.VITE_APP_NAME || "Safetyobservation";
 
 createInertiaApp({
