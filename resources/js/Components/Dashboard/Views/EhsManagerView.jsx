@@ -12,6 +12,19 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
         data: [],
     });
 
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            router.reload({
+                only: ["ehsStats"],
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            });
+        }, 15000);
+
+        return () => clearInterval(intervalId);
+    }, []);
+
     const handleGenericClick = (title, list) => {
         setCustomDrillDown({ title, data: list });
         setActiveMetric("custom");
@@ -77,6 +90,15 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-blue-200 rounded-full shadow-sm">
+                        <span className="relative flex w-2.5 h-2.5">
+                            <span className="absolute inline-flex w-full h-full bg-blue-400 rounded-full opacity-75 animate-ping"></span>
+                            <span className="relative inline-flex w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
+                        </span>
+                        <span className="text-xs font-bold tracking-wide text-blue-700 uppercase">
+                            Sincronizado
+                        </span>
+                    </div>
                     <a
                         href={route("observations.export.pdf")}
                         target="_blank"
