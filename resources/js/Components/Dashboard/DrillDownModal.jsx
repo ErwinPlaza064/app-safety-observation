@@ -74,7 +74,9 @@ export default function DrillDownModal({
                                 </>
                             )}
 
-                            {type === "high_risk" && (
+                            {["high_risk", "open", "closed", "total"].includes(
+                                type
+                            ) && (
                                 <>
                                     <thead className="sticky top-0 text-xs text-gray-700 uppercase bg-gray-50">
                                         <tr>
@@ -100,7 +102,14 @@ export default function DrillDownModal({
                                                     onItemClick &&
                                                     onItemClick(obs)
                                                 }
-                                                className="transition-colors border-l-4 border-transparent cursor-pointer hover:bg-blue-50 hover:border-blue-500"
+                                                className={`cursor-pointer transition-colors border-l-4 border-transparent
+                        ${
+                            type === "high_risk"
+                                ? "hover:bg-red-50 hover:border-red-500"
+                                : type === "closed"
+                                ? "hover:bg-green-50 hover:border-green-500"
+                                : "hover:bg-blue-50 hover:border-blue-500"
+                        }`}
                                             >
                                                 <td className="px-4 py-3 whitespace-nowrap">
                                                     {new Date(
@@ -119,9 +128,20 @@ export default function DrillDownModal({
                                                     </p>
                                                 </td>
                                                 <td className="px-4 py-3">
-                                                    <span className="inline-flex px-2 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">
-                                                        Crítico
-                                                    </span>
+                                                    {type === "high_risk" ? (
+                                                        <span className="inline-flex px-2 text-xs font-semibold leading-5 text-red-800 bg-red-100 rounded-full">
+                                                            Crítico
+                                                        </span>
+                                                    ) : obs.status ===
+                                                      "cerrada" ? (
+                                                        <span className="inline-flex px-2 text-xs font-semibold leading-5 text-green-800 bg-green-100 rounded-full">
+                                                            Cerrada
+                                                        </span>
+                                                    ) : (
+                                                        <span className="inline-flex px-2 text-xs font-semibold leading-5 text-blue-800 bg-blue-100 rounded-full">
+                                                            Abierta
+                                                        </span>
+                                                    )}
                                                 </td>
                                             </tr>
                                         ))}

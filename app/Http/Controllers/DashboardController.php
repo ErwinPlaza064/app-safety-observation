@@ -153,33 +153,47 @@ class DashboardController extends Controller
                 return $q;
             };
 
-            $totalMonth = $applyFilters(Observation::query())
-                            ->whereMonth('observation_date', now()->month)
-                            ->whereYear('observation_date', now()->year)
-                            ->count();
+            $totalMonthQuery = $applyFilters(Observation::query())
+                ->whereMonth('observation_date', now()->month)
+                ->whereYear('observation_date', now()->year)
+                ->with(['area', 'user']);
 
-            $open = $applyFilters(Observation::query())->where('status', 'en_progreso')->count();
-            $closed = $applyFilters(Observation::query())->where('status', 'cerrada')->count();
+            $totalMonthList = $totalMonthQuery->latest('observation_date')->get();
+            $totalMonth = $totalMonthList->count();
+
+            $openQuery = $applyFilters(Observation::query())
+                ->where('status', 'en_progreso')
+                ->with(['area', 'user']);
+
+            $openList = $openQuery->latest('observation_date')->get();
+            $open = $openList->count();
+
+            $closedQuery = $applyFilters(Observation::query())
+                ->where('status', 'cerrada')
+                ->with(['area', 'user']);
+
+            $closedList = $closedQuery->latest('closed_at')->get();
+            $closed = $closedList->count();
+
             $totalAll = $applyFilters(Observation::query())->count();
             $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
 
-                    $highRiskCategories = [
-            'Manejo de SQP',
-            'Ingesta de sustancias',
-            'Trabajos Eléctricos',
-            'Mal uso de herramientas'
-        ];
+            $highRiskCategories = [
+                'Manejo de SQP',
+                'Ingesta de sustancias',
+                'Trabajos Eléctricos',
+                'Mal uso de herramientas'
+            ];
 
-        $highRiskQuery = $applyFilters(Observation::query())
-            ->where('status', 'en_progreso')
-            ->whereHas('categories', function($q) use ($highRiskCategories) {
-                $q->whereIn('name', $highRiskCategories);
-            })
-            ->with(['area', 'user']);
+            $highRiskQuery = $applyFilters(Observation::query())
+                ->where('status', 'en_progreso')
+                ->whereHas('categories', function($q) use ($highRiskCategories) {
+                    $q->whereIn('name', $highRiskCategories);
+                })
+                ->with(['area', 'user']);
 
-        // 3. Obtenemos la lista y la cuenta
-        $highRiskList = $highRiskQuery->latest('observation_date')->get();
-        $highRiskCount = $highRiskList->count();
+            $highRiskList = $highRiskQuery->latest('observation_date')->get();
+            $highRiskCount = $highRiskList->count();
 
             $repeatOffendersList = $applyFilters(Observation::query())
                 ->select('observed_person', DB::raw('count(*) as total'))
@@ -190,23 +204,51 @@ class DashboardController extends Controller
 
             $repeatOffendersCount = $repeatOffendersList->count();
 
-            $observationsByPlant = Area::withCount(['observations' => function($q) {
+            $observationsByPlant = Area::where('is_active', true)
+            ->with(['observations' => function($q) {
+                $q->submitted()->latest()->with(['user', 'area']);
+            }])
+            ->withCount(['observations' => function($q) {
                 $q->submitted();
-            }])->get()->map(function($area){
-                return ['name' => $area->name, 'count' => $area->observations_count];
+            }])
+            ->get()
+            ->map(function($area){
+                return [
+                    'name' => $area->name,
+                    'count' => $area->observations_count,
+                    'list' => $area->observations
+                ];
             });
 
-            $topCategories = Category::withCount(['observations' => function($q) use ($applyFilters) {
+        $topCategories = Category::where('is_active', true)
+            ->with(['observations' => function($q) use ($applyFilters) {
+                $applyFilters($q)->with(['area', 'user'])->latest();
+            }])
+            ->withCount(['observations' => function($q) use ($applyFilters) {
                 $applyFilters($q);
-            }])->orderByDesc('observations_count')->take(5)->get();
+            }])
+            ->orderByDesc('observations_count')
+            ->take(5)
+            ->get()
+            ->map(function($cat){
+                return [
+                    'id' => $cat->id,
+                    'name' => $cat->name,
+                    'count' => $cat->observations_count,
+                    'list' => $cat->observations
+                ];
+            });
 
 
             $data['ehsStats'] = [
                 'total_month' => $totalMonth,
+                'total_month_list' => $totalMonthList,
                 'open' => $open,
+                'open_list' => $openList,
+                'closed_rate' => $closedRate,
+                'closed_list' => $closedList,
                 'high_risk' => $highRiskCount,
                 'high_risk_list' => $highRiskList,
-                'closed_rate' => $closedRate,
                 'recidivism' => $repeatOffendersCount,
                 'recidivism_list' => $repeatOffendersList,
                 'by_plant' => $observationsByPlant,

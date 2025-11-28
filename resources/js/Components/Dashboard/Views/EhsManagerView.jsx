@@ -7,6 +7,16 @@ import { BiPulse, BiTrendingUp } from "react-icons/bi";
 import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
 
 export default function EhsManagerView({ user, stats, areas, filters }) {
+    const [customDrillDown, setCustomDrillDown] = useState({
+        title: "",
+        data: [],
+    });
+
+    const handleGenericClick = (title, list) => {
+        setCustomDrillDown({ title, data: list });
+        setActiveMetric("custom");
+    };
+
     const [selectedObservation, setSelectedObservation] = useState(null);
 
     const [activeMetric, setActiveMetric] = useState(null);
@@ -90,20 +100,32 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
-                <EhsMetricCard
-                    title="Total"
-                    value={stats.total_month}
-                    subtitle="Este mes"
-                    color="blue"
-                    icon={<CgFileDocument className="w-6 h-6 text-blue-600" />}
-                />
-                <EhsMetricCard
-                    title="Abiertas"
-                    value={stats.open}
-                    subtitle="Requieren atención"
-                    color="orange"
-                    icon={<BiPulse className="w-6 h-6 text-orange-500" />}
-                />
+                <div
+                    onClick={() => setActiveMetric("total")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                >
+                    <EhsMetricCard
+                        title="Total"
+                        value={stats.total_month}
+                        subtitle="Este mes"
+                        color="blue"
+                        icon={
+                            <CgFileDocument className="w-6 h-6 text-blue-600" />
+                        }
+                    />
+                </div>
+                <div
+                    onClick={() => setActiveMetric("open")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                >
+                    <EhsMetricCard
+                        title="Abiertas"
+                        value={stats.open}
+                        subtitle="Requieren atención"
+                        color="orange"
+                        icon={<BiPulse className="w-6 h-6 text-orange-500" />}
+                    />
+                </div>
                 <div
                     onClick={() => setActiveMetric("high_risk")}
                     className="cursor-pointer transition-transform hover:scale-[1.02]"
@@ -116,13 +138,20 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         icon={<CgDanger className="w-6 h-6 text-red-600" />}
                     />
                 </div>
-                <EhsMetricCard
-                    title="Cerradas"
-                    value={`${stats.closed_rate}%`}
-                    subtitle="Tasa de resolución"
-                    color="green"
-                    icon={<BiTrendingUp className="w-6 h-6 text-green-600" />}
-                />
+                <div
+                    onClick={() => setActiveMetric("closed")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                >
+                    <EhsMetricCard
+                        title="Cerradas"
+                        value={`${stats.closed_rate}%`}
+                        subtitle="Tasa de resolución"
+                        color="green"
+                        icon={
+                            <BiTrendingUp className="w-6 h-6 text-green-600" />
+                        }
+                    />
+                </div>
             </div>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                 <div className="p-6 bg-white shadow-sm rounded-xl">
@@ -144,9 +173,18 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </h3>
                     <div className="space-y-4">
                         {stats.by_plant.map((plant, index) => (
-                            <div key={index}>
+                            <div
+                                key={index}
+                                onClick={() =>
+                                    handleGenericClick(
+                                        `Reportes: ${plant.name}`,
+                                        plant.list
+                                    )
+                                }
+                                className="cursor-pointer group"
+                            >
                                 <div className="flex justify-between mb-1 text-sm">
-                                    <span className="text-gray-600">
+                                    <span className="font-medium text-gray-600 transition-colors group-hover:text-blue-600">
                                         {plant.name}
                                     </span>
                                     <span className="font-semibold text-gray-800">
@@ -155,7 +193,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                 </div>
                                 <div className="w-full bg-gray-100 rounded-full h-2.5">
                                     <div
-                                        className="bg-[#1e3a8a] h-2.5 rounded-full"
+                                        className="bg-[#1e3a8a] h-2.5 rounded-full transition-all group-hover:bg-blue-500"
                                         style={{
                                             width: `${
                                                 (plant.count /
@@ -184,7 +222,13 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         {stats.top_categories.map((cat, index) => (
                             <div
                                 key={cat.id}
-                                className="flex items-center justify-between p-3 rounded-lg bg-gray-50"
+                                onClick={() =>
+                                    handleGenericClick(
+                                        `Categoría: ${cat.name}`,
+                                        cat.list
+                                    )
+                                }
+                                className="flex items-center justify-between p-3 transition-colors border border-transparent rounded-lg cursor-pointer bg-gray-50 hover:bg-purple-50 hover:border-purple-200"
                             >
                                 <div className="flex items-center">
                                     <span
@@ -199,7 +243,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                     </span>
                                 </div>
                                 <span className="px-2 py-1 text-sm font-bold text-gray-900 bg-white border rounded shadow-sm">
-                                    {cat.observations_count}
+                                    {cat.count}
                                 </span>
                             </div>
                         ))}
@@ -381,30 +425,42 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 show={!!activeMetric}
                 onClose={() => setActiveMetric(null)}
                 title={
-                    activeMetric === "recidivism"
+                    activeMetric === "custom"
+                        ? customDrillDown.title
+                        : activeMetric === "recidivism"
                         ? "Detalle: Personas Reincidentes"
                         : activeMetric === "high_risk"
                         ? "Atención Inmediata: Riesgo Alto"
+                        : activeMetric === "open"
+                        ? "Reportes en Progreso"
+                        : activeMetric === "closed"
+                        ? "Reportes Cerrados"
+                        : activeMetric === "total"
+                        ? "Total del Mes"
                         : ""
                 }
                 data={
-                    activeMetric === "recidivism"
+                    activeMetric === "custom"
+                        ? customDrillDown.data
+                        : activeMetric === "recidivism"
                         ? stats.recidivism_list
                         : activeMetric === "high_risk"
                         ? stats.high_risk_list
+                        : activeMetric === "open"
+                        ? stats.open_list
+                        : activeMetric === "closed"
+                        ? stats.closed_list
+                        : activeMetric === "total"
+                        ? stats.total_month_list
                         : []
                 }
-                type={activeMetric}
+                type={activeMetric === "custom" ? "open" : activeMetric}
                 onItemClick={(item) => {
                     setActiveMetric(null);
-
-                    if (activeMetric === "high_risk") {
+                    if (activeMetric === "recidivism") {
+                        setParams({ ...params, search: item.observed_person });
+                    } else {
                         setTimeout(() => setSelectedObservation(item), 100);
-                    } else if (activeMetric === "recidivism") {
-                        setParams({
-                            ...params,
-                            search: item.observed_person,
-                        });
                     }
                 }}
             />
