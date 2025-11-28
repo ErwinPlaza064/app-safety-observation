@@ -1,10 +1,9 @@
 import { Link } from "@inertiajs/react";
 
 export default function UsersTable({ users, onUserClick }) {
-    // Función auxiliar para formatear timestamp UNIX de la sesión
     const formatLastActivity = (timestamp) => {
         if (!timestamp) return "Nunca";
-        const date = new Date(timestamp * 1000); // PHP envía segundos, JS usa milisegundos
+        const date = new Date(timestamp * 1000);
         return date.toLocaleString("es-MX", {
             month: "short",
             day: "numeric",
@@ -13,7 +12,6 @@ export default function UsersTable({ users, onUserClick }) {
         });
     };
 
-    // Accedemos a .data porque ahora viene paginado
     const userList = users.data || [];
     const links = users.links || [];
 
@@ -45,8 +43,7 @@ export default function UsersTable({ users, onUserClick }) {
                                 </th>
                                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     Última Actividad
-                                </th>{" "}
-                                {/* NUEVA COLUMNA */}
+                                </th>
                                 <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase">
                                     Estado
                                 </th>
@@ -92,7 +89,6 @@ export default function UsersTable({ users, onUserClick }) {
                                                 </span>
                                             )}
                                         </td>
-                                        {/* NUEVA CELDA: ÚLTIMA ACTIVIDAD */}
                                         <td className="px-6 py-4 text-sm text-gray-600 whitespace-nowrap">
                                             {formatLastActivity(
                                                 userData.last_activity
@@ -126,7 +122,6 @@ export default function UsersTable({ users, onUserClick }) {
                     </table>
                 </div>
 
-                {/* --- PAGINACIÓN VISUAL --- */}
                 {links.length > 3 && (
                     <div className="flex items-center justify-between pt-4 mt-4 border-t border-gray-200">
                         <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
