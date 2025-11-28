@@ -4,8 +4,8 @@ import AutoSaveIndicator from "@/Components/Observations/AutoSaveIndicator";
 import ObserverInfoStep from "./Steps/ObserverInfoStep";
 import AreaTypeStep from "./Steps/AreaTypeStep";
 import DetailsStep from "./Steps/DetailsStep";
+import ObservationHelpModal from "./ObservationHelpModal";
 
-// PhotosStep con funcionalidad de cámara integrada
 function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
     const [showWebcam, setShowWebcam] = useState(false);
     const [stream, setStream] = useState(null);
@@ -15,11 +15,11 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
     const startWebcam = async () => {
         try {
             const mediaStream = await navigator.mediaDevices.getUserMedia({
-                video: { facingMode: "environment" }
+                video: { facingMode: "environment" },
             });
             setStream(mediaStream);
             setShowWebcam(true);
-            
+
             setTimeout(() => {
                 if (videoRef.current) {
                     videoRef.current.srcObject = mediaStream;
@@ -33,7 +33,7 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
 
     const stopWebcam = () => {
         if (stream) {
-            stream.getTracks().forEach(track => track.stop());
+            stream.getTracks().forEach((track) => track.stop());
             setStream(null);
         }
         setShowWebcam(false);
@@ -43,30 +43,36 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
         if (videoRef.current && canvasRef.current) {
             const video = videoRef.current;
             const canvas = canvasRef.current;
-            
+
             canvas.width = video.videoWidth;
             canvas.height = video.videoHeight;
-            
-            const context = canvas.getContext('2d');
+
+            const context = canvas.getContext("2d");
             context.drawImage(video, 0, 0, canvas.width, canvas.height);
-            
-            canvas.toBlob((blob) => {
-                const file = new File([blob], `photo_${Date.now()}.jpg`, { type: 'image/jpeg' });
-                const event = {
-                    target: {
-                        files: [file]
-                    }
-                };
-                onPhotoChange(event);
-                stopWebcam();
-            }, 'image/jpeg', 0.9);
+
+            canvas.toBlob(
+                (blob) => {
+                    const file = new File([blob], `photo_${Date.now()}.jpg`, {
+                        type: "image/jpeg",
+                    });
+                    const event = {
+                        target: {
+                            files: [file],
+                        },
+                    };
+                    onPhotoChange(event);
+                    stopWebcam();
+                },
+                "image/jpeg",
+                0.9
+            );
         }
     };
 
     useEffect(() => {
         return () => {
             if (stream) {
-                stream.getTracks().forEach(track => track.stop());
+                stream.getTracks().forEach((track) => track.stop());
             }
         };
     }, [stream]);
@@ -78,30 +84,30 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                     Evidencia Fotográfica (Opcional)
                 </h3>
                 <p className="mb-4 text-sm text-gray-600">
-                    Puede adjuntar hasta 5 fotografías que documenten la observación.
+                    Puede adjuntar hasta 5 fotografías que documenten la
+                    observación.
                 </p>
             </div>
 
-            {/* Modal de Webcam */}
             {showWebcam && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
                     <div className="relative w-full max-w-2xl p-4 bg-white rounded-lg">
                         <button
                             onClick={stopWebcam}
-                            className="absolute top-2 right-2 p-2 text-white bg-red-500 rounded-full hover:bg-red-600"
+                            className="absolute p-2 text-white bg-red-500 rounded-full top-2 right-2 hover:bg-red-600"
                         >
                             ✕
                         </button>
-                        
+
                         <video
                             ref={videoRef}
                             autoPlay
                             playsInline
                             className="w-full rounded-lg"
                         />
-                        
+
                         <canvas ref={canvasRef} className="hidden" />
-                        
+
                         <button
                             onClick={capturePhoto}
                             className="w-full px-6 py-3 mt-4 text-white transition-all transform bg-blue-600 rounded-lg hover:bg-blue-700 hover:scale-105"
@@ -112,28 +118,54 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                 </div>
             )}
 
-            {/* Botones para tomar foto o subir */}
             <div className="grid grid-cols-1 gap-3 md:grid-cols-3">
-                {/* Botón Webcam (Desktop) */}
                 <button
                     type="button"
                     onClick={startWebcam}
                     disabled={formData.photos.length >= 5}
                     className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-purple-300 border-dashed rounded-lg bg-purple-50 hover:bg-purple-100 hover:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                    <svg
+                        className="w-5 h-5 text-purple-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
+                        />
                     </svg>
-                    <span className="font-medium text-purple-700">Usar Webcam</span>
+                    <span className="font-medium text-purple-700">
+                        Usar Webcam
+                    </span>
                 </button>
 
-                {/* Botón Tomar Foto (Móvil) */}
                 <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 hover:border-blue-400">
-                    <svg className="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                    <svg
+                        className="w-5 h-5 text-blue-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"
+                        />
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
+                        />
                     </svg>
-                    <span className="font-medium text-blue-700">Tomar Foto</span>
+                    <span className="font-medium text-blue-700">
+                        Tomar Foto
+                    </span>
                     <input
                         type="file"
                         accept="image/*"
@@ -144,12 +176,23 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                     />
                 </label>
 
-                {/* Botón Subir desde Galería */}
                 <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-gray-400">
-                    <svg className="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    <svg
+                        className="w-5 h-5 text-gray-600"
+                        fill="none"
+                        stroke="currentColor"
+                        viewBox="0 0 24 24"
+                    >
+                        <path
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth={2}
+                            d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
+                        />
                     </svg>
-                    <span className="font-medium text-gray-700">Subir Galería</span>
+                    <span className="font-medium text-gray-700">
+                        Subir Galería
+                    </span>
                     <input
                         type="file"
                         accept="image/*"
@@ -166,7 +209,7 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
             </div>
 
             {formData.photos.length > 0 && (
-                <div className="p-4 bg-gray-50 rounded-lg">
+                <div className="p-4 rounded-lg bg-gray-50">
                     <h4 className="mb-3 text-sm font-semibold text-gray-700">
                         Fotos Adjuntas:
                     </h4>
@@ -196,13 +239,16 @@ function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
 
             {formData.photos.length >= 5 && (
                 <div className="p-3 text-sm text-center text-orange-700 bg-orange-100 rounded-lg">
-                    Has alcanzado el límite de 5 fotos. Elimina una para agregar otra.
+                    Has alcanzado el límite de 5 fotos. Elimina una para agregar
+                    otra.
                 </div>
             )}
 
-            <div className="p-4 bg-blue-50 rounded-lg">
+            <div className="p-4 rounded-lg bg-blue-50">
                 <p className="text-sm text-blue-800">
-                    <span className="font-semibold">💡 Consejo:</span> Las fotos ayudan a documentar mejor la observación y facilitan la comprensión de la situación.
+                    <span className="font-semibold">💡 Consejo:</span> Las fotos
+                    ayudan a documentar mejor la observación y facilitan la
+                    comprensión de la situación.
                 </p>
             </div>
         </div>
@@ -218,6 +264,9 @@ export default function SafetyObservationForm({
 }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [isSaving, setIsSaving] = useState(false);
+
+    // ESTADO PARA EL MODAL DE AYUDA
+    const [showHelpModal, setShowHelpModal] = useState(false);
 
     const [lastSaved, setLastSaved] = useState(
         savedDraft ? new Date(savedDraft.updated_at) : null
@@ -515,14 +564,17 @@ export default function SafetyObservationForm({
                         onChange={handleInputChange}
                     />
                 )}
+
                 {currentStep === 2 && (
                     <AreaTypeStep
                         formData={formData}
                         onChange={handleInputChange}
                         areas={areas}
                         errors={errors}
+                        onOpenHelp={() => setShowHelpModal(true)}
                     />
                 )}
+
                 {currentStep === 3 && (
                     <DetailsStep
                         formData={formData}
@@ -605,6 +657,11 @@ export default function SafetyObservationForm({
                     </div>
                 )}
             </div>
+
+            <ObservationHelpModal
+                show={showHelpModal}
+                onClose={() => setShowHelpModal(false)}
+            />
         </div>
     );
 }

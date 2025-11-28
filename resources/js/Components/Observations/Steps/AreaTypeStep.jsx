@@ -1,4 +1,12 @@
-export default function AreaTypeStep({ formData, onChange, areas, errors }) {
+import { FaQuestionCircle } from "react-icons/fa";
+
+export default function AreaTypeStep({
+    formData,
+    onChange,
+    areas,
+    errors,
+    onOpenHelp,
+}) {
     return (
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="mb-6">
@@ -21,14 +29,27 @@ export default function AreaTypeStep({ formData, onChange, areas, errors }) {
             </div>
 
             <div className="mb-6">
-                <label className="block mb-3 text-sm font-medium text-gray-700">
-                    Tipo de Observación <span className="text-red-500">*</span>
-                </label>
+                <div className="flex items-end justify-between mb-3">
+                    <label className="block text-sm font-medium text-gray-700">
+                        Tipo de Observación{" "}
+                        <span className="text-red-500">*</span>
+                    </label>
+                    <button
+                        type="button"
+                        onClick={onOpenHelp}
+                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors font-medium"
+                    >
+                        <FaQuestionCircle />
+                        ¿No sabes cuál elegir?
+                    </button>
+                </div>
+
                 {errors.observation_type && (
                     <p className="mb-2 text-sm text-red-600">
                         {errors.observation_type}
                     </p>
                 )}
+
                 <div className="space-y-3">
                     {[
                         {

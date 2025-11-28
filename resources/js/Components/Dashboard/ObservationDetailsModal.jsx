@@ -1,3 +1,4 @@
+import { useState } from "react";
 import Modal from "@/Components/Modal";
 import SecondaryButton from "@/Components/SecondaryButton";
 import { router } from "@inertiajs/react";
@@ -8,6 +9,8 @@ export default function ObservationDetailsModal({
     onClose,
     canClose,
 }) {
+    const [processing, setProcessing] = useState(false);
+
     if (!observation) return null;
 
     const formatDate = (dateString) => {
@@ -31,31 +34,13 @@ export default function ObservationDetailsModal({
         ).toUpperCase();
     };
 
-    const handleCloseReport = () => {
-        if (
-            confirm(
-                "¿Estás seguro de cerrar este reporte? Se marcará como completado."
-            )
-        ) {
-            router.put(
-                route("observations.close", observation.id),
-                {},
-                {
-                    onSuccess: () => onClose(),
-                }
-            );
-        }
-    };
-
     const getStatusBadge = (status) => {
         const styles = {
             en_progreso: "bg-blue-100 text-blue-800 border-blue-200",
             cerrada: "bg-green-100 text-green-800 border-green-200",
             borrador: "bg-gray-100 text-gray-800 border-gray-200",
         };
-
         const label = status === "en_progreso" ? "Abierta" : status;
-
         return (
             <span
                 className={`px-3 py-1 text-xs font-bold uppercase tracking-wide rounded-full border ${
@@ -64,6 +49,24 @@ export default function ObservationDetailsModal({
             >
                 {label}
             </span>
+        );
+    };
+
+    const handleCloseReport = () => {
+        setProcessing(true);
+        router.put(
+            route("observations.close", observation.id),
+            {},
+            {
+                preserveScroll: true,
+                onSuccess: () => {
+                    onClose();
+                },
+                onError: () => {
+                    alert("No se pudo cerrar el reporte. Inténtalo de nuevo.");
+                },
+                onFinish: () => setProcessing(false),
+            }
         );
     };
 
@@ -133,8 +136,8 @@ export default function ObservationDetailsModal({
                                 Reportado Por
                             </h3>
                             <div className="flex items-center gap-4">
-                                <div className="h-12 w-20 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md lg:w-12">
-                                    {getInitials(observation.user?.name)}{" "}
+                                <div className="h-12 w-12 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                    {getInitials(observation.user?.name)}
                                 </div>
                                 <div>
                                     <p className="text-base font-bold text-gray-900">
@@ -229,6 +232,7 @@ export default function ObservationDetailsModal({
                                 </p>
                             </div>
                         </div>
+
                         {observation.categories &&
                             observation.categories.length > 0 && (
                                 <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
@@ -288,12 +292,18 @@ export default function ObservationDetailsModal({
                 >
                     Cerrar
                 </SecondaryButton>
+
                 {canClose && observation.status === "en_progreso" && (
                     <button
                         onClick={handleCloseReport}
-                        className="px-4 py-2 text-xs font-bold tracking-widest text-white uppercase transition-colors bg-green-600 rounded-md hover:bg-green-500"
+                        disabled={processing}
+                        className={`px-4 py-2 text-xs font-bold tracking-widest text-white uppercase transition-colors rounded-md ${
+                            processing
+                                ? "bg-gray-400 cursor-not-allowed"
+                                : "bg-green-600 hover:bg-green-500"
+                        }`}
                     >
-                        Marcar como Cerrado
+                        {processing ? "Cerrando..." : "Marcar como Cerrado"}
                     </button>
                 )}
             </div>
