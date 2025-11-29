@@ -79,7 +79,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
                 </label>
                 <input
                     type="text"
-                    placeholder="Nombre de la persona observada"
+                    placeholder="Nombre de la persona observada con apellido si es posible"
                     value={formData.observed_person}
                     onChange={(e) =>
                         onChange("observed_person", e.target.value)

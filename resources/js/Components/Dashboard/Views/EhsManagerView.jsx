@@ -20,7 +20,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 preserveState: true,
                 replace: true,
             });
-        }, 15000);
+        }, 7000);
 
         return () => clearInterval(intervalId);
     }, []);

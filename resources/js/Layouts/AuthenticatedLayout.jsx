@@ -3,14 +3,50 @@ import Dropdown from "@/Components/Dropdown";
 import NavLink from "@/Components/NavLink";
 import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage, router } from "@inertiajs/react";
-import { useState } from "react";
+import { useState, useEffect, useRef } from "react";
+import { BiBell } from "react-icons/bi";
 
-export default function AuthenticatedLayout({ header, children }) {
+export default function AuthenticatedLayout({
+    header,
+    children,
+    notificationCount = 0,
+    notifications = [],
+}) {
     const user = usePage().props.auth.user;
 
     const [showingNavigationDropdown, setShowingNavigationDropdown] =
         useState(false);
     const [isLoggingOut, setIsLoggingOut] = useState(false);
+
+    const [badgeCount, setBadgeCount] = useState(0);
+
+    const prevCountRef = useRef(notificationCount);
+    const isFirstRender = useRef(true);
+
+    useEffect(() => {
+        if (isFirstRender.current) {
+            isFirstRender.current = false;
+            prevCountRef.current = notificationCount;
+            return;
+        }
+
+        if (user.is_ehs_manager) {
+            const diff = notificationCount - prevCountRef.current;
+
+            if (diff > 0) {
+                setBadgeCount((prev) => prev + diff);
+
+                const audio = new Audio("/sounds/notification.mp3");
+                audio.play().catch((error) => {
+                    console.log("Reproducción de audio bloqueada:", error);
+                });
+
+                if (navigator.vibrate) navigator.vibrate(200);
+            }
+        }
+
+        prevCountRef.current = notificationCount;
+    }, [notificationCount, user.is_ehs_manager]);
 
     const handleLogout = (e) => {
         e.preventDefault();
@@ -19,6 +55,18 @@ export default function AuthenticatedLayout({ header, children }) {
         setTimeout(() => {
             router.post(route("logout"));
         }, 1500);
+    };
+
+    const clearNotifications = () => {
+        setBadgeCount(0);
+    };
+
+    const timeAgo = (dateString) => {
+        const date = new Date(dateString);
+        return date.toLocaleDateString("es-MX", {
+            hour: "2-digit",
+            minute: "2-digit",
+        });
     };
 
     return (
@@ -114,9 +162,181 @@ export default function AuthenticatedLayout({ header, children }) {
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
+                            {user.is_ehs_manager && (
+                                <div className="relative mr-0">
+                                    <Dropdown>
+                                        <Dropdown.Trigger>
+                                            <button
+                                                onClick={clearNotifications}
+                                                className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                            >
+                                                <BiBell className="w-6 h-6" />
+
+                                                {badgeCount > 0 && (
+                                                    <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white">
+                                                        {badgeCount}
+                                                    </span>
+                                                )}
+                                            </button>
+                                        </Dropdown.Trigger>
+
+                                        <Dropdown.Content width="96">
+                                            <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b bg-gray-50">
+                                                Recientes
+                                            </div>
+
+                                            <div className="overflow-y-auto max-h-64">
+                                                {notifications.length > 0 ? (
+                                                    notifications
+                                                        .slice(0, 5)
+                                                        .map((notif) => (
+                                                            <Dropdown.Link
+                                                                key={notif.id}
+                                                                href={route(
+                                                                    "observations.show",
+                                                                    notif.id
+                                                                )}
+                                                                className="transition-colors border-b border-gray-50 hover:bg-blue-50"
+                                                            >
+                                                                <div className="flex flex-col gap-1 py-1">
+                                                                    <div className="flex items-center justify-between">
+                                                                        <span
+                                                                            className={`font-bold text-xs uppercase ${
+                                                                                notif.observation_type ===
+                                                                                "acto_inseguro"
+                                                                                    ? "text-orange-600"
+                                                                                    : notif.observation_type ===
+                                                                                      "condicion_insegura"
+                                                                                    ? "text-red-600"
+                                                                                    : "text-green-600"
+                                                                            }`}
+                                                                        >
+                                                                            {notif.observation_type?.replace(
+                                                                                /_/g,
+                                                                                " "
+                                                                            )}
+                                                                        </span>
+                                                                        <span className="text-[10px] text-gray-400">
+                                                                            {timeAgo(
+                                                                                notif.created_at
+                                                                            )}
+                                                                        </span>
+                                                                    </div>
+
+                                                                    <span className="text-sm font-medium text-gray-600 truncate">
+                                                                        {
+                                                                            notif.description
+                                                                        }
+                                                                    </span>
+
+                                                                    <span className="text-xs text-blue-500">
+                                                                        {notif
+                                                                            .area
+                                                                            ?.name ||
+                                                                            "Sin área"}
+                                                                    </span>
+                                                                </div>
+                                                            </Dropdown.Link>
+                                                        ))
+                                                ) : (
+                                                    <div className="px-4 py-6 text-sm text-center text-gray-500">
+                                                        No hay notificaciones
+                                                        recientes
+                                                    </div>
+                                                )}
+                                            </div>
+                                        </Dropdown.Content>
+                                    </Dropdown>
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex items-center -me-2 sm:hidden">
+                            {user.is_ehs_manager && (
+                                <Dropdown>
+                                    <Dropdown.Trigger>
+                                        <button
+                                            onClick={clearNotifications}
+                                            className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+                                        >
+                                            <BiBell className="w-6 h-6" />
+
+                                            {badgeCount > 0 && (
+                                                <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white">
+                                                    {badgeCount}
+                                                </span>
+                                            )}
+                                        </button>
+                                    </Dropdown.Trigger>
+
+                                    <Dropdown.Content width="80">
+                                        <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b bg-gray-50">
+                                            Recientes
+                                        </div>
+
+                                        <div className="overflow-y-auto max-h-64">
+                                            {notifications.length > 0 ? (
+                                                notifications
+                                                    .slice(0, 5)
+                                                    .map((notif) => (
+                                                        <Dropdown.Link
+                                                            key={notif.id}
+                                                            href={route(
+                                                                "observations.show",
+                                                                notif.id
+                                                            )}
+                                                            className="transition-colors border-b border-gray-50 hover:bg-blue-50"
+                                                        >
+                                                            <div className="flex flex-col gap-1 py-1">
+                                                                <div className="flex items-center justify-between">
+                                                                    <span
+                                                                        className={`font-bold text-xs uppercase ${
+                                                                            notif.observation_type ===
+                                                                            "acto_inseguro"
+                                                                                ? "text-orange-600"
+                                                                                : notif.observation_type ===
+                                                                                  "condicion_insegura"
+                                                                                ? "text-red-600"
+                                                                                : "text-green-600"
+                                                                        }`}
+                                                                    >
+                                                                        {notif.observation_type?.replace(
+                                                                            /_/g,
+                                                                            " "
+                                                                        )}
+                                                                    </span>
+                                                                    <span className="text-[10px] text-gray-400">
+                                                                        {timeAgo(
+                                                                            notif.created_at
+                                                                        )}
+                                                                    </span>
+                                                                </div>
+
+                                                                <span className="text-sm font-medium text-gray-600 truncate">
+                                                                    {
+                                                                        notif.description
+                                                                    }
+                                                                </span>
+
+                                                                <span className="text-xs text-blue-500">
+                                                                    {notif.area
+                                                                        ?.name ||
+                                                                        "Sin área"}
+                                                                </span>
+                                                            </div>
+                                                        </Dropdown.Link>
+                                                    ))
+                                            ) : (
+                                                <div className="px-4 py-6 text-sm text-center text-gray-500">
+                                                    No hay notificaciones
+                                                    recientes
+                                                </div>
+                                            )}
+                                        </div>
+                                    </Dropdown.Content>
+                                </Dropdown>
+                            )}
+
                             <button
                                 onClick={() =>
                                     setShowingNavigationDropdown(
@@ -170,7 +390,7 @@ export default function AuthenticatedLayout({ header, children }) {
                             href={route("dashboard")}
                             active={route().current("dashboard")}
                         >
-                            Dashboard{" "}
+                            Dashboard
                         </ResponsiveNavLink>
                     </div>
 

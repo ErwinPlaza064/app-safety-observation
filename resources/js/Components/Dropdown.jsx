@@ -53,8 +53,22 @@ const Content = ({
 
     let widthClasses = "";
 
-    if (width === "48") {
-        widthClasses = "w-48";
+    switch (width) {
+        case "48":
+            widthClasses = "w-48";
+            break;
+        case "60":
+            widthClasses = "w-60";
+            break;
+        case "80":
+            widthClasses = "w-80";
+            break;
+        case "96":
+            widthClasses = "w-96";
+            break;
+        default:
+            widthClasses = width;
+            break;
     }
 
     return (

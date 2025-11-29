@@ -45,7 +45,10 @@ export default function Dashboard({
     };
 
     return (
-        <AuthenticatedLayout>
+        <AuthenticatedLayout
+            notificationCount={ehsStats ? ehsStats.open : 0}
+            notifications={ehsStats ? ehsStats.recent : []}
+        >
             <Head title="Panel de Control" />
 
             <div className="py-6 sm:py-12">
