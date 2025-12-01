@@ -6,11 +6,11 @@ export default function DeleteUserModal({ show, user, onClose, onConfirm }) {
     return (
         <Modal show={show} onClose={onClose}>
             <div className="flex flex-col p-6">
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                     ¿Eliminar Usuario?
                 </h2>
 
-                <p className="mt-4 text-sm text-gray-600">
+                <p className="mt-4 text-sm text-gray-600 dark:text-gray-300">
                     ¿Estás seguro de que deseas eliminar a{" "}
                     <strong>{user?.name}</strong>? Esta acción no se puede
                     deshacer.
