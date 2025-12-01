@@ -111,3 +111,72 @@ php artisan serve
 # O para acceso en red local:
 php artisan serve --host=0.0.0.0 --port=8000
 ```
+
+**Terminal 2 (Vite):**
+
+```bash
+npm run dev
+```
+
+La aplicación estará disponible en `http://localhost:8000`.
+
+## 🏭 Deployment en Producción (IIS)
+
+Para desplegar la aplicación en un servidor Windows con IIS:
+
+### 📚 Documentación Completa
+
+Consulta **[DEPLOYMENT-IIS.md](DEPLOYMENT-IIS.md)** para la guía completa de instalación en IIS.
+
+### ⚡ Quick Start
+
+1. **Verificar requisitos del sistema:**
+
+    ```powershell
+    .\verify-system.ps1
+    ```
+
+2. **Deployment automático:**
+
+    ```powershell
+    .\deploy.ps1
+    ```
+
+3. **Checklist pre-deployment:**
+   Ver [DEPLOYMENT-CHECKLIST.md](DEPLOYMENT-CHECKLIST.md)
+
+### 📦 Archivos de Deployment Incluidos
+
+-   `public/web.config` - Configuración de IIS con URL Rewrite
+-   `.env.production.example` - Plantilla de variables de entorno para producción
+-   `deploy.ps1` - Script automatizado de deployment
+-   `rollback.ps1` - Script de rollback en caso de problemas
+-   `verify-system.ps1` - Verificación de requisitos del sistema
+-   `php-production.ini` - Configuración recomendada de PHP para producción
+
+### 🔧 Requisitos Mínimos
+
+-   Windows Server 2016+ o Windows 10/11 Pro
+-   IIS 10.0+ con URL Rewrite Module
+-   PHP 8.2+
+-   MySQL 8.0+
+-   Node.js 18+
+-   4 GB RAM (recomendado: 8 GB)
+
+## 🔐 Usuarios por Defecto
+
+Después de ejecutar las migraciones con seed, tendrás acceso a:
+
+| Rol         | Email               | Contraseña |
+| ----------- | ------------------- | ---------- |
+| Super Admin | admin@wasion.com    | password   |
+| EHS Manager | manager@wasion.com  | password   |
+| Empleado    | employee@wasion.com | password   |
+
+**⚠️ IMPORTANTE:** Cambia estas contraseñas en producción.
+
+## 🧪 Testing
+
+```bash
+php artisan test
+```
