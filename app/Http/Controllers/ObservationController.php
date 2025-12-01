@@ -275,8 +275,19 @@ class ObservationController extends Controller
     {
         $observations = $this->getFilteredQuery()->get();
 
-        $pdf = Pdf::loadView('exports.observations_pdf', compact('observations'));
+        // Calcular estadísticas
+        $stats = [
+            'total' => $observations->count(),
+            'abiertas' => $observations->where('status', 'en_progreso')->count(),
+            'cerradas' => $observations->where('status', 'cerrada')->count(),
+            'actos_inseguros' => $observations->where('observation_type', 'acto_inseguro')->count(),
+            'condiciones_inseguras' => $observations->where('observation_type', 'condicion_insegura')->count(),
+            'actos_seguros' => $observations->where('observation_type', 'acto_seguro')->count(),
+        ];
 
-        return $pdf->download('reporte_seguridad.pdf');
+        $pdf = Pdf::loadView('exports.observations_pdf', compact('observations', 'stats'))
+                  ->setPaper('a4', 'portrait');
+
+        return $pdf->download('reporte_seguridad_' . date('Y-m-d') . '.pdf');
     }
 }
