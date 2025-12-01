@@ -7,6 +7,8 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
     if (!user.is_ehs_manager) return null;
 
     const [badgeCount, setBadgeCount] = useState(0);
+    const [viewedNotifications, setViewedNotifications] = useState(new Set());
+    const [newNotifications, setNewNotifications] = useState(new Set());
     const prevCountRef = useRef(count);
     const isFirstRender = useRef(true);
 
@@ -22,6 +24,13 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         if (diff > 0) {
             setBadgeCount((prev) => prev + diff);
 
+            const recentIds = list.slice(0, diff).map((n) => n.id);
+            setNewNotifications((prev) => {
+                const updated = new Set(prev);
+                recentIds.forEach((id) => updated.add(id));
+                return updated;
+            });
+
             const audio = new Audio("/sounds/notification.mp3");
             audio.play().catch((e) => console.log("Audio bloqueado", e));
 
@@ -29,7 +38,16 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         }
 
         prevCountRef.current = count;
-    }, [count]);
+    }, [count, list]);
+
+    const handleDropdownOpen = () => {
+        const newViewedSet = new Set(viewedNotifications);
+        list.forEach((notif) => newViewedSet.add(notif.id));
+        setViewedNotifications(newViewedSet);
+
+        setNewNotifications(new Set());
+        setBadgeCount(0);
+    };
 
     const clearNotifications = () => {
         setBadgeCount(0);
@@ -45,7 +63,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
 
     return (
         <div className="relative">
-            <Dropdown>
+            <Dropdown onOpen={handleDropdownOpen}>
                 <Dropdown.Trigger>
                     <button className="relative p-1 text-gray-400 transition-colors rounded-full dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <BiBell className="w-7 h-7 lg:w-6 lg:h-6" />
@@ -65,45 +83,75 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
 
                     <div className="overflow-y-auto max-h-64">
                         {list.length > 0 ? (
-                            list.slice(0, 5).map((notif) => (
-                                <Dropdown.Link
-                                    key={notif.id}
-                                    href={route("observations.show", notif.id)}
-                                    className="transition-colors border-b border-gray-50 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                                >
-                                    <div className="flex flex-col gap-1 py-1">
-                                        <div className="flex items-center justify-between">
+                            list.slice(0, 5).map((notif) => {
+                                const isNew = newNotifications.has(notif.id);
+                                return (
+                                    <Dropdown.Link
+                                        key={notif.id}
+                                        href={route(
+                                            "observations.show",
+                                            notif.id
+                                        )}
+                                        className={`relative transition-all border-b border-gray-50 dark:border-gray-700 ${
+                                            isNew
+                                                ? "bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-500 dark:border-l-blue-400 shadow-md hover:shadow-lg"
+                                                : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                        }`}
+                                    >
+                                        <div className="flex flex-col gap-1 py-1">
+                                            <div className="flex items-center justify-between">
+                                                <div className="flex items-center gap-2">
+                                                    {isNew && (
+                                                        <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
+                                                    )}
+                                                    <span
+                                                        className={`font-bold text-xs uppercase ${
+                                                            notif.observation_type ===
+                                                            "acto_inseguro"
+                                                                ? "text-orange-600 dark:text-orange-400"
+                                                                : notif.observation_type ===
+                                                                  "condicion_insegura"
+                                                                ? "text-red-600 dark:text-red-400"
+                                                                : "text-green-600 dark:text-green-400"
+                                                        }`}
+                                                    >
+                                                        {notif.observation_type?.replace(
+                                                            /_/g,
+                                                            " "
+                                                        )}
+                                                    </span>
+                                                </div>
+                                                <div className="flex items-center gap-1">
+                                                    {isNew && (
+                                                        <span className="px-1.5 py-0.5 text-[9px] font-bold text-white bg-blue-500 rounded-full uppercase">
+                                                            Nueva
+                                                        </span>
+                                                    )}
+                                                    <span className="text-[10px] text-gray-400 dark:text-gray-500">
+                                                        {timeAgo(
+                                                            notif.created_at
+                                                        )}
+                                                    </span>
+                                                </div>
+                                            </div>
+
                                             <span
-                                                className={`font-bold text-xs uppercase ${
-                                                    notif.observation_type ===
-                                                    "acto_inseguro"
-                                                        ? "text-orange-600 dark:text-orange-400"
-                                                        : notif.observation_type ===
-                                                          "condicion_insegura"
-                                                        ? "text-red-600 dark:text-red-400"
-                                                        : "text-green-600 dark:text-green-400"
+                                                className={`text-sm font-medium truncate ${
+                                                    isNew
+                                                        ? "text-gray-800 dark:text-white font-semibold"
+                                                        : "text-gray-600 dark:text-gray-300"
                                                 }`}
                                             >
-                                                {notif.observation_type?.replace(
-                                                    /_/g,
-                                                    " "
-                                                )}
+                                                {notif.description}
                                             </span>
-                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                                                {timeAgo(notif.created_at)}
+
+                                            <span className="text-xs text-blue-500 dark:text-blue-400">
+                                                {notif.area?.name || "Sin área"}
                                             </span>
                                         </div>
-
-                                        <span className="text-sm font-medium text-gray-600 truncate dark:text-gray-300">
-                                            {notif.description}
-                                        </span>
-
-                                        <span className="text-xs text-blue-500 dark:text-blue-400">
-                                            {notif.area?.name || "Sin área"}
-                                        </span>
-                                    </div>
-                                </Dropdown.Link>
-                            ))
+                                    </Dropdown.Link>
+                                );
+                            })
                         ) : (
                             <div className="px-4 py-6 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay notificaciones recientes

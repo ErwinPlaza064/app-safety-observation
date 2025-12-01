@@ -37,11 +37,11 @@ export default function UpdateProfileInformation({
         return (
             <section className={className}>
                 <header className="flex items-center justify-between lg:items-start lg:flex-col lg:justify-start">
-                    <h2 className="text-lg font-medium text-gray-900">
+                    <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                         Información del Perfil
                     </h2>
                     <div className="flex items-center gap-4 mr-6 lg:ml-14 lg:py-4">
-                        <div className="h-16 w-16 lg:h-14 lg:w-14 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md ">
+                        <div className="h-16 w-16 lg:h-14 lg:w-14 rounded-full bg-[#1e3a8a] dark:bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md ">
                             {getInitials(user.name)}{" "}
                         </div>
                     </div>
@@ -49,11 +49,11 @@ export default function UpdateProfileInformation({
 
                 <div className="mt-2 space-y-6 ">
                     <div className="lg:text-center lg:w-40">
-                        <p className="mt-1 text-sm text-gray-600">
+                        <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                             ¿Necesitas actualizar <br /> tu información? <br />
                             <a
                                 href="https://wasionithelp.freshservice.com"
-                                className="text-wasion hover:underline"
+                                className="text-wasion dark:text-blue-400 hover:underline"
                             >
                                 Contacta a IT
                             </a>
@@ -61,7 +61,7 @@ export default function UpdateProfileInformation({
                     </div>
                     <div>
                         <InputLabel htmlFor="name" value="Nombre" />
-                        <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md">
+                        <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600">
                             {user.name}
                         </div>
                     </div>
@@ -71,7 +71,7 @@ export default function UpdateProfileInformation({
                             htmlFor="email"
                             value="Correo Electrónico"
                         />
-                        <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md">
+                        <div className="block w-full px-3 py-2 mt-1 text-gray-700 bg-gray-100 border border-gray-300 rounded-md dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600">
                             {user.email}
                         </div>
                     </div>
@@ -83,11 +83,11 @@ export default function UpdateProfileInformation({
     return (
         <section className={className}>
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Información del Perfil
                 </h2>
 
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     Actualiza la información de tu perfil y dirección de correo
                     electrónico.
                 </p>
@@ -128,14 +128,14 @@ export default function UpdateProfileInformation({
 
                 {mustVerifyEmail && user.email_verified_at === null && (
                     <div>
-                        <p className="mt-2 text-sm text-gray-800">
+                        <p className="mt-2 text-sm text-gray-800 dark:text-gray-200">
                             Tu dirección de correo electrónico no está
                             verificada.
                             <Link
                                 href={route("verification.send")}
                                 method="post"
                                 as="button"
-                                className="text-sm text-gray-600 underline rounded-md hover:text-gray-900 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
+                                className="text-sm text-gray-600 underline rounded-md dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2"
                             >
                                 Haz clic aquí para reenviar el correo de
                                 verificación.
@@ -161,7 +161,9 @@ export default function UpdateProfileInformation({
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">Guardado.</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Guardado.
+                        </p>
                     </Transition>
                 </div>
             </form>

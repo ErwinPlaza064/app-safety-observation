@@ -116,10 +116,10 @@ export default function UpdatePasswordForm({ className = "" }) {
             )}
 
             <header>
-                <h2 className="text-lg font-medium text-gray-900">
+                <h2 className="text-lg font-medium text-gray-900 dark:text-gray-100">
                     Actualizar Contraseña
                 </h2>
-                <p className="mt-1 text-sm text-gray-600">
+                <p className="mt-1 text-sm text-gray-600 dark:text-gray-400">
                     Asegúrate de que tu cuenta esté usando una contraseña larga
                     y segura para mantenerte protegido.
                 </p>
@@ -166,7 +166,7 @@ export default function UpdatePasswordForm({ className = "" }) {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-gray-500 hover:text-gray-700"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 mt-1 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             {showPassword ? (
                                 <svg
@@ -210,7 +210,7 @@ export default function UpdatePasswordForm({ className = "" }) {
                     {passwordStrength && (
                         <div className="mt-2 animate-fade-in">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs text-gray-600">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
                                     Fortaleza:
                                 </span>
                                 <span
@@ -221,7 +221,7 @@ export default function UpdatePasswordForm({ className = "" }) {
                                     {passwordStrength.label}
                                 </span>
                             </div>
-                            <div className="w-full h-1.5 overflow-hidden bg-gray-200 rounded-full">
+                            <div className="w-full h-1.5 overflow-hidden bg-gray-200 dark:bg-gray-700 rounded-full">
                                 <div
                                     className={`h-full transition-all duration-500 ${
                                         passwordStrength.color.split(" ")[0]
@@ -272,7 +272,9 @@ export default function UpdatePasswordForm({ className = "" }) {
                         leave="transition ease-in-out"
                         leaveTo="opacity-0"
                     >
-                        <p className="text-sm text-gray-600">Guardado.</p>
+                        <p className="text-sm text-gray-600 dark:text-gray-400">
+                            Guardado.
+                        </p>
                     </Transition>
                 </div>
             </form>

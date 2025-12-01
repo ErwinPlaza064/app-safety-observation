@@ -4,11 +4,15 @@ import { createContext, useContext, useState } from "react";
 
 const DropDownContext = createContext();
 
-const Dropdown = ({ children }) => {
+const Dropdown = ({ children, onOpen }) => {
     const [open, setOpen] = useState(false);
 
     const toggleOpen = () => {
-        setOpen((previousState) => !previousState);
+        const newState = !open;
+        setOpen(newState);
+        if (newState && onOpen) {
+            onOpen();
+        }
     };
 
     return (
