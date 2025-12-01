@@ -140,8 +140,10 @@ class DashboardController extends Controller
                 $query->where('status', request('status'));
             }
 
-            $recentObservations = $query->latest('observation_date')->take(20)->get();
-
+            $recentObservations = $query
+                ->orderByDesc('created_at')
+                ->take(20)
+                ->get();
 
             $applyFilters = function($q) use ($currentAreaId) {
                 $q->submitted();
@@ -153,12 +155,10 @@ class DashboardController extends Controller
                 return $q;
             };
 
-            $totalMonthQuery = $applyFilters(Observation::query())
-                ->whereMonth('observation_date', now()->month)
-                ->whereYear('observation_date', now()->year)
+           $totalMonthQuery = $applyFilters(Observation::query())
                 ->with(['area', 'user']);
 
-            $totalMonthList = $totalMonthQuery->latest('observation_date')->get();
+            $totalMonthList = $totalMonthQuery->latest('created_at')->get();
             $totalMonth = $totalMonthList->count();
 
             $openQuery = $applyFilters(Observation::query())

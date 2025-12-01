@@ -20,7 +20,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 preserveState: true,
                 replace: true,
             });
-        }, 7000);
+        }, 5000);
 
         return () => clearInterval(intervalId);
     }, []);
@@ -129,7 +129,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     <EhsMetricCard
                         title="Total"
                         value={stats.total_month}
-                        subtitle="Este mes"
+                        subtitle="Total de registros"
                         color="blue"
                         icon={
                             <CgFileDocument className="w-6 h-6 text-blue-600" />
