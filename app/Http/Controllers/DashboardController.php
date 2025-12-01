@@ -105,7 +105,7 @@ class DashboardController extends Controller
             $data['savedDraft'] = $draft;
         }
 
-        // 3. LÓGICA PARA EHS MANAGER
+        // 3. LÓGICA PARA EHS MANAGER (OPTIMIZADO - Sin perder funcionalidad)
         // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
 
@@ -116,8 +116,13 @@ class DashboardController extends Controller
 
             $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
 
+            // Configurar relaciones optimizadas (solo campos necesarios)
+            $baseRelations = [
+                'user:id,name,email,area',
+                'area:id,name'
+            ];
 
-            $query = Observation::with(['user', 'area', 'categories', 'images'])
+            $query = Observation::with(array_merge($baseRelations, ['categories:id,name', 'images:id,observation_id,path']))
                 ->submitted();
 
             if (request('search')) {
@@ -155,27 +160,29 @@ class DashboardController extends Controller
                 return $q;
             };
 
-           $totalMonthQuery = $applyFilters(Observation::query())
-                ->with(['area', 'user']);
+            // OPTIMIZACIÓN: Cargar todas las observaciones filtradas UNA SOLA VEZ
+            $allFilteredObservations = $applyFilters(Observation::query())
+                ->with($baseRelations)
+                ->latest('created_at')
+                ->get();
 
-            $totalMonthList = $totalMonthQuery->latest('created_at')->get();
+            // Usar la colección cargada para todas las estadísticas
+            $totalMonthList = $allFilteredObservations;
             $totalMonth = $totalMonthList->count();
 
-            $openQuery = $applyFilters(Observation::query())
+            $openList = $allFilteredObservations
                 ->where('status', 'en_progreso')
-                ->with(['area', 'user']);
-
-            $openList = $openQuery->latest('observation_date')->get();
+                ->sortByDesc('observation_date')
+                ->values();
             $open = $openList->count();
 
-            $closedQuery = $applyFilters(Observation::query())
+            $closedList = $allFilteredObservations
                 ->where('status', 'cerrada')
-                ->with(['area', 'user']);
-
-            $closedList = $closedQuery->latest('closed_at')->get();
+                ->sortByDesc('closed_at')
+                ->values();
             $closed = $closedList->count();
 
-            $totalAll = $applyFilters(Observation::query())->count();
+            $totalAll = $allFilteredObservations->count();
             $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
 
             $highRiskCategories = [
@@ -185,15 +192,21 @@ class DashboardController extends Controller
                 'Mal uso de herramientas'
             ];
 
-            $highRiskQuery = $applyFilters(Observation::query())
-                ->where('status', 'en_progreso')
-                ->whereHas('categories', function($q) use ($highRiskCategories) {
-                    $q->whereIn('name', $highRiskCategories);
-                })
-                ->with(['area', 'user']);
+            // High risk: solo hacer consulta adicional si hay observaciones abiertas
+            $highRiskList = collect();
+            $highRiskCount = 0;
 
-            $highRiskList = $highRiskQuery->latest('observation_date')->get();
-            $highRiskCount = $highRiskList->count();
+            if ($open > 0) {
+                $highRiskList = $applyFilters(Observation::query())
+                    ->where('status', 'en_progreso')
+                    ->whereHas('categories', function($q) use ($highRiskCategories) {
+                        $q->whereIn('name', $highRiskCategories);
+                    })
+                    ->with($baseRelations)
+                    ->latest('observation_date')
+                    ->get();
+                $highRiskCount = $highRiskList->count();
+            }
 
             $repeatOffendersList = $applyFilters(Observation::query())
                 ->select('observed_person', DB::raw('count(*) as total'))
@@ -204,9 +217,10 @@ class DashboardController extends Controller
 
             $repeatOffendersCount = $repeatOffendersList->count();
 
+            // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas
             $observationsByPlant = Area::where('is_active', true)
-            ->with(['observations' => function($q) {
-                $q->submitted()->latest()->with(['user', 'area']);
+            ->with(['observations' => function($q) use ($baseRelations) {
+                $q->submitted()->latest()->with($baseRelations);
             }])
             ->withCount(['observations' => function($q) {
                 $q->submitted();
@@ -220,9 +234,10 @@ class DashboardController extends Controller
                 ];
             });
 
+        // OPTIMIZACIÓN: Top categorías con relaciones selectivas
         $topCategories = Category::where('is_active', true)
-            ->with(['observations' => function($q) use ($applyFilters) {
-                $applyFilters($q)->with(['area', 'user'])->latest();
+            ->with(['observations' => function($q) use ($applyFilters, $baseRelations) {
+                $applyFilters($q)->with($baseRelations)->latest();
             }])
             ->withCount(['observations' => function($q) use ($applyFilters) {
                 $applyFilters($q);
