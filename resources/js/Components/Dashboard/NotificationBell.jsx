@@ -47,11 +47,11 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         <div className="relative">
             <Dropdown>
                 <Dropdown.Trigger>
-                    <button className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
+                    <button className="relative p-1 text-gray-400 transition-colors rounded-full dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <BiBell className="w-8 h-8 lg:w-6 lg:h-6" />
 
                         {badgeCount > 0 && (
-                            <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white">
+                            <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white dark:border-gray-800">
                                 {badgeCount}
                             </span>
                         )}
@@ -59,7 +59,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                 </Dropdown.Trigger>
 
                 <Dropdown.Content width="80">
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b bg-gray-50">
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-200 dark:text-gray-500 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                         Recientes
                     </div>
 
@@ -69,7 +69,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                                 <Dropdown.Link
                                     key={notif.id}
                                     href={route("observations.show", notif.id)}
-                                    className="transition-colors border-b border-gray-50 hover:bg-blue-50"
+                                    className="transition-colors border-b border-gray-50 dark:border-gray-700 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                 >
                                     <div className="flex flex-col gap-1 py-1">
                                         <div className="flex items-center justify-between">
@@ -77,11 +77,11 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                                                 className={`font-bold text-xs uppercase ${
                                                     notif.observation_type ===
                                                     "acto_inseguro"
-                                                        ? "text-orange-600"
+                                                        ? "text-orange-600 dark:text-orange-400"
                                                         : notif.observation_type ===
                                                           "condicion_insegura"
-                                                        ? "text-red-600"
-                                                        : "text-green-600"
+                                                        ? "text-red-600 dark:text-red-400"
+                                                        : "text-green-600 dark:text-green-400"
                                                 }`}
                                             >
                                                 {notif.observation_type?.replace(
@@ -89,33 +89,33 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                                                     " "
                                                 )}
                                             </span>
-                                            <span className="text-[10px] text-gray-400">
+                                            <span className="text-[10px] text-gray-400 dark:text-gray-500">
                                                 {timeAgo(notif.created_at)}
                                             </span>
                                         </div>
 
-                                        <span className="text-sm font-medium text-gray-600 truncate">
+                                        <span className="text-sm font-medium text-gray-600 truncate dark:text-gray-300">
                                             {notif.description}
                                         </span>
 
-                                        <span className="text-xs text-blue-500">
+                                        <span className="text-xs text-blue-500 dark:text-blue-400">
                                             {notif.area?.name || "Sin área"}
                                         </span>
                                     </div>
                                 </Dropdown.Link>
                             ))
                         ) : (
-                            <div className="px-4 py-6 text-sm text-center text-gray-500">
+                            <div className="px-4 py-6 text-sm text-center text-gray-500 dark:text-gray-400">
                                 No hay notificaciones recientes
                             </div>
                         )}
                     </div>
 
-                    <div className="border-t border-gray-100 bg-gray-50">
+                    <div className="border-t border-gray-100 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
                         {badgeCount > 0 && (
                             <button
                                 onClick={clearNotifications}
-                                className="block w-full px-4 py-2 text-xs font-bold text-center text-gray-500 uppercase transition-colors border-b border-gray-200 hover:bg-gray-200 hover:text-gray-700"
+                                className="block w-full px-4 py-2 text-xs font-bold text-center text-gray-500 uppercase transition-colors border-b border-gray-200 dark:text-gray-400 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300"
                             >
                                 Marcar como leídas
                             </button>
@@ -123,7 +123,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
 
                         <Link
                             href={route("dashboard")}
-                            className="block w-full px-4 py-2 text-xs font-bold text-center text-blue-600 uppercase transition-colors hover:bg-blue-100"
+                            className="block w-full px-4 py-2 text-xs font-bold text-center text-blue-600 uppercase transition-colors dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                         >
                             Ver Todo el Tablero
                         </Link>

@@ -31,9 +31,12 @@ export default function Show({ auth, observation }) {
 
     const getStatusBadge = (status) => {
         const styles = {
-            en_progreso: "bg-blue-100 text-blue-800 border-blue-200",
-            cerrada: "bg-green-100 text-green-800 border-green-200",
-            borrador: "bg-gray-100 text-gray-800 border-gray-200",
+            en_progreso:
+                "bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 border-blue-200 dark:border-blue-700",
+            cerrada:
+                "bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 border-green-200 dark:border-green-700",
+            borrador:
+                "bg-gray-100 dark:bg-gray-700 text-gray-800 dark:text-gray-200 border-gray-200 dark:border-gray-600",
         };
         const label = status === "en_progreso" ? "Abierta" : status;
         return (
@@ -65,7 +68,7 @@ export default function Show({ auth, observation }) {
         <AuthenticatedLayout
             user={user}
             header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800">
+                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-100">
                     Detalle de Observación
                 </h2>
             }
@@ -74,14 +77,14 @@ export default function Show({ auth, observation }) {
 
             <div className="py-12">
                 <div className="max-w-4xl mx-auto sm:px-6 lg:px-8">
-                    <div className="overflow-hidden bg-white shadow-sm sm:rounded-lg">
-                        <div className="flex items-start justify-between px-6 py-6 border-b border-gray-100">
+                    <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">
+                        <div className="flex items-start justify-between px-6 py-6 border-b border-gray-100 dark:border-gray-700">
                             <div>
-                                <h1 className="text-2xl font-bold text-gray-800">
+                                <h1 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                                     {observation.folio ||
                                         `Reporte #${observation.id}`}
                                 </h1>
-                                <p className="mt-1 text-sm text-gray-500">
+                                <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                                     Creado el
                                     {formatDate(observation.created_at)}
                                 </p>
@@ -91,48 +94,48 @@ export default function Show({ auth, observation }) {
                             </div>
                         </div>
 
-                        <div className="p-6 bg-gray-50/50">
+                        <div className="p-6 bg-gray-50/50 dark:bg-gray-900/50">
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                                 <div className="space-y-6 md:col-span-2">
-                                    <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-                                        <h3 className="mb-4 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                    <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                        <h3 className="mb-4 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                             Reportado Por
                                         </h3>
                                         <div className="flex items-center gap-4">
-                                            <div className="h-12 w-12 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md">
+                                            <div className="h-12 w-12 rounded-full bg-[#1e3a8a] dark:bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
                                                 {getInitials(
                                                     observation.user?.name
                                                 )}
                                             </div>
                                             <div>
-                                                <p className="text-base font-bold text-gray-900">
+                                                <p className="text-base font-bold text-gray-900 dark:text-gray-100">
                                                     {observation.user?.name ||
                                                         "Usuario Desconocido"}
                                                 </p>
-                                                <p className="text-sm text-gray-500">
+                                                <p className="text-sm text-gray-500 dark:text-gray-400">
                                                     {observation.user?.email}
                                                 </p>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-                                        <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                    <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                        <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                             Descripción
                                         </h3>
-                                        <div className="p-4 leading-relaxed text-gray-700 whitespace-pre-wrap border border-gray-100 rounded-lg bg-gray-50">
+                                        <div className="p-4 leading-relaxed text-gray-700 whitespace-pre-wrap border border-gray-100 rounded-lg dark:text-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900">
                                             {observation.description}
                                         </div>
                                     </div>
 
                                     {observation.observed_person && (
-                                        <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                        <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                                 Persona Observada
                                             </h3>
-                                            <div className="flex items-center gap-2 font-medium text-gray-800">
+                                            <div className="flex items-center gap-2 font-medium text-gray-800 dark:text-gray-200">
                                                 <svg
-                                                    className="w-5 h-5 text-gray-400"
+                                                    className="w-5 h-5 text-gray-400 dark:text-gray-500"
                                                     fill="none"
                                                     stroke="currentColor"
                                                     viewBox="0 0 24 24"
@@ -151,14 +154,14 @@ export default function Show({ auth, observation }) {
                                 </div>
 
                                 <div className="space-y-6">
-                                    <div className="p-5 space-y-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+                                    <div className="p-5 space-y-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                         <div>
-                                            <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                            <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                                 Ubicación
                                             </h3>
-                                            <p className="flex items-center gap-1 font-semibold text-gray-900">
+                                            <p className="flex items-center gap-1 font-semibold text-gray-900 dark:text-gray-100">
                                                 <svg
-                                                    className="w-4 h-4 text-red-500"
+                                                    className="w-4 h-4 text-red-500 dark:text-red-400"
                                                     fill="none"
                                                     viewBox="0 0 24 24"
                                                     stroke="currentColor"
@@ -180,12 +183,12 @@ export default function Show({ auth, observation }) {
                                                     "Sin Área"}
                                             </p>
                                         </div>
-                                        <hr className="border-gray-100" />
+                                        <hr className="border-gray-100 dark:border-gray-700" />
                                         <div>
-                                            <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                            <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                                 Tipo
                                             </h3>
-                                            <p className="font-medium text-gray-800 capitalize">
+                                            <p className="font-medium text-gray-800 capitalize dark:text-gray-200">
                                                 {observation.observation_type?.replace(
                                                     /_/g,
                                                     " "
@@ -195,8 +198,8 @@ export default function Show({ auth, observation }) {
                                     </div>
 
                                     {observation.categories?.length > 0 && (
-                                        <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                        <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                                 Categorías
                                             </h3>
                                             <div className="flex flex-wrap gap-2">
@@ -204,7 +207,7 @@ export default function Show({ auth, observation }) {
                                                     (cat) => (
                                                         <span
                                                             key={cat.id}
-                                                            className="px-2.5 py-1 text-xs font-medium text-blue-700 bg-blue-50 border border-blue-100 rounded-md"
+                                                            className="px-2.5 py-1 text-xs font-medium text-blue-700 dark:text-blue-300 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-700 rounded-md"
                                                         >
                                                             {cat.name}
                                                         </span>
@@ -215,8 +218,8 @@ export default function Show({ auth, observation }) {
                                     )}
 
                                     {observation.images?.length > 0 && (
-                                        <div className="p-5 bg-white border border-gray-100 shadow-sm rounded-xl">
-                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase">
+                                        <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                                 Evidencia
                                             </h3>
                                             <div className="grid grid-cols-2 gap-2">
@@ -226,7 +229,7 @@ export default function Show({ auth, observation }) {
                                                             href={`/storage/${img.path}`}
                                                             target="_blank"
                                                             key={img.id}
-                                                            className="relative block overflow-hidden bg-gray-100 border border-gray-200 rounded-lg aspect-square group"
+                                                            className="relative block overflow-hidden bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-700 dark:border-gray-600 aspect-square group"
                                                         >
                                                             <img
                                                                 src={`/storage/${img.path}`}
@@ -243,10 +246,10 @@ export default function Show({ auth, observation }) {
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 bg-gray-50">
+                        <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                             <Link
                                 href={route("dashboard")}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm hover:bg-gray-50"
+                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                             >
                                 Volver al Dashboard
                             </Link>
