@@ -48,7 +48,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
             <Dropdown>
                 <Dropdown.Trigger>
                     <button className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
-                        <BiBell className="w-6 h-6" />
+                        <BiBell className="w-8 h-8 lg:w-6 lg:h-6" />
 
                         {badgeCount > 0 && (
                             <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white">

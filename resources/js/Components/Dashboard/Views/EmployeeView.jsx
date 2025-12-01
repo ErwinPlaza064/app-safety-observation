@@ -188,7 +188,7 @@ export default function EmployeeView({
             <StatusListModal
                 show={showStatusModal}
                 status={currentStatusFilter}
-                reports={fidlteredReports}
+                reports={filteredReports}
                 onClose={() => setShowStatusModal(false)}
                 onRowClick={handleModalRowClick}
             />
