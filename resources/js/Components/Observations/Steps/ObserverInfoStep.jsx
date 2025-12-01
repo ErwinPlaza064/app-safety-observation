@@ -36,7 +36,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
                 </div>
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700">
-                        ID
+                        Numero De Nomina
                     </label>
                     <input
                         type="text"
