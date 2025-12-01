@@ -17,49 +17,49 @@ export default function ObserverInfoStep({ formData, onChange }) {
                         />
                     </svg>
                 </div>
-                <h3 className="text-lg font-semibold text-gray-800 md:text-xl">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100 md:text-xl">
                     Información del Observador
                 </h3>
             </div>
 
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Nombre
                     </label>
                     <input
                         type="text"
                         value={formData.observer_name}
                         readOnly
-                        className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg bg-gray-50"
+                        className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Numero De Nomina
                     </label>
                     <input
                         type="text"
                         value={formData.employee_id}
                         readOnly
-                        className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg bg-gray-50"
+                        className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
                     />
                 </div>
             </div>
 
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Depto
                     </label>
                     <input
                         value={formData.department}
                         readOnly
-                        className="w-full px-4 py-2 border rounded-lg bg-gray-50"
+                        className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700">
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Fecha
                     </label>
                     <input
@@ -68,13 +68,13 @@ export default function ObserverInfoStep({ formData, onChange }) {
                         onChange={(e) =>
                             onChange("observation_date", e.target.value)
                         }
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
                     />
                 </div>
             </div>
 
             <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Persona Observada O Situación
                 </label>
                 <input
@@ -84,7 +84,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
                     onChange={(e) =>
                         onChange("observed_person", e.target.value)
                     }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                    className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
                 />
             </div>
         </div>

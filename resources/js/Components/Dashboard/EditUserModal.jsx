@@ -60,13 +60,13 @@ export default function EditUserModal({
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-xl font-semibold text-gray-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                     Editar Usuario
                 </h2>
                 <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600 focus:outline-none"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 focus:outline-none"
                 >
                     <svg
                         className="w-6 h-6"
@@ -182,8 +182,8 @@ export default function EditUserModal({
                         </div>
                     </div>
 
-                    <div className="pt-4 border-t border-gray-100">
-                        <h3 className="mb-4 text-sm font-medium text-gray-900">
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                        <h3 className="mb-4 text-sm font-medium text-gray-900 dark:text-gray-100">
                             Roles y Permisos
                         </h3>
                         <div className="block">
@@ -198,7 +198,7 @@ export default function EditUserModal({
                                         )
                                     }
                                 />
-                                <span className="ml-2 text-sm text-gray-600">
+                                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                                     Asignar como <strong>Gerente de EHS</strong>
                                 </span>
                             </label>
@@ -207,7 +207,7 @@ export default function EditUserModal({
                 </div>
 
                 {/* ... Footer igual que antes ... */}
-                <div className="px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                     <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex justify-center sm:justify-start">
                             {user &&
@@ -216,7 +216,7 @@ export default function EditUserModal({
                                     <button
                                         type="button"
                                         onClick={onDelete}
-                                        className="text-sm font-medium text-red-600 hover:text-red-800 hover:underline focus:outline-none"
+                                        className="text-sm font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:underline focus:outline-none"
                                     >
                                         Eliminar este usuario
                                     </button>
@@ -226,7 +226,7 @@ export default function EditUserModal({
                                 <button
                                     type="button"
                                     onClick={resendVerification}
-                                    className="text-sm font-medium text-blue-600 transition-colors hover:text-blue-800 hover:underline focus:outline-none sm:ml-4"
+                                    className="text-sm font-medium text-blue-600 dark:text-blue-400 transition-colors hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none sm:ml-4"
                                 >
                                     Reenviar verificación
                                 </button>

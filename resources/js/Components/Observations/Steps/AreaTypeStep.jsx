@@ -10,7 +10,7 @@ export default function AreaTypeStep({
     return (
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Área / Planta
                 </label>
                 <select
@@ -18,7 +18,7 @@ export default function AreaTypeStep({
                     onChange={(e) =>
                         onChange("area_id", parseInt(e.target.value))
                     }
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
                 >
                     {areas.map((a) => (
                         <option key={a.id} value={a.id}>
@@ -30,14 +30,14 @@ export default function AreaTypeStep({
 
             <div className="mb-6">
                 <div className="flex items-end justify-between mb-3">
-                    <label className="block text-sm font-medium text-gray-700">
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                         Tipo de Observación{" "}
                         <span className="text-red-500">*</span>
                     </label>
                     <button
                         type="button"
                         onClick={onOpenHelp}
-                        className="text-sm text-blue-600 hover:text-blue-800 flex items-center gap-1.5 transition-colors font-medium"
+                        className="text-sm text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1.5 transition-colors font-medium"
                     >
                         <FaQuestionCircle />
                         ¿No sabes cuál elegir?
@@ -72,8 +72,8 @@ export default function AreaTypeStep({
                             key={type.value}
                             className={`flex items-start p-3 md:p-4 border-2 rounded-lg cursor-pointer transition ${
                                 formData.observation_type === type.value
-                                    ? "border-[#1e3a8a] bg-blue-50"
-                                    : "border-gray-300 hover:border-[#1e3a8a]"
+                                    ? "border-[#1e3a8a] dark:border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                                    : "border-gray-300 dark:border-gray-600 hover:border-[#1e3a8a] dark:hover:border-blue-500"
                             }`}
                         >
                             <input
@@ -92,13 +92,13 @@ export default function AreaTypeStep({
                                 <div
                                     className={`text-sm font-semibold md:text-base ${
                                         formData.observation_type === type.value
-                                            ? "text-[#1e3a8a]"
-                                            : "text-gray-800"
+                                            ? "text-[#1e3a8a] dark:text-blue-400"
+                                            : "text-gray-800 dark:text-gray-200"
                                     }`}
                                 >
                                     {type.label}
                                 </div>
-                                <div className="text-xs text-gray-600 md:text-sm">
+                                <div className="text-xs text-gray-600 dark:text-gray-400 md:text-sm">
                                     {type.desc}
                                 </div>
                             </div>

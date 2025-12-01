@@ -4,6 +4,7 @@ import InputLabel from "@/Components/InputLabel";
 import PrimaryButton from "@/Components/PrimaryButton";
 import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
+import ThemeToggle from "@/Components/ThemeToggle";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
@@ -38,8 +39,14 @@ export default function Login({ status, canResetPassword }) {
     return (
         <GuestLayout>
             <Head title="Iniciar Sesión" />
+
+            {/* Botón de cambio de tema en la esquina superior derecha */}
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
+
             <form onSubmit={submit}>
-                <h2 className="mb-6 text-lg text-center text-blue-900">
+                <h2 className="mb-6 text-lg text-center text-blue-900 dark:text-blue-400">
                     Iniciar Sesión
                 </h2>
 
@@ -83,7 +90,7 @@ export default function Login({ status, canResetPassword }) {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             {showPassword ? (
                                 <svg
@@ -136,14 +143,14 @@ export default function Login({ status, canResetPassword }) {
                                 setData("remember", e.target.checked)
                             }
                         />
-                        <span className="ml-2 text-sm font-semibold text-gray-600 ">
+                        <span className="ml-2 text-sm font-semibold text-gray-600 dark:text-gray-400">
                             Recordar mi sesión
                         </span>
                     </label>
 
                     <Link
                         href={route("register")}
-                        className="ml-10 text-sm text-center underline lg:ml-0 text-wasion hover:text-wasion-700"
+                        className="ml-10 text-sm text-center underline lg:ml-0 text-wasion dark:text-blue-400 hover:text-wasion-700 dark:hover:text-blue-300"
                     >
                         ¿No tiene cuenta? <hr /> <b>Regístrate</b>
                     </Link>
@@ -191,18 +198,18 @@ export default function Login({ status, canResetPassword }) {
                     <div className="mt-4 text-center">
                         <Link
                             href={route("password.request")}
-                            className="text-sm text-gray-600 underline hover:text-gray-900"
+                            className="text-sm text-gray-600 dark:text-gray-400 underline hover:text-gray-900 dark:hover:text-gray-200"
                         >
                             ¿Olvidó su contraseña?
                         </Link>
                     </div>
                 )}
 
-                <div className="mt-4 text-xs text-center text-gray-500">
+                <div className="mt-4 text-xs text-center text-gray-500 dark:text-gray-400">
                     <p>¿Necesitas ayuda? Contacte con el equipo de IT:</p>
                     <a
                         href="https://wasionithelp.freshservice.com"
-                        className="text-wasion hover:underline"
+                        className="text-wasion dark:text-blue-400 hover:underline"
                     >
                         wasionithelp.freshservice.com
                     </a>

@@ -74,10 +74,10 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
     return (
         <div className="space-y-6">
             <div>
-                <h3 className="mb-2 text-lg font-semibold text-gray-800">
+                <h3 className="mb-2 text-lg font-semibold text-gray-800 dark:text-gray-100">
                     Evidencia Fotográfica (Opcional)
                 </h3>
-                <p className="mb-4 text-sm text-gray-600">
+                <p className="mb-4 text-sm text-gray-600 dark:text-gray-400">
                     Puede adjuntar hasta 5 fotografías que documenten la
                     observación.
                 </p>
@@ -85,7 +85,7 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
 
             {showWebcam && (
                 <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-75">
-                    <div className="relative w-full max-w-2xl p-4 bg-white rounded-lg">
+                    <div className="relative w-full max-w-2xl p-4 bg-white rounded-lg dark:bg-gray-800">
                         <button
                             onClick={stopWebcam}
                             className="absolute p-2 text-white bg-red-500 rounded-full top-2 right-2 hover:bg-red-600"
@@ -117,10 +117,10 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                     type="button"
                     onClick={startWebcam}
                     disabled={formData.photos.length >= 5}
-                    className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-purple-300 border-dashed rounded-lg bg-purple-50 hover:bg-purple-100 hover:border-purple-400 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-purple-300 border-dashed rounded-lg dark:border-purple-700 bg-purple-50 dark:bg-purple-900/20 hover:bg-purple-100 dark:hover:bg-purple-900/30 hover:border-purple-400 dark:hover:border-purple-600 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
                     <svg
-                        className="w-5 h-5 text-purple-600"
+                        className="w-5 h-5 text-purple-600 dark:text-purple-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -132,14 +132,14 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                             d="M15 10l4.553-2.276A1 1 0 0121 8.618v6.764a1 1 0 01-1.447.894L15 14M5 18h8a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v8a2 2 0 002 2z"
                         />
                     </svg>
-                    <span className="font-medium text-purple-700">
+                    <span className="font-medium text-purple-700 dark:text-purple-300">
                         Usar Webcam
                     </span>
                 </button>
 
-                <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-blue-300 border-dashed rounded-lg cursor-pointer bg-blue-50 hover:bg-blue-100 hover:border-blue-400">
+                <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-blue-300 border-dashed rounded-lg cursor-pointer dark:border-blue-700 bg-blue-50 dark:bg-blue-900/20 hover:bg-blue-100 dark:hover:bg-blue-900/30 hover:border-blue-400 dark:hover:border-blue-600">
                     <svg
-                        className="w-5 h-5 text-blue-600"
+                        className="w-5 h-5 text-blue-600 dark:text-blue-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -157,7 +157,7 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                             d="M15 13a3 3 0 11-6 0 3 3 0 016 0z"
                         />
                     </svg>
-                    <span className="font-medium text-blue-700">
+                    <span className="font-medium text-blue-700 dark:text-blue-300">
                         Tomar Foto
                     </span>
                     <input
@@ -170,9 +170,9 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                     />
                 </label>
 
-                <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-gray-300 border-dashed rounded-lg cursor-pointer bg-gray-50 hover:bg-gray-100 hover:border-gray-400">
+                <label className="flex items-center justify-center gap-2 px-6 py-4 transition-all border-2 border-gray-300 border-dashed rounded-lg cursor-pointer dark:border-gray-600 bg-gray-50 dark:bg-gray-700 hover:bg-gray-100 dark:hover:bg-gray-600 hover:border-gray-400 dark:hover:border-gray-500">
                     <svg
-                        className="w-5 h-5 text-gray-600"
+                        className="w-5 h-5 text-gray-600 dark:text-gray-400"
                         fill="none"
                         stroke="currentColor"
                         viewBox="0 0 24 24"
@@ -184,7 +184,7 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                             d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"
                         />
                     </svg>
-                    <span className="font-medium text-gray-700">
+                    <span className="font-medium text-gray-700 dark:text-gray-300">
                         Subir Galería
                     </span>
                     <input
@@ -198,13 +198,13 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                 </label>
             </div>
 
-            <div className="text-sm text-center text-gray-500">
+            <div className="text-sm text-center text-gray-500 dark:text-gray-400">
                 {formData.photos.length} de 5 fotos agregadas
             </div>
 
             {formData.photos.length > 0 && (
-                <div className="p-4 rounded-lg bg-gray-50">
-                    <h4 className="mb-3 text-sm font-semibold text-gray-700">
+                <div className="p-4 rounded-lg bg-gray-50 dark:bg-gray-800">
+                    <h4 className="mb-3 text-sm font-semibold text-gray-700 dark:text-gray-200">
                         Fotos Adjuntas:
                     </h4>
                     <div className="grid grid-cols-2 gap-3 md:grid-cols-3">
@@ -232,14 +232,14 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
             )}
 
             {formData.photos.length >= 5 && (
-                <div className="p-3 text-sm text-center text-orange-700 bg-orange-100 rounded-lg">
+                <div className="p-3 text-sm text-center text-orange-700 bg-orange-100 rounded-lg dark:text-orange-300 dark:bg-orange-900/30">
                     Has alcanzado el límite de 5 fotos. Elimina una para agregar
                     otra.
                 </div>
             )}
 
-            <div className="p-4 rounded-lg bg-blue-50">
-                <p className="text-sm text-blue-800">
+            <div className="p-4 rounded-lg bg-blue-50 dark:bg-blue-900/30">
+                <p className="text-sm text-blue-800 dark:text-blue-300">
                     <span className="font-semibold">💡 Consejo:</span> Las fotos
                     ayudan a documentar mejor la observación y facilitan la
                     comprensión de la situación.

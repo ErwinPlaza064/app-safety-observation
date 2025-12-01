@@ -251,7 +251,7 @@ export default function SafetyObservationForm({
 
     return (
         <div
-            className="relative overflow-hidden bg-white shadow-sm sm:rounded-lg"
+            className="relative overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg"
             onKeyDown={handleKeyDown}
         >
             {toast.show && (
@@ -276,19 +276,19 @@ export default function SafetyObservationForm({
                 </div>
             )}
 
-            <div className="p-4 text-gray-900 md:p-6">
+            <div className="p-4 text-gray-900 dark:text-gray-100 md:p-6">
                 <div className="flex items-start justify-between mb-6 md:mb-8">
                     <div>
-                        <h2 className="mb-2 text-2xl font-semibold text-gray-800 md:text-3xl">
+                        <h2 className="mb-2 text-2xl font-semibold text-gray-800 dark:text-gray-200 md:text-3xl">
                             Nueva Observación
                         </h2>
-                        <p className="text-sm text-gray-600 md:text-base">
+                        <p className="text-sm text-gray-600 dark:text-gray-400 md:text-base">
                             Complete el formulario con los detalles.
                         </p>
                     </div>
                     <button
                         onClick={onClose}
-                        className="text-gray-400 hover:text-gray-600"
+                        className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                     >
                         <svg
                             className="w-6 h-6"
@@ -341,26 +341,26 @@ export default function SafetyObservationForm({
                     />
                 )}
 
-                <div className="flex flex-col-reverse justify-between gap-4 pt-6 mt-6 border-t md:flex-row md:items-center md:gap-0">
+                <div className="flex flex-col-reverse justify-between gap-4 pt-6 mt-6 border-t dark:border-gray-700 md:flex-row md:items-center md:gap-0">
                     <button
                         onClick={handlePrevious}
                         className={`w-full md:w-auto px-6 py-3 md:py-2 rounded-lg transition flex items-center justify-center ${
                             currentStep === 1
-                                ? "bg-white text-gray-500 border border-gray-300 hover:bg-gray-50"
-                                : "bg-gray-200 text-gray-700 hover:bg-gray-300"
+                                ? "bg-white dark:bg-gray-700 text-gray-500 dark:text-gray-300 border border-gray-300 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                : "bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-300 hover:bg-gray-300 dark:hover:bg-gray-600"
                         }`}
                     >
                         {currentStep === 1 ? "Cancelar" : "Anterior"}
                     </button>
 
-                    <div className="text-sm text-center text-gray-500 md:text-left">
+                    <div className="text-sm text-center text-gray-500 dark:text-gray-400 md:text-left">
                         Paso {currentStep} de 4
                     </div>
 
                     {currentStep < 4 ? (
                         <button
                             onClick={handleNext}
-                            className="flex items-center justify-center w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 hover:scale-105 active:scale-95"
+                            className="flex items-center justify-center w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] dark:bg-blue-700 rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 dark:hover:bg-blue-600 hover:scale-105 active:scale-95"
                         >
                             Siguiente
                             <svg
@@ -381,13 +381,13 @@ export default function SafetyObservationForm({
                         <div className="flex flex-col w-full gap-3 md:flex-row md:w-auto">
                             <button
                                 onClick={handleSaveDraft}
-                                className="w-full px-6 py-3 border rounded-lg md:w-auto md:py-2 hover:bg-gray-50"
+                                className="w-full px-6 py-3 border dark:border-gray-600 dark:text-gray-300 rounded-lg md:w-auto md:py-2 hover:bg-gray-50 dark:hover:bg-gray-700"
                             >
                                 Guardar Borrador
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 hover:scale-105 active:scale-95"
+                                className="w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] dark:bg-blue-700 rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 dark:hover:bg-blue-600 hover:scale-105 active:scale-95"
                             >
                                 Enviar Observación
                             </button>
@@ -401,7 +401,7 @@ export default function SafetyObservationForm({
                     </div>
                 )}
                 {!isSaving && lastSaved && (
-                    <div className="text-xs text-center text-gray-400">
+                    <div className="text-xs text-center text-gray-400 dark:text-gray-500">
                         Guardado a las {lastSaved.toLocaleTimeString()}
                     </div>
                 )}

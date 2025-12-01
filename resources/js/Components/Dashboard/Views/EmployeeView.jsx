@@ -71,7 +71,7 @@ export default function EmployeeView({
             <div>
                 <button
                     onClick={() => setShowForm(true)}
-                    className="w-full sm:w-auto flex items-center justify-center px-8 py-4 text-lg font-semibold text-white transition-all transform bg-[#1e3a8a] rounded-xl shadow-lg hover:bg-blue-900 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+                    className="w-full sm:w-auto flex items-center justify-center px-8 py-4 text-lg font-semibold text-white transition-all transform bg-[#1e3a8a] dark:bg-blue-700 rounded-xl shadow-lg hover:bg-blue-900 dark:hover:bg-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
                 >
                     <svg
                         className="w-6 h-6 mr-2"
@@ -93,14 +93,14 @@ export default function EmployeeView({
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
                 <div
                     onClick={() => handleCardClick("en_progreso")}
-                    className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200"
+                    className="p-4 transition bg-white dark:bg-gray-800 border-l-4 border-blue-500 dark:border-blue-400 shadow-sm sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-medium text-gray-600 sm:text-lg">
+                        <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
                             En Progreso
                         </h3>
                         <svg
-                            className="w-6 h-6 text-blue-500"
+                            className="w-6 h-6 text-blue-500 dark:text-blue-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -114,10 +114,10 @@ export default function EmployeeView({
                         </svg>
                     </div>
                     <div className="flex items-end justify-between">
-                        <span className="text-3xl font-bold text-gray-800 sm:text-4xl">
+                        <span className="text-3xl font-bold text-gray-800 dark:text-gray-100 sm:text-4xl">
                             {userStats?.in_progress || 0}
                         </span>
-                        <span className="text-xs text-gray-500 sm:text-sm">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
                             En seguimiento
                         </span>
                     </div>
@@ -125,14 +125,14 @@ export default function EmployeeView({
 
                 <div
                     onClick={() => handleCardClick("cerrada")}
-                    className="p-4 bg-white border-l-4 border-green-500 shadow-sm hover:cursor-pointer hover:bg-gray-200 sm:p-6 rounded-xl"
+                    className="p-4 bg-white dark:bg-gray-800 border-l-4 border-green-500 dark:border-green-400 shadow-sm hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 sm:p-6 rounded-xl"
                 >
                     <div className="flex items-center justify-between mb-4">
-                        <h3 className="text-base font-medium text-gray-600 sm:text-lg">
+                        <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
                             Cerradas
                         </h3>
                         <svg
-                            className="w-6 h-6 text-green-500"
+                            className="w-6 h-6 text-green-500 dark:text-green-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -146,21 +146,21 @@ export default function EmployeeView({
                         </svg>
                     </div>
                     <div className="flex items-end justify-between">
-                        <span className="text-3xl font-bold text-gray-800 sm:text-4xl">
+                        <span className="text-3xl font-bold text-gray-800 dark:text-gray-100 sm:text-4xl">
                             {userStats?.completed || 0}
                         </span>
-                        <span className="text-xs text-gray-500 sm:text-sm">
+                        <span className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
                             Completadas
                         </span>
                     </div>
                 </div>
             </div>
 
-            <div className="p-4 bg-white shadow-sm sm:p-6 sm:rounded-lg rounded-xl">
+            <div className="p-4 bg-white dark:bg-gray-800 shadow-sm sm:p-6 sm:rounded-lg rounded-xl">
                 <div className="flex items-center justify-between mb-4">
-                    <h3 className="flex items-center text-base font-semibold text-gray-800 sm:text-lg">
+                    <h3 className="flex items-center text-base font-semibold text-gray-800 dark:text-gray-200 sm:text-lg">
                         <svg
-                            className="w-5 h-5 mr-2 text-blue-600"
+                            className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -174,7 +174,7 @@ export default function EmployeeView({
                         </svg>
                         Mis Reportes Recientes
                     </h3>
-                    <span className="px-3 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full">
+                    <span className="px-3 py-1 text-xs font-semibold text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 rounded-full">
                         {(userStats?.total || 0) + " Total"}
                     </span>
                 </div>

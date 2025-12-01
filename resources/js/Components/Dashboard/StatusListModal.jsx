@@ -16,13 +16,13 @@ export default function StatusListModal({
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b bg-gray-50">
-                <h3 className="text-lg font-semibold text-gray-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
                     {titles[status] || "Listado de Reportes"}
                 </h3>
                 <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                     <svg
                         className="w-6 h-6"
@@ -47,13 +47,13 @@ export default function StatusListModal({
                         onRowClick={onRowClick}
                     />
                 ) : (
-                    <div className="p-8 text-center text-gray-500 border-2 border-dashed rounded-lg">
+                    <div className="p-8 text-center text-gray-500 dark:text-gray-400 border-2 border-dashed dark:border-gray-700 rounded-lg">
                         No se encontraron reportes en este estado.
                     </div>
                 )}
             </div>
 
-            <div className="flex justify-end px-6 py-4 border-t bg-gray-50">
+            <div className="flex justify-end px-6 py-4 border-t dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <SecondaryButton onClick={onClose}>Cerrar</SecondaryButton>
             </div>
         </Modal>

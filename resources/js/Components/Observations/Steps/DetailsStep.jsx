@@ -8,7 +8,7 @@ export default function DetailsStep({
     return (
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="mb-6">
-                <label className="block mb-3 text-sm font-medium text-gray-700">
+                <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Categorías Aplicables
                 </label>
                 {errors.category_ids && (
@@ -22,8 +22,8 @@ export default function DetailsStep({
                             key={category.id}
                             className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
                                 formData.category_ids.includes(category.id)
-                                    ? "border-[#1e3a8a] bg-blue-50"
-                                    : "border-gray-300 hover:border-[#1e3a8a]"
+                                    ? "border-[#1e3a8a] dark:border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                                    : "border-gray-300 dark:border-gray-600 hover:border-[#1e3a8a] dark:hover:border-blue-500"
                             }`}
                         >
                             <input
@@ -37,8 +37,8 @@ export default function DetailsStep({
                             <span
                                 className={`text-sm ${
                                     formData.category_ids.includes(category.id)
-                                        ? "text-[#1e3a8a] font-medium"
-                                        : "text-gray-700"
+                                        ? "text-[#1e3a8a] dark:text-blue-400 font-medium"
+                                        : "text-gray-700 dark:text-gray-200"
                                 }`}
                             >
                                 {category.name}
@@ -49,7 +49,7 @@ export default function DetailsStep({
             </div>
 
             <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     Descripción Detallada{" "}
                     <span className="text-red-500">*</span>
                 </label>
@@ -61,11 +61,11 @@ export default function DetailsStep({
                 <textarea
                     value={formData.description}
                     onChange={(e) => onChange("description", e.target.value)}
-                    className="w-full p-2 border border-gray-300 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400"
                     rows={6}
                     placeholder="Describa la observación en detalle..."
                 ></textarea>
-                <p className="mt-1 text-xs text-gray-500">
+                <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                     Mínimo 20 caracteres. Actual: {formData.description.length}
                 </p>
             </div>

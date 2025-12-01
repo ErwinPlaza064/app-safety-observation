@@ -5,6 +5,7 @@ import ResponsiveNavLink from "@/Components/ResponsiveNavLink";
 import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 import NotificationBell from "@/Components/Dashboard/NotificationBell";
+import ThemeToggle from "@/Components/ThemeToggle";
 
 export default function AuthenticatedLayout({
     header,
@@ -37,14 +38,14 @@ export default function AuthenticatedLayout({
     };
 
     return (
-        <div className="min-h-screen bg-gray-100">
-            <nav className="bg-white border-b border-gray-100">
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <nav className="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
                         <div className="flex">
                             <div className="flex items-center shrink-0">
                                 <Link href="/">
-                                    <ApplicationLogo className="block w-auto h-6 text-gray-800 fill-current" />
+                                    <ApplicationLogo className="block w-auto h-6 text-gray-800 fill-current dark:text-gray-200" />
                                 </Link>
                             </div>
                         </div>
@@ -64,7 +65,7 @@ export default function AuthenticatedLayout({
                                         <span className="inline-flex rounded-md">
                                             <button
                                                 type="button"
-                                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md hover:text-gray-700 focus:outline-none"
+                                                className="inline-flex items-center px-3 py-2 text-sm font-medium leading-4 text-gray-500 transition duration-150 ease-in-out bg-white border border-transparent rounded-md dark:text-gray-400 dark:bg-gray-800 hover:text-gray-700 dark:hover:text-gray-300 focus:outline-none"
                                             >
                                                 {user.name}
 
@@ -85,6 +86,15 @@ export default function AuthenticatedLayout({
                                     </Dropdown.Trigger>
 
                                     <Dropdown.Content>
+                                        <div className="block w-full px-4 py-2 text-sm leading-5 text-start">
+                                            <div className="flex items-center justify-between">
+                                                <span className="text-gray-700 dark:text-gray-300">
+                                                    Tema
+                                                </span>
+                                                <ThemeToggle />
+                                            </div>
+                                        </div>
+                                        <div className="border-t border-gray-100 dark:border-gray-600"></div>
                                         <Dropdown.Link
                                             href={route("profile.edit")}
                                         >
@@ -153,7 +163,7 @@ export default function AuthenticatedLayout({
                                         (previousState) => !previousState
                                     )
                                 }
-                                className="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md hover:bg-gray-100 hover:text-gray-500 focus:bg-gray-100 focus:text-gray-500 focus:outline-none"
+                                className="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-500 dark:hover:text-gray-400 focus:bg-gray-100 dark:focus:bg-gray-700 focus:text-gray-500 focus:outline-none"
                             >
                                 <div className="h-10 w-10 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md">
                                     {getInitials(user?.name)}
@@ -178,8 +188,16 @@ export default function AuthenticatedLayout({
                         </ResponsiveNavLink>
                     </div>
 
-                    <div className="pt-4 pb-1 border-t border-gray-200">
+                    <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-700">
                         <div className="space-y-1 ">
+                            <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
+                                <div className="flex items-center justify-between">
+                                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                                        Tema
+                                    </span>
+                                    <ThemeToggle />
+                                </div>
+                            </div>
                             <ResponsiveNavLink href={route("profile.edit")}>
                                 Perfil
                             </ResponsiveNavLink>
@@ -223,7 +241,7 @@ export default function AuthenticatedLayout({
             </nav>
 
             {header && (
-                <header className="bg-white shadow">
+                <header className="bg-white shadow dark:bg-gray-800 dark:shadow-gray-900">
                     <div className="px-4 py-6 mx-auto max-w-7xl sm:px-6 lg:px-8">
                         {header}
                     </div>

@@ -82,20 +82,20 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
         <div className="space-y-8 animate-fade-in">
             <div className="flex flex-col items-center justify-between md:flex-row">
                 <div>
-                    <h2 className="text-2xl font-bold text-gray-800">
+                    <h2 className="text-2xl font-bold text-gray-800 dark:text-gray-100">
                         Dashboard EHS - {user.name}
                     </h2>
-                    <p className="text-gray-500">
+                    <p className="text-gray-500 dark:text-gray-400">
                         Estadísticas y Métricas de Seguridad
                     </p>
                 </div>
                 <div className="flex gap-3 mt-4 md:mt-0">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white border border-blue-200 rounded-full shadow-sm">
+                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-full shadow-sm">
                         <span className="relative flex w-2.5 h-2.5">
                             <span className="absolute inline-flex w-full h-full bg-blue-400 rounded-full opacity-75 animate-ping"></span>
                             <span className="relative inline-flex w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
                         </span>
-                        <span className="text-xs font-bold tracking-wide text-blue-700 uppercase">
+                        <span className="text-xs font-bold tracking-wide text-blue-700 dark:text-blue-400 uppercase">
                             Sincronizado
                         </span>
                     </div>
@@ -176,10 +176,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="p-6 bg-white shadow-sm rounded-xl">
-                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800">
+                <div className="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
                         <svg
-                            className="w-5 h-5 mr-2 text-[#1e3a8a]"
+                            className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -206,16 +206,16 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                 className="cursor-pointer group"
                             >
                                 <div className="flex justify-between mb-1 text-sm">
-                                    <span className="font-medium text-gray-600 transition-colors group-hover:text-blue-600">
+                                    <span className="font-medium text-gray-600 dark:text-gray-300 transition-colors group-hover:text-blue-600 dark:group-hover:text-blue-400">
                                         {plant.name}
                                     </span>
-                                    <span className="font-semibold text-gray-800">
+                                    <span className="font-semibold text-gray-800 dark:text-gray-100">
                                         {plant.count}
                                     </span>
                                 </div>
-                                <div className="w-full bg-gray-100 rounded-full h-2.5">
+                                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
                                     <div
-                                        className="bg-[#1e3a8a] h-2.5 rounded-full transition-all group-hover:bg-blue-500"
+                                        className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
                                         style={{
                                             width: `${
                                                 (plant.count /
@@ -235,10 +235,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </div>
                 </div>
 
-                <div className="p-6 bg-white shadow-sm rounded-xl">
-                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800">
-                        <CgDanger className="w-5 h-5 mr-2 text-[#1e3a8a]" /> Top
-                        Categorías
+                <div className="p-6 bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
+                        <CgDanger className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400" />{" "}
+                        Top Categorías
                     </h3>
                     <div className="space-y-3">
                         {stats.top_categories.map((cat, index) => (
@@ -250,7 +250,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                         cat.list
                                     )
                                 }
-                                className="flex items-center justify-between p-3 transition-colors border border-transparent rounded-lg cursor-pointer bg-gray-50 hover:bg-purple-50 hover:border-purple-200"
+                                className="flex items-center justify-between p-3 transition-colors border border-transparent rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-200 dark:hover:border-purple-700"
                             >
                                 <div className="flex items-center">
                                     <span
@@ -260,11 +260,11 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                     >
                                         {index + 1}
                                     </span>
-                                    <span className="text-sm font-medium text-gray-700">
+                                    <span className="text-sm font-medium text-gray-700 dark:text-gray-200">
                                         {cat.name}
                                     </span>
                                 </div>
-                                <span className="px-2 py-1 text-sm font-bold text-gray-900 bg-white border rounded shadow-sm">
+                                <span className="px-2 py-1 text-sm font-bold text-gray-900 dark:text-gray-100 bg-white dark:bg-gray-600 border dark:border-gray-500 rounded shadow-sm">
                                     {cat.count}
                                 </span>
                             </div>
@@ -274,11 +274,11 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
 
                 <div
                     onClick={() => setActiveMetric("recidivism")}
-                    className="flex flex-col items-center justify-center p-6 text-center transition-all bg-white border-l-4 border-purple-600 shadow-sm cursor-pointer rounded-xl hover:shadow-md hover:bg-purple-50/30"
+                    className="flex flex-col items-center justify-center p-6 text-center transition-all bg-white dark:bg-gray-800 border-l-4 border-purple-600 shadow-sm cursor-pointer rounded-xl hover:shadow-md hover:bg-purple-50/30 dark:hover:bg-purple-900/20"
                 >
-                    <div className="p-4 mb-4 rounded-full bg-purple-50">
+                    <div className="p-4 mb-4 rounded-full bg-purple-50 dark:bg-purple-900/30">
                         <svg
-                            className="w-10 h-10 text-purple-600"
+                            className="w-10 h-10 text-purple-600 dark:text-purple-400"
                             fill="none"
                             stroke="currentColor"
                             viewBox="0 0 24 24"
@@ -291,27 +291,27 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             />
                         </svg>
                     </div>
-                    <h3 className="mb-2 font-medium text-gray-500">
+                    <h3 className="mb-2 font-medium text-gray-500 dark:text-gray-400">
                         Personas Reincidentes
                     </h3>
-                    <span className="mb-2 text-5xl font-bold text-gray-800">
+                    <span className="mb-2 text-5xl font-bold text-gray-800 dark:text-gray-100">
                         {stats.recidivism}
                     </span>
-                    <p className="text-sm text-gray-400">
+                    <p className="text-sm text-gray-400 dark:text-gray-500">
                         Empleados con &gt;1 reporte
                         <br />
-                        <span className="text-xs font-semibold text-purple-600">
+                        <span className="text-xs font-semibold text-purple-600 dark:text-purple-400">
                             (Ver detalles)
                         </span>
                     </p>
                 </div>
             </div>
-            <div className="p-4 bg-white border border-gray-100 shadow-sm rounded-xl">
+            <div className="p-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="relative w-full md:w-1/3">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
                             <svg
-                                className="w-5 h-5 text-gray-400"
+                                className="w-5 h-5 text-gray-400 dark:text-gray-500"
                                 fill="none"
                                 stroke="currentColor"
                                 viewBox="0 0 24 24"
@@ -330,7 +330,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             value={params.search}
                             onChange={handleFilterChange}
                             placeholder="Buscar folio, persona, descripción..."
-                            className="w-full py-2 pl-10 pr-4 text-sm border-gray-300 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                            className="w-full py-2 pl-10 pr-4 text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
                         />
                     </div>
 
@@ -339,7 +339,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             name="area_id"
                             value={params.area_id}
                             onChange={handleFilterChange}
-                            className="text-sm border-gray-300 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                            className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
                         >
                             <option value="">Todas las Plantas</option>
                             {areas &&
@@ -354,7 +354,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             name="status"
                             value={params.status}
                             onChange={handleFilterChange}
-                            className="text-sm border-gray-300 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                            className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
                         >
                             <option value="">Todos los Estados</option>
                             <option value="en_progreso">Abiertas</option>
@@ -363,18 +363,18 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </div>
                 </div>
             </div>
-            <div className="overflow-hidden bg-white shadow-sm rounded-xl">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100">
-                    <h3 className="text-lg font-semibold text-gray-800">
+            <div className="overflow-hidden bg-white dark:bg-gray-800 shadow-sm rounded-xl">
+                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                         Observaciones Recientes
                     </h3>
-                    <span className="bg-blue-100 text-blue-800 text-xs font-semibold px-2.5 py-0.5 rounded">
+                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">
                         {stats.recent.length} mostrados
                     </span>
                 </div>
                 <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500">
-                        <thead className="text-xs text-gray-700 uppercase bg-gray-50">
+                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                        <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                             <tr>
                                 <th className="px-6 py-3">Observada</th>
                                 <th className="px-6 py-3">Descripción</th>
@@ -384,24 +384,24 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                 <th className="px-6 py-3">Fecha</th>
                             </tr>
                         </thead>
-                        <tbody className="divide-y divide-gray-200">
+                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                             {stats.recent.length > 0 ? (
                                 stats.recent.map((obs) => (
                                     <tr
                                         key={obs.id}
                                         onClick={() => handleRowClick(obs)}
-                                        className="transition-colors duration-150 bg-white cursor-pointer hover:bg-blue-50"
+                                        className="transition-colors duration-150 bg-white dark:bg-gray-800 cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                     >
-                                        <td className="px-6 py-4 font-medium text-blue-600 whitespace-nowrap">
+                                        <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
                                             {obs.observed_person}
                                         </td>
-                                        <td className="max-w-xs px-6 py-4 truncate">
+                                        <td className="max-w-xs px-6 py-4 text-gray-900 dark:text-gray-200 truncate">
                                             {obs.description}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                             {obs.user?.name}
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                             {obs.area?.name}
                                         </td>
                                         <td className="px-6 py-4">
@@ -420,7 +420,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                                     : obs.status}
                                             </span>
                                         </td>
-                                        <td className="px-6 py-4">
+                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                             {new Date(
                                                 obs.observation_date
                                             ).toLocaleDateString()}
@@ -431,7 +431,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                 <tr>
                                     <td
                                         colSpan="6"
-                                        className="px-6 py-10 text-center text-gray-500"
+                                        className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
                                     >
                                         No se encontraron observaciones con esos
                                         filtros.
