@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
+import { IoMdClose } from "react-icons/io";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
@@ -44,9 +45,32 @@ export default function SuperAdminView({
         setParams({ ...params, [e.target.name]: e.target.value });
     };
 
+    const handleCardClick = (type) => {
+        let newParams = { ...params };
+
+        switch (type) {
+            case "all":
+                newParams = { search: "", area: "", role: "", status: "" };
+                break;
+            case "verified":
+                newParams = { ...params, status: "verified", role: "" };
+                break;
+            case "manager":
+                newParams = { ...params, role: "manager", status: "" };
+                break;
+            case "admin":
+                newParams = { ...params, role: "admin", status: "" };
+                break;
+        }
+
+        setParams(newParams);
+    };
+
     return (
         <div className="space-y-6">
-            {stats && <StatsCards stats={stats} />}
+            {stats && (
+                <StatsCards stats={stats} onCardClick={handleCardClick} />
+            )}
 
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
@@ -98,8 +122,19 @@ export default function SuperAdminView({
                             value={params.search}
                             onChange={handleChange}
                             placeholder="Buscar por nombre, email o ID..."
-                            className="w-full py-2 pl-10 pr-4 text-sm text-gray-900 placeholder-gray-400 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
+                            className="w-full py-2 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
                         />
+                        {params.search && (
+                            <button
+                                type="button"
+                                onClick={() =>
+                                    setParams({ ...params, search: "" })
+                                }
+                                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
+                            >
+                                <IoMdClose className="w-5 h-5" />
+                            </button>
+                        )}
                     </div>
 
                     <div className="flex flex-col w-full gap-2 sm:flex-row md:w-auto">
