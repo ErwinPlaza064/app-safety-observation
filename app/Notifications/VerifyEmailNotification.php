@@ -21,10 +21,16 @@ class VerifyEmailNotification extends VerifyEmail
             ->subject('Verificar Dirección de Correo Electrónico')
             ->greeting('Hola, ' . $notifiable->name)
             ->line('Gracias por registrarte en el Sistema de Observaciones de Seguridad de Wasion.')
+            ->line('')
             ->line('Por favor, verifica tu dirección de correo electrónico haciendo clic en el botón de abajo.')
+            ->line('')
             ->action('Verificar Correo Electrónico', $verificationUrl)
+            ->line('')
             ->line('Si no creaste esta cuenta, puedes ignorar este mensaje.')
-            ->salutation('Atentamente, Equipo de Seguridad e Higiene - Wasion');
+            ->line('')
+            ->salutation('Atentamente,')
+            ->line('Equipo de Seguridad e Higiene - Wasion')
+            ->priority(1);
     }
 
     /**

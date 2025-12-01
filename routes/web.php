@@ -12,15 +12,100 @@ Route::get('/', function () {
 });
 
 Route::get('/test-email', function () {
+    $recipient = 'erwin.martinez@wasionmx.onmicrosoft.com';
+    $startTime = microtime(true);
+
     try {
-        Mail::raw('Hola, si lees esto, la conexión SMTP funciona correctamente desde XAMPP.', function ($message) {
-            $message->to('erwin.martinez@wasionmx.onmicrosoft.com')
-                    ->subject('Prueba de Conexión SMTP Wasion');
+        // Configuración actual
+        $config = [
+            'Mailer' => config('mail.default'),
+            'Host' => config('mail.mailers.smtp.host'),
+            'Port' => config('mail.mailers.smtp.port'),
+            'Encryption' => config('mail.mailers.smtp.encryption'),
+            'From' => config('mail.from.address'),
+            'From Name' => config('mail.from.name'),
+        ];
+
+        Mail::raw('✅ Este es un correo de prueba enviado desde el Sistema de Observaciones de Seguridad de Wasion.' . "\n\n" .
+                  '📧 Remitente: ' . config('mail.from.address') . "\n" .
+                  '📬 Destinatario: ' . $recipient . "\n" .
+                  '🕐 Fecha y hora: ' . now()->format('d/m/Y H:i:s') . "\n\n" .
+                  'Si recibes este mensaje, la configuración SMTP está funcionando correctamente.',
+            function ($message) use ($recipient) {
+                $message->to($recipient)
+                        ->subject('✅ Prueba de Correo - Wasion Safety Observation')
+                        ->priority(1);
+            }
+        );
+
+        $endTime = microtime(true);
+        $duration = round(($endTime - $startTime) * 1000, 2);
+
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Correo enviado exitosamente',
+            'details' => [
+                'recipient' => $recipient,
+                'sent_at' => now()->format('d/m/Y H:i:s'),
+                'duration_ms' => $duration,
+                'configuration' => $config,
+            ],
+            'instructions' => [
+                '1. Revisa tu bandeja de entrada: ' . $recipient,
+                '2. Si no está ahí, revisa SPAM/Correo no deseado',
+                '3. Si está en spam, márcalo como "No es spam"',
+                '4. Agrega observacionwasion@gmail.com a tus contactos seguros',
+            ]
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+    } catch (\Exception $e) {
+        $endTime = microtime(true);
+        $duration = round(($endTime - $startTime) * 1000, 2);
+
+        return response()->json([
+            'success' => false,
+            'message' => '❌ Error al enviar el correo',
+            'error' => $e->getMessage(),
+            'details' => [
+                'recipient' => $recipient,
+                'attempted_at' => now()->format('d/m/Y H:i:s'),
+                'duration_ms' => $duration,
+            ],
+            'configuration' => $config ?? null,
+        ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+});
+
+Route::get('/test-verification-email', function () {
+    $recipient = 'erwin.martinez@wasionmx.onmicrosoft.com';
+
+    try {
+        Mail::send('emails.verify-test', ['name' => 'Erwin Dayan Martinez Plaza'], function ($message) use ($recipient) {
+            $message->to($recipient)
+                    ->subject('Verificar Dirección de Correo Electrónico')
+                    ->priority(1);
         });
 
-        return 'El correo se envió correctamente (o al menos Laravel lo entregó al servidor SMTP). Revisa tu bandeja.';
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Correo de verificación enviado',
+            'details' => [
+                'type' => 'Email Verification',
+                'recipient' => $recipient,
+                'sent_at' => now()->format('d/m/Y H:i:s'),
+                'from' => config('mail.from.address'),
+            ],
+            'note' => 'Este es el mismo tipo de correo que se envía al registrarse. Revisa tu bandeja y spam.'
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
     } catch (\Exception $e) {
-        return 'Error al enviar el correo: ' . $e->getMessage();
+        return response()->json([
+            'success' => false,
+            'message' => '❌ Error al enviar',
+            'error' => $e->getMessage(),
+            'line' => $e->getLine(),
+            'file' => basename($e->getFile()),
+        ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 });
 
