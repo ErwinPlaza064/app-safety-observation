@@ -30,13 +30,13 @@ export default function CreateUserModal({ show, onClose }) {
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 bg-gray-50">
-                <h2 className="text-xl font-semibold text-gray-800">
+            <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
+                <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-100">
                     Crear Nuevo Usuario
                 </h2>
                 <button
                     onClick={onClose}
-                    className="text-gray-400 hover:text-gray-600"
+                    className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
                 >
                     <svg
                         className="w-6 h-6"
@@ -83,7 +83,7 @@ export default function CreateUserModal({ show, onClose }) {
                             />
                             <TextInput
                                 id="new_employee_number"
-                                className="block w-full mt-1 bg-gray-50"
+                                className="block w-full mt-1 bg-gray-50 dark:bg-gray-700"
                                 value={data.employee_number}
                                 onChange={(e) =>
                                     setData("employee_number", e.target.value)
@@ -176,7 +176,7 @@ export default function CreateUserModal({ show, onClose }) {
                         />
                     </div>
 
-                    <div className="pt-4 border-t border-gray-100">
+                    <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
                         <label className="flex items-center">
                             <Checkbox
                                 name="is_ehs_manager"
@@ -185,14 +185,14 @@ export default function CreateUserModal({ show, onClose }) {
                                     setData("is_ehs_manager", e.target.checked)
                                 }
                             />
-                            <span className="ml-2 text-sm text-gray-600">
+                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                                 Asignar como <strong>Gerente de EHS</strong>
                             </span>
                         </label>
                     </div>
                 </div>
 
-                <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 bg-gray-50">
+                <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                     <SecondaryButton onClick={onClose}>
                         Cancelar
                     </SecondaryButton>
