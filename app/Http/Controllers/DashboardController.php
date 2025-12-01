@@ -90,7 +90,7 @@ class DashboardController extends Controller
                                         ->where('is_draft', false)
                                         ->with(['area', 'user', 'images', 'categories'])
                                         ->latest('observation_date')
-                                        ->take(5)
+                                        ->take(10)
                                         ->get();
 
             $draft = Observation::where('user_id', $user->id)
