@@ -19,3 +19,61 @@
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
 </IfModule>
+
+# ==========================================
+# OPTIMIZACIONES DE PERFORMANCE - LIGHTHOUSE
+# ==========================================
+
+# Habilitar compresión GZIP
+<IfModule mod_deflate.c>
+    AddOutputFilterByType DEFLATE text/html text/plain text/xml text/css text/javascript application/javascript application/json application/xml
+</IfModule>
+
+# Cache del navegador (Browser Caching)
+<IfModule mod_expires.c>
+    ExpiresActive On
+
+    # Imágenes - 1 año
+    ExpiresByType image/jpg "access plus 1 year"
+    ExpiresByType image/jpeg "access plus 1 year"
+    ExpiresByType image/gif "access plus 1 year"
+    ExpiresByType image/png "access plus 1 year"
+    ExpiresByType image/webp "access plus 1 year"
+    ExpiresByType image/svg+xml "access plus 1 year"
+    ExpiresByType image/x-icon "access plus 1 year"
+
+    # CSS y JavaScript - 1 mes
+    ExpiresByType text/css "access plus 1 month"
+    ExpiresByType text/javascript "access plus 1 month"
+    ExpiresByType application/javascript "access plus 1 month"
+
+    # Fuentes - 1 año
+    ExpiresByType font/ttf "access plus 1 year"
+    ExpiresByType font/otf "access plus 1 year"
+    ExpiresByType font/woff "access plus 1 year"
+    ExpiresByType font/woff2 "access plus 1 year"
+    ExpiresByType application/font-woff "access plus 1 year"
+
+    # HTML - 1 hora
+    ExpiresByType text/html "access plus 1 hour"
+</IfModule>
+
+# Headers de control de cache
+<IfModule mod_headers.c>
+    # Cache para assets estáticos
+    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|webp|svg|js|css|swf|woff|woff2|ttf|otf)$">
+        Header set Cache-Control "max-age=31536000, public, immutable"
+    </FilesMatch>
+
+    # No cachear HTML
+    <FilesMatch "\.(html|htm|php)$">
+        Header set Cache-Control "max-age=3600, must-revalidate"
+    </FilesMatch>
+
+    # Preload y Preconnect para recursos externos
+    Header always set Link "</build/assets/app.css>; rel=preload; as=style"
+    Header always append Link "<https://fonts.bunny.net>; rel=preconnect; crossorigin"
+
+    # Habilitar compresión adicional
+    Header append Vary: Accept-Encoding
+</IfModule>

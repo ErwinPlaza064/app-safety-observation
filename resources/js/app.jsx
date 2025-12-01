@@ -19,7 +19,7 @@ createInertiaApp({
     resolve: (name) =>
         resolvePageComponent(
             `./Pages/${name}.jsx`,
-            import.meta.glob("./Pages/**/*.jsx")
+            import.meta.glob("./Pages/**/*.jsx", { eager: false })
         ),
     setup({ el, App, props }) {
         const root = createRoot(el);
@@ -32,5 +32,8 @@ createInertiaApp({
     },
     progress: {
         color: "#4B5563",
+        delay: 250,
+        includeCSS: true,
+        showSpinner: false,
     },
 });
