@@ -42,6 +42,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     });
 
     const isFirstRender = useRef(true);
+    const searchSectionRef = useRef(null);
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -307,7 +308,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </p>
                 </div>
             </div>
-            <div className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+            <div
+                ref={searchSectionRef}
+                className="p-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl"
+            >
                 <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
                     <div className="relative w-full md:w-1/3">
                         <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
@@ -493,6 +497,12 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     setActiveMetric(null);
                     if (activeMetric === "recidivism") {
                         setParams({ ...params, search: item.observed_person });
+                        setTimeout(() => {
+                            searchSectionRef.current?.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center",
+                            });
+                        }, 400);
                     } else {
                         setTimeout(() => setSelectedObservation(item), 100);
                     }
