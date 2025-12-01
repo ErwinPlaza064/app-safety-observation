@@ -1,4 +1,3 @@
-import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, router } from "@inertiajs/react";
 import { useState } from "react";
 
@@ -65,14 +64,7 @@ export default function Show({ auth, observation }) {
     };
 
     return (
-        <AuthenticatedLayout
-            user={user}
-            header={
-                <h2 className="text-xl font-semibold leading-tight text-gray-800 dark:text-gray-100">
-                    Detalle de Observación
-                </h2>
-            }
-        >
+        <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
             <Head title={`Reporte #${observation.id}`} />
 
             <div className="py-12">
@@ -257,6 +249,6 @@ export default function Show({ auth, observation }) {
                     </div>
                 </div>
             </div>
-        </AuthenticatedLayout>
+        </div>
     );
 }
