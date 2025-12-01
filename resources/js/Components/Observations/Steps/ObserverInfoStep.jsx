@@ -31,7 +31,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
                         type="text"
                         value={formData.observer_name}
                         readOnly
-                        className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
+                        className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg dark:text-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
                     />
                 </div>
                 <div>
@@ -42,7 +42,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
                         type="text"
                         value={formData.employee_id}
                         readOnly
-                        className="w-full px-4 py-2 text-gray-500 dark:text-gray-400 border border-gray-300 dark:border-gray-600 rounded-lg bg-gray-50 dark:bg-gray-700"
+                        className="w-full px-4 py-2 text-gray-500 border border-gray-300 rounded-lg dark:text-gray-400 dark:border-gray-600 bg-gray-50 dark:bg-gray-700"
                     />
                 </div>
             </div>
@@ -75,7 +75,7 @@ export default function ObserverInfoStep({ formData, onChange }) {
 
             <div className="mb-6">
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Persona Observada O Situación
+                    Persona Observada/Numero Nomina o Título de la Situación
                 </label>
                 <input
                     type="text"

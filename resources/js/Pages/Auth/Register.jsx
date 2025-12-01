@@ -417,7 +417,7 @@ export default function Register() {
                         href={route("login")}
                         className="text-sm underline text-wasion hover:text-wasion-700"
                     >
-                        ¿Ya tiene cuenta? Iniciar sesión
+                        ¿Ya tienes cuenta? Iniciar sesión
                     </Link>
                 </div>
             </form>
