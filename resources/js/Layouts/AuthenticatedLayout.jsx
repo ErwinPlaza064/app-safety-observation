@@ -192,7 +192,7 @@ export default function AuthenticatedLayout({
                         <div className="space-y-1 ">
                             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center justify-between">
-                                    <span className="text-sm text-gray-700 dark:text-gray-300">
+                                    <span className="text-gray-700 dark:text-gray-300">
                                         Tema
                                     </span>
                                     <ThemeToggle />
