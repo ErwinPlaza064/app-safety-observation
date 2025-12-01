@@ -64,16 +64,15 @@
     <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|webp|svg|js|css|swf|woff|woff2|ttf|otf)$">
         Header set Cache-Control "max-age=31536000, public, immutable"
     </FilesMatch>
-
+    
     # No cachear HTML
     <FilesMatch "\.(html|htm|php)$">
         Header set Cache-Control "max-age=3600, must-revalidate"
     </FilesMatch>
-
-    # Preload y Preconnect para recursos externos
-    Header always set Link "</build/assets/app.css>; rel=preload; as=style"
-    Header always append Link "<https://fonts.bunny.net>; rel=preconnect; crossorigin"
-
+    
+    # Preconnect para recursos externos (mejora DNS lookup)
+    Header always set Link "<https://fonts.bunny.net>; rel=preconnect; crossorigin"
+    
     # Habilitar compresión adicional
     Header append Vary: Accept-Encoding
 </IfModule>
