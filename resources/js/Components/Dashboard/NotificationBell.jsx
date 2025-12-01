@@ -4,14 +4,12 @@ import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
 
 export default function NotificationBell({ user, count = 0, list = [] }) {
-    // Si el usuario no es Manager, no mostramos nada
     if (!user.is_ehs_manager) return null;
 
     const [badgeCount, setBadgeCount] = useState(0);
     const prevCountRef = useRef(count);
     const isFirstRender = useRef(true);
 
-    // --- LÓGICA DE NOTIFICACIONES ---
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
@@ -22,14 +20,11 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         const diff = count - prevCountRef.current;
 
         if (diff > 0) {
-            // Sumamos al badge
             setBadgeCount((prev) => prev + diff);
 
-            // Sonido
             const audio = new Audio("/sounds/notification.mp3");
             audio.play().catch((e) => console.log("Audio bloqueado", e));
 
-            // Vibración
             if (navigator.vibrate) navigator.vibrate(200);
         }
 
@@ -52,14 +47,9 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         <div className="relative">
             <Dropdown>
                 <Dropdown.Trigger>
-                    <button
-                        // NOTA: Quitamos onClick={clearNotifications} de aquí para que
-                        // el usuario decida cuándo borrarlas con el botón de adentro.
-                        className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-                    >
+                    <button className="relative p-1 text-gray-400 transition-colors rounded-full hover:text-gray-600 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500">
                         <BiBell className="w-6 h-6" />
 
-                        {/* Badge Rojo */}
                         {badgeCount > 0 && (
                             <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white">
                                 {badgeCount}
@@ -68,7 +58,6 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                     </button>
                 </Dropdown.Trigger>
 
-                {/* Contenido del Dropdown */}
                 <Dropdown.Content width="80">
                     <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b bg-gray-50">
                         Recientes
@@ -122,9 +111,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                         )}
                     </div>
 
-                    {/* Footer con Botones */}
                     <div className="border-t border-gray-100 bg-gray-50">
-                        {/* Botón para LIMPIAR (Solo si hay badge) */}
                         {badgeCount > 0 && (
                             <button
                                 onClick={clearNotifications}

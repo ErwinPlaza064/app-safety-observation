@@ -271,12 +271,6 @@ class ObservationController extends Controller
         return $query->latest('observation_date');
     }
 
-    public function exportCsv(Request $request)
-    {
-        $query = $this->getFilteredQuery();
-        return Excel::download(new ObservationsExport($query), 'observaciones.csv');
-    }
-
     public function exportPdf(Request $request)
     {
         $observations = $this->getFilteredQuery()->get();
