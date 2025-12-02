@@ -38,6 +38,19 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "type": "shell",
+            "label": "Queue Worker",
+            "command": "php",
+            "args": ["artisan", "queue:work", "--sleep=3", "--tries=3"],
+            "isBackground": true,
+            "problemMatcher": [],
+            "presentation": {
+                "reveal": "always",
+                "panel": "dedicated",
+                "group": "workers"
+            }
         }
     ]
 }

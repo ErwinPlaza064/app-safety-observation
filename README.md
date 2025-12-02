@@ -126,33 +126,35 @@ Para desplegar la aplicación en un servidor Windows con IIS:
 
 ### 📚 Documentación Completa
 
-Consulta **[DEPLOYMENT-IIS.md](DEPLOYMENT-IIS.md)** para la guía completa de instalación en IIS.
+Consulta **[docs/DEPLOYMENT-IIS.md](docs/DEPLOYMENT-IIS.md)** para la guía completa de instalación en IIS.
 
 ### ⚡ Quick Start
 
 1. **Verificar requisitos del sistema:**
 
     ```powershell
-    .\verify-system.ps1
+    .\scripts\deployment\verify-system.ps1
     ```
 
 2. **Deployment automático:**
 
     ```powershell
-    .\deploy.ps1
+    .\scripts\deployment\deploy.ps1
     ```
 
 3. **Checklist pre-deployment:**
-   Ver [DEPLOYMENT-CHECKLIST.md](DEPLOYMENT-CHECKLIST.md)
+   Ver [docs/DEPLOYMENT-CHECKLIST.md](docs/DEPLOYMENT-CHECKLIST.md)
 
-### 📦 Archivos de Deployment Incluidos
+### 📦 Scripts Disponibles
 
--   `public/web.config` - Configuración de IIS con URL Rewrite
--   `.env.production.example` - Plantilla de variables de entorno para producción
--   `deploy.ps1` - Script automatizado de deployment
--   `rollback.ps1` - Script de rollback en caso de problemas
--   `verify-system.ps1` - Verificación de requisitos del sistema
--   `php-production.ini` - Configuración recomendada de PHP para producción
+Todos los scripts están organizados en la carpeta `/scripts`:
+
+-   **`/scripts/deployment`** - Scripts de deployment y rollback
+-   **`/scripts/queue`** - Gestión del Queue Worker
+-   **`/scripts/monitoring`** - Monitoreo del sistema
+-   **`/scripts/scheduler`** - Configuración de tareas programadas
+
+Ver [scripts/README.md](scripts/README.md) para más detalles.
 
 ### 🔧 Requisitos Mínimos
 
