@@ -88,18 +88,18 @@ flowchart TB
 
 ```mermaid
 stateDiagram-v2
-    [*] --> Borrador: Usuario inicia reporte
+    [*] --> Borrador: Empleado inicia reporte
 
     Borrador --> Borrador: Autoguardado (30s)
-    Borrador --> Enviada: Submit del formulario
+    Borrador --> Abierta: Submit del formulario
 
-    Enviada --> EnRevision: EHS Manager abre el caso
-
-    EnRevision --> Cerrada: Aprobada/Resuelta
-    EnRevision --> Enviada: Requiere más información
-
-    Cerrada --> Reabierta: Reabrir caso
-    Reabierta --> EnRevision: Nueva revisión
+    Abierta --> Revisada: EHS Manager revisa
+    
+    state notificacion <<fork>>
+    Revisada --> notificacion: Sistema notifica
+    notificacion --> ListaParaCerrar: 📧 Notificación al Empleado
+    
+    ListaParaCerrar --> Cerrada: Empleado cierra su observación
 
     Cerrada --> [*]: Caso finalizado
 
@@ -108,17 +108,46 @@ stateDiagram-v2
         Sin folio asignado
     end note
 
-    note right of Enviada
+    note right of Abierta
         is_draft = false
         Folio generado
         status = 'open'
     end note
 
+    note right of Revisada
+        reviewed_by = EHS Manager
+        reviewed_at = timestamp
+    end note
+
     note right of Cerrada
         status = 'closed'
+        closed_by = Empleado (creador)
         closed_at = timestamp
-        closure_notes = texto
     end note
+```
+
+### 🔔 Flujo de Revisión y Notificación
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor E as 👷 Empleado
+    participant S as Sistema
+    actor M as 👔 EHS Manager
+
+    E->>S: Crea observación
+    S->>S: Genera folio único
+    S-->>E: ✅ Observación enviada
+
+    M->>S: Revisa observación
+    S->>S: Marca como revisada (reviewed_at)
+    S->>E: 📧 Notificación: "Lista para cerrar"
+    
+    Note over E,S: El empleado ve la notificación<br/>en su dashboard
+
+    E->>S: Cierra su observación
+    S->>S: Registra cierre (closed_at, closed_by)
+    S-->>E: ✅ Observación cerrada
 ```
 
 ### 🗃️ Diagrama Entidad-Relación (ERD)
@@ -209,17 +238,21 @@ flowchart LR
         P2["Crear Observaciones"]
         P3["Ver Observaciones Propias"]
         P4["Ver Todas las Observaciones"]
-        P5["Cerrar/Reabrir Observaciones"]
-        P6["Exportar Reportes"]
-        P7["Gestionar Usuarios"]
-        P8["Gestionar Áreas"]
-        P9["Eliminar Cualquier Registro"]
+        P5["Revisar Observaciones"]
+        P6["Cerrar Observaciones Propias"]
+        P7["Exportar Reportes PDF/CSV"]
+        P8["Gestionar Usuarios"]
+        P9["Gestionar Áreas"]
+        P10["Suspender/Reactivar Cuentas"]
+        P11["Reenviar Email Verificación"]
     end
 
-    SA --> P1 & P2 & P3 & P4 & P5 & P6 & P7 & P8 & P9
-    EHS --> P1 & P2 & P3 & P4 & P5 & P6
-    EMP --> P1 & P2 & P3
+    SA --> P1 & P2 & P3 & P8 & P9 & P10 & P11
+    EHS --> P1 & P2 & P3 & P4 & P5 & P7
+    EMP --> P1 & P2 & P3 & P6
 ```
+
+> **📌 Flujo de cierre:** El empleado crea la observación → EHS Manager la revisa y marca como "revisada" → El empleado recibe notificación → El empleado cierra su propia observación.
 
 ### 📊 Diagrama de Secuencia: Crear Observación
 
