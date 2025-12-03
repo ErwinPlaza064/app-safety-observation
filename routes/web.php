@@ -212,6 +212,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
         Route::put('/{observation}/close', [ObservationController::class, 'close'])->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])->name('reopen');
+        Route::post('/{observation}/mark-reviewed', [ObservationController::class, 'markAsReviewed'])->name('mark-reviewed');
     });
 
 });

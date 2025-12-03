@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
+import axios from "axios";
 import EhsMetricCard from "@/Components/Dashboard/EhsMetricCard";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 import { CgFileDocument, CgDanger } from "react-icons/cg";
@@ -66,7 +67,18 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
         setParams({ ...params, [e.target.name]: e.target.value });
     };
 
-    const handleRowClick = (obs) => setSelectedObservation(obs);
+    const handleRowClick = async (obs) => {
+        if (obs.status === "en_progreso" && !obs.reviewed_at) {
+            try {
+                await axios.post(route("observations.mark-reviewed", obs.id));
+                obs.reviewed_at = new Date().toISOString();
+            } catch (error) {
+                console.log("Error marcando como revisada:", error);
+            }
+        }
+        setSelectedObservation(obs);
+    };
+
     const handleCloseModal = () => setSelectedObservation(null);
 
     const getCategoryColor = (index) => {

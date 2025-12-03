@@ -88,7 +88,7 @@ class DashboardController extends Controller
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                                         ->where('is_draft', false)
-                                        ->with(['area', 'user', 'images', 'categories'])
+                                        ->with(['area', 'user', 'images', 'categories', 'reviewedByUser'])
                                         ->latest('observation_date')
                                         ->take(10)
                                         ->get();
@@ -103,6 +103,18 @@ class DashboardController extends Controller
             }
 
             $data['savedDraft'] = $draft;
+
+            // Notificaciones para empleado: observaciones revisadas por EHS que puede cerrar
+            $reviewedNotifications = Observation::where('user_id', $user->id)
+                ->where('is_draft', false)
+                ->where('status', 'en_progreso')
+                ->whereNotNull('reviewed_at')
+                ->with(['area', 'reviewedByUser'])
+                ->latest('reviewed_at')
+                ->get();
+
+            $data['employeeNotifications'] = $reviewedNotifications;
+            $data['employeeNotificationCount'] = $reviewedNotifications->count();
         }
 
         // 3. LÓGICA PARA EHS MANAGER (OPTIMIZADO - Sin perder funcionalidad)

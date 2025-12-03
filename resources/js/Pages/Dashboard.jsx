@@ -20,6 +20,8 @@ export default function Dashboard({
     filters,
     filterAreas,
     filteredReports,
+    employeeNotifications,
+    employeeNotificationCount,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -46,8 +48,12 @@ export default function Dashboard({
 
     return (
         <AuthenticatedLayout
-            notificationCount={ehsStats ? ehsStats.open : 0}
-            notifications={ehsStats ? ehsStats.recent : []}
+            notificationCount={
+                ehsStats ? ehsStats.open : employeeNotificationCount || 0
+            }
+            notifications={
+                ehsStats ? ehsStats.recent : employeeNotifications || []
+            }
         >
             <Head title="Dashboard" />
 
@@ -81,6 +87,7 @@ export default function Dashboard({
                             savedDraft={savedDraft}
                             myObservations={myObservations}
                             filteredReports={filteredReports}
+                            employeeNotifications={employeeNotifications}
                         />
                     )}
                 </div>

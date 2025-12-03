@@ -8,18 +8,53 @@ export default function StatusListModal({
     reports,
     onClose,
     onRowClick,
+    customTitle,
+    customSubtitle,
 }) {
     const titles = {
         en_progreso: "Reportes En Progreso",
         cerrada: "Reportes Cerrados",
+        ready_to_close: "Listas para Cerrar",
+    };
+
+    const subtitles = {
+        ready_to_close: "Estas observaciones ya fueron revisadas por EHS",
+    };
+
+    const headerStyles = {
+        ready_to_close:
+            "bg-gradient-to-r from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-b-2 border-green-200 dark:border-green-800",
+    };
+
+    const titleStyles = {
+        ready_to_close: "text-green-700 dark:text-green-300",
     };
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
-            <div className="flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
-                <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200">
-                    {titles[status] || "Listado de Reportes"}
-                </h3>
+            <div
+                className={`flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 ${
+                    headerStyles[status] || "bg-gray-50 dark:bg-gray-800"
+                }`}
+            >
+                <div>
+                    <h3
+                        className={`text-lg font-semibold ${
+                            titleStyles[status] ||
+                            "text-gray-800 dark:text-gray-200"
+                        }`}
+                    >
+                        {status === "ready_to_close" && (
+                            <span className="mr-2">✓</span>
+                        )}
+                        {customTitle || titles[status] || "Listado de Reportes"}
+                    </h3>
+                    {(customSubtitle || subtitles[status]) && (
+                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                            {customSubtitle || subtitles[status]}
+                        </p>
+                    )}
+                </div>
                 <button
                     onClick={onClose}
                     className="text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300"
@@ -41,6 +76,18 @@ export default function StatusListModal({
             </div>
 
             <div className="p-6 max-h-[70vh] overflow-y-auto">
+                {status === "ready_to_close" &&
+                    reports &&
+                    reports.length > 0 && (
+                        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                            <p className="text-sm text-green-700 dark:text-green-300">
+                                <span className="font-semibold">💡 Tip:</span>{" "}
+                                Haz click en cualquier reporte para ver los
+                                detalles y marcarlo como cerrado.
+                            </p>
+                        </div>
+                    )}
+
                 {reports && reports.length > 0 ? (
                     <MyReportsTable
                         observations={reports}
@@ -48,7 +95,9 @@ export default function StatusListModal({
                     />
                 ) : (
                     <div className="p-8 text-center text-gray-500 dark:text-gray-400 border-2 border-dashed dark:border-gray-700 rounded-lg">
-                        No se encontraron reportes en este estado.
+                        {status === "ready_to_close"
+                            ? "No tienes observaciones pendientes de cerrar. Cuando EHS revise tus reportes, aparecerán aquí."
+                            : "No se encontraron reportes en este estado."}
                     </div>
                 )}
             </div>

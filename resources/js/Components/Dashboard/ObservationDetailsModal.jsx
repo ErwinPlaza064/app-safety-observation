@@ -75,7 +75,7 @@ export default function ObservationDetailsModal({
 
     return (
         <Modal show={show} onClose={onClose} maxWidth="3xl">
-            <div className="flex items-start justify-between px-6 py-5 bg-white dark:bg-gray-800 border-b dark:border-gray-700">
+            <div className="flex items-start justify-between px-6 py-5 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <div>
                     <h2 className="mt-10 text-xl font-bold text-gray-800 dark:text-gray-200 lg:mt-7">
                         Detalles del Reporte
@@ -86,7 +86,7 @@ export default function ObservationDetailsModal({
                 </div>
                 <button
                     onClick={onClose}
-                    className="p-1 mt-10 text-gray-400 dark:text-gray-500 transition-colors rounded-full hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
+                    className="p-1 mt-10 text-gray-400 transition-colors rounded-full dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-700"
                 >
                     <svg
                         className="w-6 h-6"
@@ -105,9 +105,46 @@ export default function ObservationDetailsModal({
             </div>
 
             <div className="p-6 max-h-[75vh] overflow-y-auto bg-gray-50/50 dark:bg-gray-900/50">
-                <div className="flex flex-col justify-between gap-4 p-4 mb-6 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm sm:flex-row sm:items-center rounded-xl">
+                {/* Banner de observación revisada por EHS */}
+                {observation.reviewed_at &&
+                    observation.status === "en_progreso" &&
+                    canClose && (
+                        <div className="flex items-center gap-3 p-4 mb-6 border border-green-200 dark:border-green-800 rounded-xl bg-green-50 dark:bg-green-900/30">
+                            <div className="flex items-center justify-center w-10 h-10 bg-green-100 rounded-full dark:bg-green-800">
+                                <svg
+                                    className="w-6 h-6 text-green-600 dark:text-green-400"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth={2}
+                                        d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                    />
+                                </svg>
+                            </div>
+                            <div className="flex-1">
+                                <p className="font-semibold text-green-800 dark:text-green-300">
+                                    ✓ Revisada por EHS
+                                </p>
+                                <p className="text-sm text-green-600 dark:text-green-400">
+                                    {observation.reviewed_by_user?.name &&
+                                        `${observation.reviewed_by_user.name} - `}
+                                    {formatDate(observation.reviewed_at)}
+                                </p>
+                                <p className="mt-1 text-xs text-green-700 dark:text-green-400">
+                                    Ya puedes marcar esta observación como
+                                    cerrada
+                                </p>
+                            </div>
+                        </div>
+                    )}
+
+                <div className="flex flex-col justify-between gap-4 p-4 mb-6 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 sm:flex-row sm:items-center rounded-xl">
                     <div className="flex items-center gap-3">
-                        <span className="text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                        <span className="text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                             Estado:
                         </span>
                         {getStatusBadge(observation.status)}
@@ -134,8 +171,8 @@ export default function ObservationDetailsModal({
 
                 <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
                     <div className="space-y-6 lg:col-span-2">
-                        <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
-                            <h3 className="mb-4 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                        <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                            <h3 className="mb-4 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                 Reportado Por
                             </h3>
                             <div className="flex items-center gap-4">
@@ -147,7 +184,7 @@ export default function ObservationDetailsModal({
                                         {observation.user?.name ||
                                             "Usuario Desconocido"}
                                     </p>
-                                    <p className="text-sm text-gray-500 dark:text-gray-400 break-all">
+                                    <p className="text-sm text-gray-500 break-all dark:text-gray-400">
                                         {observation.user?.email}
                                     </p>
                                     <p className="text-xs text-gray-400 dark:text-gray-500 mt-0.5">
@@ -157,18 +194,18 @@ export default function ObservationDetailsModal({
                             </div>
                         </div>
 
-                        <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
-                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                        <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                            <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                 Descripción del Evento
                             </h3>
-                            <div className="p-4 leading-relaxed text-gray-700 dark:text-gray-300 whitespace-pre-wrap border border-gray-100 dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-900/50">
+                            <div className="p-4 leading-relaxed text-gray-700 whitespace-pre-wrap border border-gray-100 rounded-lg dark:text-gray-300 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                                 {observation.description}
                             </div>
                         </div>
 
                         {observation.observed_person && (
-                            <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
-                                <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                            <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                     Persona Observada
                                 </h3>
                                 <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
@@ -194,9 +231,9 @@ export default function ObservationDetailsModal({
                     </div>
 
                     <div className="space-y-6">
-                        <div className="p-5 space-y-4 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+                        <div className="p-5 space-y-4 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                             <div>
-                                <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                                <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                     Ubicación
                                 </h3>
                                 <p className="flex items-center gap-1 font-semibold text-gray-900 dark:text-gray-100">
@@ -224,10 +261,10 @@ export default function ObservationDetailsModal({
                             </div>
                             <hr className="border-gray-100 dark:border-gray-700" />
                             <div>
-                                <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                                <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                     Tipo de Reporte
                                 </h3>
-                                <p className="font-medium text-gray-800 dark:text-gray-200 capitalize">
+                                <p className="font-medium text-gray-800 capitalize dark:text-gray-200">
                                     {observation.observation_type?.replace(
                                         /_/g,
                                         " "
@@ -238,8 +275,8 @@ export default function ObservationDetailsModal({
 
                         {observation.categories &&
                             observation.categories.length > 0 && (
-                                <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
-                                    <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                                <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                    <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                         Categorías
                                     </h3>
                                     <div className="flex flex-wrap gap-2">
@@ -256,8 +293,8 @@ export default function ObservationDetailsModal({
                             )}
 
                         {observation.images && observation.images.length > 0 ? (
-                            <div className="p-5 bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
-                                <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 dark:text-gray-500 uppercase">
+                            <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
+                                <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
                                     Evidencia ({observation.images.length})
                                 </h3>
                                 <div className="grid grid-cols-2 gap-2">
@@ -266,7 +303,7 @@ export default function ObservationDetailsModal({
                                             href={`/storage/${img.path}`}
                                             target="_blank"
                                             key={img.id}
-                                            className="relative block overflow-hidden bg-gray-100 dark:bg-gray-900 border border-gray-200 dark:border-gray-700 rounded-lg group aspect-square"
+                                            className="relative block overflow-hidden bg-gray-100 border border-gray-200 rounded-lg dark:bg-gray-900 dark:border-gray-700 group aspect-square"
                                         >
                                             <img
                                                 src={`/storage/${img.path}`}
@@ -278,7 +315,7 @@ export default function ObservationDetailsModal({
                                 </div>
                             </div>
                         ) : (
-                            <div className="p-5 text-center bg-white dark:bg-gray-800 border border-gray-100 dark:border-gray-700 shadow-sm rounded-xl">
+                            <div className="p-5 text-center bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                 <p className="text-xs italic text-gray-400 dark:text-gray-500">
                                     Sin evidencia fotográfica
                                 </p>
@@ -288,27 +325,58 @@ export default function ObservationDetailsModal({
                 </div>
             </div>
 
-            <div className="flex justify-center gap-4 px-6 py-6 bg-white dark:bg-gray-800 border-t dark:border-gray-700">
-                <SecondaryButton
-                    onClick={onClose}
-                    className="justify-center w-full sm:w-auto"
-                >
-                    Cerrar
-                </SecondaryButton>
+            <div className="flex flex-col items-center gap-4 px-6 py-6 bg-white border-t dark:bg-gray-800 dark:border-gray-700">
+                {/* Mensaje cuando la observación aún no ha sido revisada por EHS */}
+                {canClose &&
+                    observation.status === "en_progreso" &&
+                    !observation.reviewed_at && (
+                        <div className="flex items-center gap-2 px-4 py-2 text-sm text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-900/20 border border-amber-200 dark:border-amber-800 rounded-lg">
+                            <svg
+                                className="w-5 h-5 flex-shrink-0"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                            <span>
+                                Esperando revisión de EHS para poder cerrar
+                            </span>
+                        </div>
+                    )}
 
-                {canClose && observation.status === "en_progreso" && (
-                    <button
-                        onClick={handleCloseReport}
-                        disabled={processing}
-                        className={`px-4 py-2 text-xs font-bold tracking-widest text-white uppercase transition-colors rounded-md ${
-                            processing
-                                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
-                                : "bg-green-600 dark:bg-green-700 hover:bg-green-500 dark:hover:bg-green-600"
-                        }`}
+                <div className="flex justify-center gap-4">
+                    <SecondaryButton
+                        onClick={onClose}
+                        className="justify-center w-full sm:w-auto"
                     >
-                        {processing ? "Cerrando..." : "Marcar como Cerrado"}
-                    </button>
-                )}
+                        Cerrar
+                    </SecondaryButton>
+
+                    {/* Solo mostrar botón de cerrar si EHS ya revisó la observación */}
+                    {canClose &&
+                        observation.status === "en_progreso" &&
+                        observation.reviewed_at && (
+                            <button
+                                onClick={handleCloseReport}
+                                disabled={processing}
+                                className={`px-4 py-2 text-xs font-bold tracking-widest text-white uppercase transition-colors rounded-md ${
+                                    processing
+                                        ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                                        : "bg-green-600 dark:bg-green-700 hover:bg-green-500 dark:hover:bg-green-600 ring-2 ring-green-300 dark:ring-green-500 ring-offset-2 dark:ring-offset-gray-800 animate-pulse"
+                                }`}
+                            >
+                                {processing
+                                    ? "Cerrando..."
+                                    : "✓ Marcar como Cerrado"}
+                            </button>
+                        )}
+                </div>
             </div>
         </Modal>
     );

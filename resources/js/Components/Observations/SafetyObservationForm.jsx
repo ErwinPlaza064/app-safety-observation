@@ -16,6 +16,7 @@ export default function SafetyObservationForm({
 }) {
     const [currentStep, setCurrentStep] = useState(1);
     const [isSaving, setIsSaving] = useState(false);
+    const [isSubmitting, setIsSubmitting] = useState(false);
 
     const [showHelpModal, setShowHelpModal] = useState(false);
 
@@ -221,6 +222,12 @@ export default function SafetyObservationForm({
             setCurrentStep(3);
             return;
         }
+
+        // Prevenir múltiples envíos
+        if (isSubmitting) return;
+
+        setIsSubmitting(true);
+
         const submitData = new FormData();
         Object.keys(formData).forEach((key) => {
             if (key === "category_ids")
@@ -239,12 +246,14 @@ export default function SafetyObservationForm({
                 showToast("Observación enviada exitosamente", "success");
                 setCurrentStep(1);
                 setTimeout(() => {
+                    setIsSubmitting(false);
                     if (onClose) onClose();
                 }, 1500);
             },
             onError: (err) => {
                 setErrors(err);
                 showToast("Error al enviar. Verifica los datos.", "error");
+                setIsSubmitting(false);
             },
         });
     };
@@ -381,15 +390,51 @@ export default function SafetyObservationForm({
                         <div className="flex flex-col w-full gap-3 md:flex-row md:w-auto">
                             <button
                                 onClick={handleSaveDraft}
-                                className="w-full px-6 py-3 border dark:border-gray-600 dark:text-gray-300 rounded-lg md:w-auto md:py-2 hover:bg-gray-50 dark:hover:bg-gray-700"
+                                disabled={isSubmitting}
+                                className={`w-full px-6 py-3 border dark:border-gray-600 dark:text-gray-300 rounded-lg md:w-auto md:py-2 ${
+                                    isSubmitting
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : "hover:bg-gray-50 dark:hover:bg-gray-700"
+                                }`}
                             >
                                 Guardar Borrador
                             </button>
                             <button
                                 onClick={handleSubmit}
-                                className="w-full px-6 py-3 text-white transition-all transform bg-[#1e3a8a] dark:bg-blue-700 rounded-lg shadow-md md:w-auto md:py-2 hover:bg-blue-900 dark:hover:bg-blue-600 hover:scale-105 active:scale-95"
+                                disabled={isSubmitting}
+                                className={`w-full px-6 py-3 text-white rounded-lg shadow-md md:w-auto md:py-2 transition-all ${
+                                    isSubmitting
+                                        ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                                        : "bg-[#1e3a8a] dark:bg-blue-700 hover:bg-blue-900 dark:hover:bg-blue-600 transform hover:scale-105 active:scale-95"
+                                }`}
                             >
-                                Enviar Observación
+                                {isSubmitting ? (
+                                    <div className="flex items-center justify-center">
+                                        <svg
+                                            className="w-5 h-5 mr-2 text-white animate-spin"
+                                            xmlns="http://www.w3.org/2000/svg"
+                                            fill="none"
+                                            viewBox="0 0 24 24"
+                                        >
+                                            <circle
+                                                className="opacity-25"
+                                                cx="12"
+                                                cy="12"
+                                                r="10"
+                                                stroke="currentColor"
+                                                strokeWidth="4"
+                                            ></circle>
+                                            <path
+                                                className="opacity-75"
+                                                fill="currentColor"
+                                                d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                            ></path>
+                                        </svg>
+                                        <span>Enviando...</span>
+                                    </div>
+                                ) : (
+                                    "Enviar Observación"
+                                )}
                             </button>
                         </div>
                     )}

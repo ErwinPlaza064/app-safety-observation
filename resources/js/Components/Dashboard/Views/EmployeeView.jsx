@@ -13,6 +13,7 @@ export default function EmployeeView({
     savedDraft,
     myObservations,
     filteredReports,
+    employeeNotifications = [],
 }) {
     const [showForm, setShowForm] = useState(!!savedDraft);
 
@@ -21,6 +22,8 @@ export default function EmployeeView({
     const [showStatusModal, setShowStatusModal] = useState(false);
 
     const [currentStatusFilter, setCurrentStatusFilter] = useState(null);
+
+    const [showReadyToCloseModal, setShowReadyToCloseModal] = useState(false);
 
     useEffect(() => {
         if (savedDraft) setShowForm(true);
@@ -31,6 +34,24 @@ export default function EmployeeView({
             setShowStatusModal(true);
         }
     }, [filteredReports]);
+
+    useEffect(() => {
+        const intervalId = setInterval(() => {
+            router.reload({
+                only: [
+                    "employeeNotifications",
+                    "employeeNotificationCount",
+                    "myObservations",
+                    "userStats",
+                ],
+                preserveScroll: true,
+                preserveState: true,
+                replace: true,
+            });
+        }, 5000);
+
+        return () => clearInterval(intervalId);
+    }, []);
 
     const handleCardClick = (status) => {
         setCurrentStatusFilter(status);
@@ -49,6 +70,7 @@ export default function EmployeeView({
 
     const handleModalRowClick = (obs) => {
         setShowStatusModal(false);
+        setShowReadyToCloseModal(false);
         setSelectedObservation(obs);
     };
 
@@ -90,10 +112,10 @@ export default function EmployeeView({
                 </button>
             </div>
 
-            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-2">
+            <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
                 <div
                     onClick={() => handleCardClick("en_progreso")}
-                    className="p-4 transition bg-white dark:bg-gray-800 border-l-4 border-blue-500 dark:border-blue-400 shadow-sm sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
+                    className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm dark:bg-gray-800 dark:border-blue-400 sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
@@ -124,8 +146,83 @@ export default function EmployeeView({
                 </div>
 
                 <div
+                    onClick={() => setShowReadyToCloseModal(true)}
+                    className={`p-4 transition shadow-sm sm:p-6 rounded-xl hover:cursor-pointer ${
+                        employeeNotifications.length > 0
+                            ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 dark:border-green-400 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/50 dark:hover:to-emerald-900/50 ring-2 ring-green-200 dark:ring-green-800"
+                            : "bg-white dark:bg-gray-800 border-l-4 border-gray-300 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700"
+                    }`}
+                >
+                    <div className="flex items-center justify-between mb-4">
+                        <h3
+                            className={`text-base font-medium sm:text-lg ${
+                                employeeNotifications.length > 0
+                                    ? "text-green-700 dark:text-green-300"
+                                    : "text-gray-600 dark:text-gray-300"
+                            }`}
+                        >
+                            Listas para Cerrar
+                        </h3>
+                        <div
+                            className={`p-1 rounded-full ${
+                                employeeNotifications.length > 0
+                                    ? "bg-green-100 dark:bg-green-800"
+                                    : ""
+                            }`}
+                        >
+                            <svg
+                                className={`w-6 h-6 ${
+                                    employeeNotifications.length > 0
+                                        ? "text-green-600 dark:text-green-400"
+                                        : "text-gray-400 dark:text-gray-500"
+                                }`}
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"
+                                />
+                            </svg>
+                        </div>
+                    </div>
+                    <div className="flex items-end justify-between">
+                        <span
+                            className={`text-3xl font-bold sm:text-4xl ${
+                                employeeNotifications.length > 0
+                                    ? "text-green-700 dark:text-green-300"
+                                    : "text-gray-800 dark:text-gray-100"
+                            }`}
+                        >
+                            {employeeNotifications.length}
+                        </span>
+                        <span
+                            className={`text-xs sm:text-sm ${
+                                employeeNotifications.length > 0
+                                    ? "text-green-600 dark:text-green-400 font-medium"
+                                    : "text-gray-500 dark:text-gray-400"
+                            }`}
+                        >
+                            {employeeNotifications.length > 0
+                                ? "¡Puedes cerrar!"
+                                : "Revisadas por EHS"}
+                        </span>
+                    </div>
+                    {employeeNotifications.length > 0 && (
+                        <div className="pt-3 mt-3 border-t border-green-200 dark:border-green-700">
+                            <span className="text-xs font-medium text-green-600 dark:text-green-400 animate-pulse">
+                                Click para ver y cerrar
+                            </span>
+                        </div>
+                    )}
+                </div>
+
+                <div
                     onClick={() => handleCardClick("cerrada")}
-                    className="p-4 bg-white dark:bg-gray-800 border-l-4 border-green-500 dark:border-green-400 shadow-sm hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 sm:p-6 rounded-xl"
+                    className="p-4 bg-white border-l-4 border-green-500 shadow-sm dark:bg-gray-800 dark:border-green-400 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 sm:p-6 rounded-xl"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
@@ -156,7 +253,7 @@ export default function EmployeeView({
                 </div>
             </div>
 
-            <div className="p-4 bg-white dark:bg-gray-800 shadow-sm sm:p-6 sm:rounded-lg rounded-xl">
+            <div className="p-4 bg-white shadow-sm dark:bg-gray-800 sm:p-6 sm:rounded-lg rounded-xl">
                 <div className="flex items-center justify-between mb-4">
                     <h3 className="flex items-center text-base font-semibold text-gray-800 dark:text-gray-200 sm:text-lg">
                         <svg
@@ -174,7 +271,7 @@ export default function EmployeeView({
                         </svg>
                         Mis Reportes Recientes
                     </h3>
-                    <span className="px-3 py-1 text-xs font-semibold text-blue-800 dark:text-blue-300 bg-blue-100 dark:bg-blue-900/40 rounded-full">
+                    <span className="px-3 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-300 dark:bg-blue-900/40">
                         {(userStats?.total || 0) + " Total"}
                     </span>
                 </div>
@@ -191,6 +288,16 @@ export default function EmployeeView({
                 reports={filteredReports}
                 onClose={() => setShowStatusModal(false)}
                 onRowClick={handleModalRowClick}
+            />
+
+            <StatusListModal
+                show={showReadyToCloseModal}
+                status="ready_to_close"
+                reports={employeeNotifications}
+                onClose={() => setShowReadyToCloseModal(false)}
+                onRowClick={handleModalRowClick}
+                customTitle="Listas para Cerrar"
+                customSubtitle="Estas observaciones ya fueron revisadas por EHS y puedes marcarlas como cerradas"
             />
 
             <ObservationDetailsModal

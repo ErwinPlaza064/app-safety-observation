@@ -87,6 +87,48 @@ export default function Show({ auth, observation }) {
                         </div>
 
                         <div className="p-6 bg-gray-50/50 dark:bg-gray-900/50">
+                            {/* Banner de observación revisada por EHS - Solo para el empleado dueño */}
+                            {observation.reviewed_at && observation.status === "en_progreso" && user.id === observation.user_id && !user.is_ehs_manager && (
+                                <div className="flex items-center gap-3 p-4 mb-6 border border-green-200 dark:border-green-800 rounded-xl bg-green-50 dark:bg-green-900/30">
+                                    <div className="flex items-center justify-center w-10 h-10 bg-green-100 dark:bg-green-800 rounded-full">
+                                        <svg className="w-6 h-6 text-green-600 dark:text-green-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-green-800 dark:text-green-300">
+                                            ✓ Revisada por EHS
+                                        </p>
+                                        <p className="text-sm text-green-600 dark:text-green-400">
+                                            {observation.reviewed_by_user?.name && `${observation.reviewed_by_user.name} - `}
+                                            {formatDate(observation.reviewed_at)}
+                                        </p>
+                                        <p className="mt-1 text-xs text-green-700 dark:text-green-400">
+                                            Ya puedes marcar esta observación como cerrada
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
+                            {/* Mensaje cuando la observación aún no ha sido revisada - Solo para el empleado dueño */}
+                            {!observation.reviewed_at && observation.status === "en_progreso" && user.id === observation.user_id && !user.is_ehs_manager && (
+                                <div className="flex items-center gap-3 p-4 mb-6 border border-amber-200 dark:border-amber-800 rounded-xl bg-amber-50 dark:bg-amber-900/30">
+                                    <div className="flex items-center justify-center w-10 h-10 bg-amber-100 dark:bg-amber-800 rounded-full">
+                                        <svg className="w-6 h-6 text-amber-600 dark:text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                        </svg>
+                                    </div>
+                                    <div className="flex-1">
+                                        <p className="font-semibold text-amber-800 dark:text-amber-300">
+                                            Esperando revisión de EHS
+                                        </p>
+                                        <p className="text-sm text-amber-600 dark:text-amber-400">
+                                            Tu reporte está siendo revisado. Te notificaremos cuando puedas cerrarlo.
+                                        </p>
+                                    </div>
+                                </div>
+                            )}
+
                             <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
                                 <div className="space-y-6 md:col-span-2">
                                     <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
@@ -238,13 +280,56 @@ export default function Show({ auth, observation }) {
                             </div>
                         </div>
 
-                        <div className="flex justify-end gap-3 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
-                            <Link
-                                href={route("dashboard")}
-                                className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
-                            >
-                                Volver al Dashboard
-                            </Link>
+                        <div className="flex flex-col items-center gap-4 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
+                            <div className="flex justify-center gap-3 w-full">
+                                <Link
+                                    href={route("dashboard")}
+                                    className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
+                                >
+                                    Volver al Dashboard
+                                </Link>
+
+                                {/* Solo mostrar botón de cerrar para el empleado dueño si EHS ya revisó la observación */}
+                                {user.id === observation.user_id && !user.is_ehs_manager && observation.status === "en_progreso" && observation.reviewed_at && (
+                                    <button
+                                        onClick={handleCloseReport}
+                                        disabled={processing}
+                                        className={`px-4 py-2 text-sm font-bold text-white rounded-lg shadow-sm transition-all ${
+                                            processing
+                                                ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
+                                                : "bg-green-600 dark:bg-green-700 hover:bg-green-500 dark:hover:bg-green-600 ring-2 ring-green-300 dark:ring-green-500 ring-offset-2 dark:ring-offset-gray-800 animate-pulse"
+                                        }`}
+                                    >
+                                        {processing ? (
+                                            <div className="flex items-center">
+                                                <svg
+                                                    className="w-4 h-4 mr-2 text-white animate-spin"
+                                                    xmlns="http://www.w3.org/2000/svg"
+                                                    fill="none"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <circle
+                                                        className="opacity-25"
+                                                        cx="12"
+                                                        cy="12"
+                                                        r="10"
+                                                        stroke="currentColor"
+                                                        strokeWidth="4"
+                                                    ></circle>
+                                                    <path
+                                                        className="opacity-75"
+                                                        fill="currentColor"
+                                                        d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                                    ></path>
+                                                </svg>
+                                                Cerrando...
+                                            </div>
+                                        ) : (
+                                            "✓ Marcar como Cerrado"
+                                        )}
+                                    </button>
+                                )}
+                            </div>
                         </div>
                     </div>
                 </div>
