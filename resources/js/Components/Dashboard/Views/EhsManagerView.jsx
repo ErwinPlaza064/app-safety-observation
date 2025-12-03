@@ -540,6 +540,16 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             });
                         }, 400);
                     } else {
+                        // Marcar como revisada si está en progreso
+                        if (item.status === "en_progreso" && !item.reviewed_at) {
+                            axios.post(route("observations.mark-reviewed", item.id))
+                                .then(() => {
+                                    item.reviewed_at = new Date().toISOString();
+                                })
+                                .catch((error) => {
+                                    console.log("Error marcando como revisada:", error);
+                                });
+                        }
                         setTimeout(() => setSelectedObservation(item), 100);
                     }
                 }}
