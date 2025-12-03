@@ -42,28 +42,76 @@
     <body class="font-sans antialiased">
         @inertia
 
+        <!-- PWA Helper -->
+        <script src="/js/pwa-helper.js"></script>
+
         <!-- Service Worker Registration -->
         <script>
             if ('serviceWorker' in navigator) {
-                window.addEventListener('load', () => {
-                    navigator.serviceWorker.register('/sw.js')
-                        .then((registration) => {
-                            console.log('✅ Service Worker registrado:', registration.scope);
+                window.addEventListener('load', async () => {
+                    try {
+                        const registration = await navigator.serviceWorker.register('/sw.js');
+                        console.log('✅ Service Worker v4 registrado:', registration.scope);
 
-                            // Verificar actualizaciones
-                            registration.addEventListener('updatefound', () => {
-                                const newWorker = registration.installing;
-                                newWorker.addEventListener('statechange', () => {
-                                    if (newWorker.state === 'installed' && navigator.serviceWorker.controller) {
+                        // Verificar actualizaciones
+                        registration.addEventListener('updatefound', () => {
+                            const newWorker = registration.installing;
+                            console.log('🔄 Descargando nueva versión del Service Worker...');
+
+                            newWorker.addEventListener('statechange', () => {
+                                if (newWorker.state === 'installed') {
+                                    if (navigator.serviceWorker.controller) {
                                         // Nueva versión disponible
-                                        console.log('🔄 Nueva versión disponible');
+                                        console.log('🆕 Nueva versión disponible - Recarga para actualizar');
+
+                                        // Mostrar notificación al usuario (opcional)
+                                        if (window.showUpdateNotification) {
+                                            window.showUpdateNotification();
+                                        }
+                                    } else {
+                                        console.log('✅ Service Worker instalado por primera vez');
                                     }
-                                });
+                                }
                             });
-                        })
-                        .catch((error) => {
-                            console.error('❌ Error al registrar Service Worker:', error);
                         });
+
+                        // Escuchar mensajes del Service Worker
+                        navigator.serviceWorker.addEventListener('message', (event) => {
+                            console.log('📨 Mensaje del SW:', event.data);
+
+                            if (event.data.type === 'SYNC_COMPLETE') {
+                                console.log('✅ Sincronización completada');
+                                // Recargar datos si es necesario
+                                if (window.refreshData) {
+                                    window.refreshData();
+                                }
+                            }
+                        });
+
+                        // Verificar si hay observaciones pendientes
+                        if (window.PWAHelper) {
+                            const pending = await PWAHelper.getPendingCount();
+                            if (pending > 0) {
+                                console.log(`📋 ${pending} observación(es) pendiente(s) de sincronizar`);
+                            }
+                        }
+
+                    } catch (error) {
+                        console.error('❌ Error al registrar Service Worker:', error);
+                    }
+                });
+
+                // Detectar cambios de conexión
+                window.addEventListener('online', () => {
+                    console.log('🌐 Conexión restaurada');
+                    // Intentar sincronizar observaciones pendientes
+                    if (window.PWAHelper) {
+                        PWAHelper.forceSync();
+                    }
+                });
+
+                window.addEventListener('offline', () => {
+                    console.log('📴 Sin conexión - Modo offline activado');
                 });
             }
         </script>
