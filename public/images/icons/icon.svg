@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
+  <!-- Background circle -->
+  <circle cx="256" cy="256" r="256" fill="#1e3a8a"/>
+
+  <!-- Shield icon representing safety -->
+  <path d="M256 90c-8.3 0-15.6 5.4-18.1 13.3l-47.3 150.5c-1.7 5.4-1.7 11.2 0 16.6l47.3 150.5c2.5 7.9 9.8 13.3 18.1 13.3s15.6-5.4 18.1-13.3l47.3-150.5c1.7-5.4 1.7-11.2 0-16.6l-47.3-150.5c-2.5-7.9-9.8-13.3-18.1-13.3z" fill="white" opacity="0.9"/>
+
+  <!-- Eye/observation symbol -->
+  <ellipse cx="256" cy="256" rx="70" ry="50" fill="none" stroke="white" stroke-width="16"/>
+  <circle cx="256" cy="256" r="25" fill="white"/>
+
+  <!-- Checkmark for safety verified -->
+  <path d="M200 256l35 35 77-77" fill="none" stroke="#22c55e" stroke-width="20" stroke-linecap="round" stroke-linejoin="round"/>
+</svg>
