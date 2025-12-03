@@ -440,7 +440,9 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                     <tr
                                         key={obs.id}
                                         onClick={() => handleRowClick(obs)}
-                                        onMouseEnter={(e) => handleRowMouseEnter(obs, e)}
+                                        onMouseEnter={(e) =>
+                                            handleRowMouseEnter(obs, e)
+                                        }
                                         onMouseLeave={handleRowMouseLeave}
                                         className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                     >
@@ -541,13 +543,22 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         }, 400);
                     } else {
                         // Marcar como revisada si está en progreso
-                        if (item.status === "en_progreso" && !item.reviewed_at) {
-                            axios.post(route("observations.mark-reviewed", item.id))
+                        if (
+                            item.status === "en_progreso" &&
+                            !item.reviewed_at
+                        ) {
+                            axios
+                                .post(
+                                    route("observations.mark-reviewed", item.id)
+                                )
                                 .then(() => {
                                     item.reviewed_at = new Date().toISOString();
                                 })
                                 .catch((error) => {
-                                    console.log("Error marcando como revisada:", error);
+                                    console.log(
+                                        "Error marcando como revisada:",
+                                        error
+                                    );
                                 });
                         }
                         setTimeout(() => setSelectedObservation(item), 100);
