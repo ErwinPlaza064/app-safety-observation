@@ -31,7 +31,7 @@ export default function AreaTypeStep({
             <div className="mb-6">
                 <div className="flex items-end justify-between mb-3">
                     <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Tipo de Observación{" "}
+                        Tipo de Observación
                         <span className="text-red-500">*</span>
                     </label>
                     <button
