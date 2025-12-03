@@ -1,6 +1,7 @@
 # 📬 Scripts de Queue Worker
 
 Scripts para gestión del procesador de colas de Laravel.
+**Compatible con XAMPP (desarrollo) y Windows Server + IIS (producción)**
 
 ## 🎯 ¿Por qué necesitas esto?
 
@@ -8,86 +9,151 @@ Cuando `QUEUE_CONNECTION=database` en tu `.env`, Laravel guarda los trabajos (co
 
 ## 📋 Archivos
 
-### `start-queue-worker.bat` ⭐ (Recomendado para desarrollo)
+| Script                   | Uso                                                    |
+| ------------------------ | ------------------------------------------------------ |
+| `install-queue-task.ps1` | **⭐ Principal** - Instala tarea programada de Windows |
+| `start-queue-worker.ps1` | Script del worker con reinicio automático              |
+| `start-queue-worker.bat` | Inicio rápido para desarrollo                          |
+| `queue-config.json`      | Configuración generada automáticamente                 |
 
-Script de inicio rápido para Windows.
+---
 
-**Uso:**
+## 🚀 Instalación Rápida
 
--   Doble click en el archivo
--   Se ejecuta en segundo plano
--   Procesa correos automáticamente
+### Desarrollo (XAMPP)
 
-### `start-queue-worker.ps1`
+El worker ya se inicia automáticamente con VS Code (configurado en `tasks.json`).
 
-Script PowerShell del worker con reinicio automático.
-
-**Uso:**
+Si necesitas iniciarlo manualmente:
 
 ```powershell
-.\start-queue-worker.ps1
+.\start-queue-worker.bat
 ```
 
-### `install-queue-task.ps1`
+### Producción (Windows Server + IIS)
 
-Configura una tarea programada de Windows para que el worker inicie automáticamente.
+**1. Abre PowerShell como Administrador**
 
-**Uso:**
+**2. Navega a la carpeta de scripts:**
+
+```powershell
+cd C:\inetpub\wwwroot\safety-observation\scripts\queue
+```
+
+**3. Ejecuta el instalador:**
 
 ```powershell
 .\install-queue-task.ps1
 ```
 
-**Resultado:**
+**4. ¡Listo!** El worker:
 
--   Worker inicia automáticamente al encender Windows
--   No necesitas iniciar manualmente cada vez
+-   Se inicia automáticamente con Windows
+-   Se reinicia si falla
+-   Corre como servicio del sistema (SYSTEM)
 
-### `setup-queue-worker.ps1`
+---
 
-Configuración avanzada para IIS/Producción usando NSSM.
+## 🔧 Opciones Avanzadas
 
-## 🚀 Quick Start
+### Especificar rutas manualmente
 
-### Opción 1: Manual (Desarrollo)
-
-1. Doble click en `start-queue-worker.bat`
-2. ✅ Listo
-
-### Opción 2: Automático (Producción)
-
-1. Ejecuta `install-queue-task.ps1`
-2. Sigue las instrucciones
-3. El worker iniciará con Windows
-
-## 🔍 Verificar que está corriendo
+Si el instalador no detecta las rutas automáticamente:
 
 ```powershell
-Get-Process php | Where-Object {$_.Path -like "*xampp*"}
+.\install-queue-task.ps1 -ProjectPath "C:\inetpub\wwwroot\safety-observation" -PhpPath "C:\php\php.exe"
 ```
 
-## 🛑 Detener el worker
+---
+
+## 📊 Comandos Útiles
+
+### Ver estado de la tarea
 
 ```powershell
-Get-Process php | Where-Object {$_.CommandLine -like "*queue:work*"} | Stop-Process -Force
+Get-ScheduledTask -TaskName "SafetyObservation-QueueWorker"
 ```
 
-## 📝 Ver logs
+### Iniciar manualmente
 
 ```powershell
-Get-Content ..\..\storage\logs\laravel.log -Wait -Tail 20
+Start-ScheduledTask -TaskName "SafetyObservation-QueueWorker"
 ```
 
-## 💡 Alternativa: Sin worker
+### Detener
 
-Si no quieres usar workers, cambia en `.env`:
-
+```powershell
+Stop-ScheduledTask -TaskName "SafetyObservation-QueueWorker"
 ```
+
+### Eliminar tarea
+
+```powershell
+Unregister-ScheduledTask -TaskName "SafetyObservation-QueueWorker" -Confirm:$false
+```
+
+### Ver procesos PHP activos
+
+```powershell
+Get-Process php -ErrorAction SilentlyContinue | Format-Table Id, CPU, WorkingSet
+```
+
+### Ver logs de Laravel
+
+```powershell
+Get-Content ..\..\storage\logs\laravel.log -Wait -Tail 30
+```
+
+---
+
+## 🔍 Verificar que funciona
+
+1. Crea una observación de prueba
+2. Espera a que EHS la revise
+3. El empleado debería recibir el correo
+
+Revisa los logs si hay problemas:
+
+```powershell
+Get-Content ..\..\storage\logs\laravel.log -Tail 50 | Select-String "mail|queue|error"
+```
+
+---
+
+## 💡 Alternativa: Sin Queue Worker
+
+Si no quieres manejar workers, cambia en `.env`:
+
+```env
 QUEUE_CONNECTION=sync
 ```
 
-Los correos se enviarán inmediatamente sin necesidad de worker.
+**Pros:** No necesitas worker
+**Contras:** La página tarda más al enviar correos
 
-## 📚 Documentación
+---
 
-Ver `/docs/QUEUE-WORKER-GUIA.md` para más detalles.
+## 🛠️ Troubleshooting
+
+### El worker no inicia
+
+1. Verifica que PHP esté en la ruta correcta
+2. Ejecuta manualmente para ver errores:
+    ```powershell
+    php artisan queue:work --verbose
+    ```
+
+### Los correos no se envían
+
+1. Verifica `QUEUE_CONNECTION=database` en `.env`
+2. Verifica las credenciales de correo en `.env`
+3. Revisa la tabla `jobs` en la base de datos
+4. Revisa `failed_jobs` para errores
+
+### La tarea no se ejecuta al reiniciar
+
+1. Verifica que se creó como SYSTEM:
+    ```powershell
+    Get-ScheduledTask -TaskName "SafetyObservation-QueueWorker" | Select-Object -ExpandProperty Principal
+    ```
+2. Re-ejecuta `install-queue-task.ps1` como Administrador

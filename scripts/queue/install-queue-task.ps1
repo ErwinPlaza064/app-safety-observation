@@ -1,16 +1,78 @@
 # Crear tarea programada para Queue Worker
 # ==========================================
+# Compatible con XAMPP (desarrollo) y IIS (producción)
+
+param(
+    [string]$ProjectPath = "",
+    [string]$PhpPath = ""
+)
 
 $TaskName = "SafetyObservation-QueueWorker"
-$ScriptPath = "C:\xampp\htdocs\safety-observation\scripts\queue\start-queue-worker.ps1"
 
-Write-Host "Creando tarea programada: $TaskName" -ForegroundColor Cyan
+# Detectar ruta del proyecto automáticamente
+if (-not $ProjectPath) {
+    $ScriptDir = Split-Path -Parent $MyInvocation.MyCommand.Path
+    $ProjectPath = (Get-Item $ScriptDir).Parent.Parent.FullName
+}
+
+$ScriptPath = Join-Path $ProjectPath "scripts\queue\start-queue-worker.ps1"
+
+# Detectar PHP automáticamente
+if (-not $PhpPath) {
+    # Buscar en ubicaciones comunes
+    $phpLocations = @(
+        "C:\xampp\php\php.exe",
+        "C:\php\php.exe",
+        "C:\Program Files\PHP\php.exe",
+        "C:\Program Files (x86)\PHP\php.exe"
+    )
+
+    foreach ($loc in $phpLocations) {
+        if (Test-Path $loc) {
+            $PhpPath = $loc
+            break
+        }
+    }
+
+    # Si no se encuentra, buscar en PATH
+    if (-not $PhpPath) {
+        $PhpPath = (Get-Command php -ErrorAction SilentlyContinue).Source
+    }
+}
+
+Write-Host ""
+Write-Host "=============================================" -ForegroundColor Cyan
+Write-Host "  Instalador de Queue Worker" -ForegroundColor Green
+Write-Host "  Safety Observation System" -ForegroundColor Green
+Write-Host "=============================================" -ForegroundColor Cyan
+Write-Host ""
+Write-Host "Configuracion detectada:" -ForegroundColor Yellow
+Write-Host "  Proyecto: $ProjectPath" -ForegroundColor Gray
+Write-Host "  PHP: $PhpPath" -ForegroundColor Gray
+Write-Host "  Script: $ScriptPath" -ForegroundColor Gray
+Write-Host ""
 
 # Verificar que el script existe
 if (-not (Test-Path $ScriptPath)) {
-    Write-Host "ERROR: No se encontró el script en $ScriptPath" -ForegroundColor Red
+    Write-Host "ERROR: No se encontro el script en $ScriptPath" -ForegroundColor Red
     exit 1
 }
+
+# Verificar que PHP existe
+if (-not $PhpPath -or -not (Test-Path $PhpPath)) {
+    Write-Host "ERROR: No se encontro PHP. Especifica la ruta con -PhpPath" -ForegroundColor Red
+    exit 1
+}
+
+# Guardar configuración en archivo para que start-queue-worker.ps1 la use
+$configPath = Join-Path $ProjectPath "scripts\queue\queue-config.json"
+$config = @{
+    ProjectPath = $ProjectPath
+    PhpPath = $PhpPath
+} | ConvertTo-Json
+$config | Out-File -FilePath $configPath -Encoding UTF8
+Write-Host "Configuracion guardada en: $configPath" -ForegroundColor Gray
+Write-Host ""
 
 # Eliminar tarea si ya existe
 $existingTask = Get-ScheduledTask -TaskName $TaskName -ErrorAction SilentlyContinue
@@ -22,8 +84,9 @@ if ($existingTask) {
 # Crear acción (ejecutar PowerShell con el script)
 $Action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-ExecutionPolicy Bypass -WindowStyle Hidden -File `"$ScriptPath`""
 
-# Crear trigger (al inicio de sesión)
-$Trigger = New-ScheduledTaskTrigger -AtLogOn
+# Crear triggers (al inicio del sistema Y al inicio de sesión)
+$TriggerStartup = New-ScheduledTaskTrigger -AtStartup
+$TriggerLogon = New-ScheduledTaskTrigger -AtLogOn
 
 # Configuración de la tarea
 $Settings = New-ScheduledTaskSettingsSet `
@@ -31,15 +94,20 @@ $Settings = New-ScheduledTaskSettingsSet `
     -DontStopIfGoingOnBatteries `
     -StartWhenAvailable `
     -RestartCount 999 `
-    -RestartInterval (New-TimeSpan -Minutes 1)
+    -RestartInterval (New-TimeSpan -Minutes 1) `
+    -ExecutionTimeLimit (New-TimeSpan -Days 9999)
 
-# Registrar la tarea (se ejecutará con el usuario actual)
+# Principal - Ejecutar con privilegios elevados
+$Principal = New-ScheduledTaskPrincipal -UserId "SYSTEM" -LogonType ServiceAccount -RunLevel Highest
+
+# Registrar la tarea
 Register-ScheduledTask `
     -TaskName $TaskName `
     -Action $Action `
-    -Trigger $Trigger `
+    -Trigger $TriggerStartup, $TriggerLogon `
     -Settings $Settings `
-    -Description "Procesa la cola de correos electrónicos para Safety Observation" `
+    -Principal $Principal `
+    -Description "Procesa la cola de correos electronicos para Safety Observation" `
     -Force
 
 Write-Host ""
