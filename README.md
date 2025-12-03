@@ -94,11 +94,11 @@ stateDiagram-v2
     Borrador --> Abierta: Submit del formulario
 
     Abierta --> Revisada: EHS Manager revisa
-    
+
     state notificacion <<fork>>
     Revisada --> notificacion: Sistema notifica
     notificacion --> ListaParaCerrar: 📧 Notificación al Empleado
-    
+
     ListaParaCerrar --> Cerrada: Empleado cierra su observación
 
     Cerrada --> [*]: Caso finalizado
@@ -142,7 +142,7 @@ sequenceDiagram
     M->>S: Revisa observación
     S->>S: Marca como revisada (reviewed_at)
     S->>E: 📧 Notificación: "Lista para cerrar"
-    
+
     Note over E,S: El empleado ve la notificación<br/>en su dashboard
 
     E->>S: Cierra su observación
