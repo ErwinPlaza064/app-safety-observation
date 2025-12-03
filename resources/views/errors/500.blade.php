@@ -6,9 +6,82 @@
     <title>500 - Error del Servidor</title>
     <link rel="preconnect" href="https://fonts.bunny.net">
     <link href="https://fonts.bunny.net/css?family=figtree:400,500,600&display=swap" rel="stylesheet" />
-    @vite(['resources/css/app.css'])
+    <style>
+        *, ::before, ::after { box-sizing: border-box; border-width: 0; border-style: solid; }
+        html { line-height: 1.5; -webkit-text-size-adjust: 100%; font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif; }
+        body { margin: 0; line-height: inherit; }
+        h1, h2, h3, p { margin: 0; }
+        a { color: inherit; text-decoration: inherit; }
+        button { font-family: inherit; font-size: 100%; font-weight: inherit; line-height: inherit; color: inherit; margin: 0; padding: 0; background-color: transparent; cursor: pointer; }
+        img, svg { display: block; vertical-align: middle; max-width: 100%; height: auto; }
+        ul { list-style: none; margin: 0; padding: 0; }
+        .font-sans { font-family: 'Figtree', ui-sans-serif, system-ui, sans-serif; }
+        .antialiased { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .min-h-screen { min-height: 100vh; }
+        .flex { display: flex; }
+        .flex-col { flex-direction: column; }
+        .items-center { align-items: center; }
+        .items-start { align-items: flex-start; }
+        .justify-center { justify-content: center; }
+        .mx-auto { margin-left: auto; margin-right: auto; }
+        .mb-1 { margin-bottom: 0.25rem; }
+        .mb-4 { margin-bottom: 1rem; }
+        .mb-6 { margin-bottom: 1.5rem; }
+        .mb-8 { margin-bottom: 2rem; }
+        .mr-2 { margin-right: 0.5rem; }
+        .mr-3 { margin-right: 0.75rem; }
+        .mt-0\.5 { margin-top: 0.125rem; }
+        .h-6 { height: 1.5rem; }
+        .h-12 { height: 3rem; }
+        .h-32 { height: 8rem; }
+        .w-5 { width: 1.25rem; }
+        .w-6 { width: 1.5rem; }
+        .w-32 { width: 8rem; }
+        .w-full { width: 100%; }
+        .max-w-lg { max-width: 32rem; }
+        .flex-shrink-0 { flex-shrink: 0; }
+        .gap-4 { gap: 1rem; }
+        .rounded-md { border-radius: 0.375rem; }
+        .rounded-lg { border-radius: 0.5rem; }
+        .border { border-width: 1px; }
+        .border-transparent { border-color: transparent; }
+        .border-gray-300 { border-color: #d1d5db; }
+        .bg-white { background-color: #ffffff; }
+        .bg-gradient-to-br { background-image: linear-gradient(to bottom right, var(--tw-gradient-stops)); }
+        .from-blue-50 { --tw-gradient-from: #eff6ff; --tw-gradient-stops: var(--tw-gradient-from), var(--tw-gradient-to, rgba(239, 246, 255, 0)); }
+        .to-indigo-50 { --tw-gradient-to: #eef2ff; }
+        .p-6 { padding: 1.5rem; }
+        .px-4 { padding-left: 1rem; padding-right: 1rem; }
+        .px-6 { padding-left: 1.5rem; padding-right: 1.5rem; }
+        .py-3 { padding-top: 0.75rem; padding-bottom: 0.75rem; }
+        .text-left { text-align: left; }
+        .text-center { text-align: center; }
+        .text-sm { font-size: 0.875rem; line-height: 1.25rem; }
+        .text-base { font-size: 1rem; line-height: 1.5rem; }
+        .text-2xl { font-size: 1.5rem; line-height: 2rem; }
+        .text-6xl { font-size: 3.75rem; line-height: 1; }
+        .font-medium { font-weight: 500; }
+        .font-semibold { font-weight: 600; }
+        .font-bold { font-weight: 700; }
+        .text-white { color: #ffffff; }
+        .text-gray-600 { color: #4b5563; }
+        .text-gray-700 { color: #374151; }
+        .text-gray-800 { color: #1f2937; }
+        .text-gray-900 { color: #111827; }
+        .text-primary { color: #1e3a8a; }
+        .shadow-md { box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+        .transition-colors { transition-property: color, background-color, border-color; transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1); transition-duration: 150ms; }
+        .bg-primary { background-color: #1e3a8a; }
+        .bg-primary:hover { background-color: #152d6b; }
+        .bg-white:hover { background-color: #f9fafb; }
+        .space-y-1 > * + * { margin-top: 0.25rem; }
+        .inline-flex { display: inline-flex; }
+        @media (min-width: 640px) {
+            .sm\:flex-row { flex-direction: row; }
+        }
+    </style>
 </head>
-<body class="font-sans antialiased bg-gradient-to-br from-blue-50 to-indigo-50">
+<body class="font-sans antialiased" style="background: linear-gradient(to bottom right, #eff6ff, #eef2ff);">
     <div class="min-h-screen flex items-center justify-center px-4">
         <div class="max-w-lg w-full text-center">
             <div class="mb-6">
