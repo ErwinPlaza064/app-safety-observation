@@ -35,8 +35,8 @@ class RegisterRequest extends FormRequest
                 'regex:/^[a-zA-Z0-9._%+-]+@(wasion\.cn|wasion\.com|wasionmx\.onmicrosoft\.com)$/'
             ],
             'password' => ['required', 'confirmed', Password::defaults()],
-            'area' => ['nullable', 'string', 'max:255'],
-            'position' => ['nullable', 'string', 'max:255'],
+            'area' => ['required', 'string', 'max:255'],
+            'position' => ['required', 'string', 'max:255'],
         ];
     }
 
@@ -57,6 +57,8 @@ class RegisterRequest extends FormRequest
             'email.regex' => 'Solo se permiten correos corporativos de Wasion (@wasion.cn, @wasion.com o @wasionmx.onmicrosoft.com).',
             'password.required' => 'La contraseña es obligatoria.',
             'password.confirmed' => 'Las contraseñas no coinciden.',
+            'area.required' => 'El área / departamento es obligatorio.',
+            'position.required' => 'El puesto / cargo es obligatorio.',
         ];
     }
 

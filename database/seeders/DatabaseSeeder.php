@@ -16,6 +16,7 @@ class DatabaseSeeder extends Seeder
             SuperAdminSeeder::class,
             AreaSeeder::class,
             CategorySeeder::class,
+            ObservationSeeder::class,
         ]);
     }
 }

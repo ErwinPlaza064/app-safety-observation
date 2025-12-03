@@ -15,6 +15,7 @@
         "laravel/sanctum": "^4.0",
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
+        "microsoft/microsoft-graph": "^2.51",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
@@ -72,7 +73,8 @@
         "sort-packages": true,
         "allow-plugins": {
             "pestphp/pest-plugin": true,
-            "php-http/discovery": true
+            "php-http/discovery": true,
+            "tbachert/spi": true
         },
         "platform": {
             "php": "8.2.12"

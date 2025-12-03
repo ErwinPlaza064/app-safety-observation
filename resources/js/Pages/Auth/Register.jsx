@@ -5,40 +5,27 @@ import TextInput from "@/Components/TextInput";
 import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { useState, useMemo } from "react";
+import ThemeToggle from "@/Components/ThemeToggle";
 
 export default function Register() {
     const { data, setData, post, processing, errors, reset } = useForm({
         employee_number: "",
         name: "",
         email: "",
-        area: "", // <--- Nuevo campo
-        position: "", // <--- Nuevo campo
+        area: "",
+        position: "",
         password: "",
         password_confirmation: "",
     });
 
     const [showPassword, setShowPassword] = useState(false);
+
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
+
     const [showToast, setShowToast] = useState(false);
 
-    // --- FUNCIÓN DE TRADUCCIÓN ---
-    const translateError = (errorMsg) => {
-        if (!errorMsg) return null;
-
-        if (errorMsg.includes("field is required"))
-            return "Este campo es obligatorio.";
-        if (errorMsg.includes("has already been taken"))
-            return "Este dato ya está registrado en el sistema.";
-        if (errorMsg.includes("must be at least"))
-            return "Debe tener al menos 8 caracteres.";
-        if (errorMsg.includes("confirmation does not match"))
-            return "Las contraseñas no coinciden.";
-        if (errorMsg.includes("must be a valid email"))
-            return "Ingresa un correo electrónico válido.";
-
-        return errorMsg;
-    };
+    const [isLoading, setIsLoading] = useState(false);
 
     const passwordStrength = useMemo(() => {
         const password = data.password;
@@ -74,18 +61,31 @@ export default function Register() {
     const submit = (e) => {
         e.preventDefault();
 
-        post(route("register"), {
-            onSuccess: () => {
-                setShowToast(true);
-                setTimeout(() => setShowToast(false), 5000);
-            },
-            onFinish: () => reset("password", "password_confirmation"),
-        });
+        setIsLoading(true);
+
+        setTimeout(() => {
+            post(route("register"), {
+                onSuccess: () => {
+                    setShowToast(true);
+                    setTimeout(() => setShowToast(false), 5000);
+                },
+                onFinish: () => {
+                    reset("password", "password_confirmation");
+                    setIsLoading(false);
+                },
+                onError: () => {
+                    setIsLoading(false);
+                },
+            });
+        }, 1500);
     };
 
     return (
         <GuestLayout>
             <Head title="Registro" />
+            <div className="absolute top-4 right-4">
+                <ThemeToggle />
+            </div>
 
             {showToast && (
                 <div className="fixed z-50 top-4 right-4 animate-slide-in">
@@ -132,7 +132,6 @@ export default function Register() {
             </h2>
 
             <form onSubmit={submit}>
-                {/* NÚMERO DE EMPLEADO */}
                 <div>
                     <InputLabel
                         htmlFor="employee_number"
@@ -151,12 +150,11 @@ export default function Register() {
                         placeholder="Ej: 09015"
                     />
                     <InputError
-                        message={translateError(errors.employee_number)}
+                        message={errors.employee_number}
                         className="mt-2"
                     />
                 </div>
 
-                {/* NOMBRE COMPLETO */}
                 <div className="mt-4">
                     <InputLabel htmlFor="name" value="Nombre Completo" />
                     <TextInput
@@ -168,13 +166,9 @@ export default function Register() {
                         onChange={(e) => setData("name", e.target.value)}
                         placeholder="Ej: Juan Pérez Martinez"
                     />
-                    <InputError
-                        message={translateError(errors.name)}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.name} className="mt-2" />
                 </div>
 
-                {/* --- NUEVOS CAMPOS: ÁREA Y PUESTO --- */}
                 <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">
                     <div>
                         <InputLabel
@@ -190,10 +184,7 @@ export default function Register() {
                             onChange={(e) => setData("area", e.target.value)}
                             placeholder="Ej: Almacén"
                         />
-                        <InputError
-                            message={translateError(errors.area)}
-                            className="mt-2"
-                        />
+                        <InputError message={errors.area} className="mt-2" />
                     </div>
                     <div>
                         <InputLabel htmlFor="position" value="Puesto / Cargo" />
@@ -209,7 +200,7 @@ export default function Register() {
                             placeholder="Ej: Supervisor"
                         />
                         <InputError
-                            message={translateError(errors.position)}
+                            message={errors.position}
                             className="mt-2"
                         />
                     </div>
@@ -228,16 +219,12 @@ export default function Register() {
                         onChange={(e) => setData("email", e.target.value)}
                         placeholder="ejemplo@wasion.com"
                     />
-                    <InputError
-                        message={translateError(errors.email)}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.email} className="mt-2" />
                     <p className="mt-1 text-xs text-gray-500">
                         Solo se permiten correos @wasion.cn o @wasion.com
                     </p>
                 </div>
 
-                {/* CONTRASEÑA */}
                 <div className="mt-4">
                     <InputLabel htmlFor="password" value="Contraseña" />
                     <div className="relative">
@@ -258,7 +245,6 @@ export default function Register() {
                             onClick={() => setShowPassword(!showPassword)}
                             className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
                         >
-                            {/* Iconos de ojo (sin cambios) */}
                             {showPassword ? (
                                 <svg
                                     xmlns="http://www.w3.org/2000/svg"
@@ -298,7 +284,6 @@ export default function Register() {
                         </button>
                     </div>
 
-                    {/* BARRA DE FORTALEZA */}
                     {passwordStrength && (
                         <div className="mt-2 animate-fade-in">
                             <div className="flex items-center justify-between mb-1">
@@ -329,13 +314,9 @@ export default function Register() {
                             </p>
                         </div>
                     )}
-                    <InputError
-                        message={translateError(errors.password)}
-                        className="mt-2"
-                    />
+                    <InputError message={errors.password} className="mt-2" />
                 </div>
 
-                {/* CONFIRMACIÓN CONTRASEÑA */}
                 <div className="mt-4">
                     <InputLabel
                         htmlFor="password_confirmation"
@@ -403,13 +384,42 @@ export default function Register() {
                         </button>
                     </div>
                     <InputError
-                        message={translateError(errors.password_confirmation)}
+                        message={errors.password_confirmation}
                         className="mt-2"
                     />
                 </div>
 
-                <PrimaryButton className="w-full mt-6" disabled={processing}>
-                    Registrarse
+                <PrimaryButton
+                    className="w-full mt-6"
+                    disabled={processing || isLoading}
+                >
+                    {isLoading ? (
+                        <div className="flex items-center justify-center">
+                            <svg
+                                className="w-5 h-5 mr-2 text-white animate-spin"
+                                xmlns="http://www.w3.org/2000/svg"
+                                fill="none"
+                                viewBox="0 0 24 24"
+                            >
+                                <circle
+                                    className="opacity-25"
+                                    cx="12"
+                                    cy="12"
+                                    r="10"
+                                    stroke="currentColor"
+                                    strokeWidth="4"
+                                ></circle>
+                                <path
+                                    className="opacity-75"
+                                    fill="currentColor"
+                                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                                ></path>
+                            </svg>
+                            <span>Registrando...</span>
+                        </div>
+                    ) : (
+                        "Registrarse"
+                    )}
                 </PrimaryButton>
 
                 <div className="mt-4 text-center">

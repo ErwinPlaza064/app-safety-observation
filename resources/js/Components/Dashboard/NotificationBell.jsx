@@ -4,7 +4,7 @@ import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
 
 export default function NotificationBell({ user, count = 0, list = [] }) {
-    if (!user.is_ehs_manager) return null;
+    if (!user.is_ehs_manager || user.is_super_admin) return null;
 
     const [badgeCount, setBadgeCount] = useState(0);
     const [viewedNotifications, setViewedNotifications] = useState(new Set());

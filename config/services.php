@@ -31,4 +31,11 @@ return [
         ],
     ],
 
+    'microsoft' => [
+        'tenant_id' => env('MICROSOFT_TENANT_ID'),
+        'client_id' => env('MICROSOFT_CLIENT_ID'),
+        'client_secret' => env('MICROSOFT_CLIENT_SECRET'),
+        'sender_email' => env('MICROSOFT_SENDER_EMAIL'),
+    ],
+
 ];

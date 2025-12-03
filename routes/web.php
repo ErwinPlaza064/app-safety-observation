@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Services\MicrosoftGraphMailer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 
@@ -72,6 +73,65 @@ Route::get('/test-email', function () {
                 'duration_ms' => $duration,
             ],
             'configuration' => $config ?? null,
+        ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+    }
+});
+
+Route::get('/test-graph-email', function () {
+    $recipient = 'erwin.martinez@wasionmx.onmicrosoft.com';
+    $startTime = microtime(true);
+
+    try {
+        $mailer = app(MicrosoftGraphMailer::class);
+
+        $body = '<html><body>' .
+                '<h2>✅ Prueba de Microsoft Graph API</h2>' .
+                '<p>Este correo fue enviado usando OAuth2 con Microsoft Graph.</p>' .
+                '<ul>' .
+                '<li><strong>Remitente:</strong> ' . config('services.microsoft.sender_email') . '</li>' .
+                '<li><strong>Destinatario:</strong> ' . $recipient . '</li>' .
+                '<li><strong>Fecha:</strong> ' . now()->format('d/m/Y H:i:s') . '</li>' .
+                '</ul>' .
+                '<p>Si recibes este mensaje, OAuth2 está funcionando correctamente.</p>' .
+                '</body></html>';
+
+        $mailer->send(
+            $recipient,
+            '✅ Prueba Microsoft Graph - Wasion Safety Observation',
+            $body
+        );
+
+        $endTime = microtime(true);
+        $duration = round(($endTime - $startTime) * 1000, 2);
+
+        return response()->json([
+            'success' => true,
+            'message' => '✅ Correo enviado con Microsoft Graph',
+            'details' => [
+                'method' => 'Microsoft Graph API (OAuth2)',
+                'recipient' => $recipient,
+                'sent_at' => now()->format('d/m/Y H:i:s'),
+                'duration_ms' => $duration,
+                'tenant_id' => config('services.microsoft.tenant_id'),
+                'client_id' => config('services.microsoft.client_id'),
+                'sender' => config('services.microsoft.sender_email'),
+            ],
+        ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
+
+    } catch (\Exception $e) {
+        $endTime = microtime(true);
+        $duration = round(($endTime - $startTime) * 1000, 2);
+
+        return response()->json([
+            'success' => false,
+            'message' => '❌ Error al enviar con Microsoft Graph',
+            'error' => $e->getMessage(),
+            'trace' => $e->getTraceAsString(),
+            'details' => [
+                'recipient' => $recipient,
+                'attempted_at' => now()->format('d/m/Y H:i:s'),
+                'duration_ms' => $duration,
+            ],
         ], 500, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
     }
 });
