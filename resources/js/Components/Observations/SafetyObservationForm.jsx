@@ -223,7 +223,6 @@ export default function SafetyObservationForm({
             return;
         }
 
-        // Prevenir múltiples envíos
         if (isSubmitting) return;
 
         setIsSubmitting(true);
@@ -260,7 +259,7 @@ export default function SafetyObservationForm({
 
     return (
         <div
-            className="relative overflow-hidden bg-white dark:bg-gray-800 shadow-sm sm:rounded-lg"
+            className="relative overflow-hidden bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg"
             onKeyDown={handleKeyDown}
         >
             {toast.show && (
@@ -387,22 +386,11 @@ export default function SafetyObservationForm({
                             </svg>
                         </button>
                     ) : (
-                        <div className="flex flex-col w-full gap-3 md:flex-row md:w-auto">
-                            <button
-                                onClick={handleSaveDraft}
-                                disabled={isSubmitting}
-                                className={`w-full px-6 py-3 border dark:border-gray-600 dark:text-gray-300 rounded-lg md:w-auto md:py-2 ${
-                                    isSubmitting
-                                        ? "opacity-50 cursor-not-allowed"
-                                        : "hover:bg-gray-50 dark:hover:bg-gray-700"
-                                }`}
-                            >
-                                Guardar Borrador
-                            </button>
+                        <div className="flex flex-col w-full gap-2 md:w-auto">
                             <button
                                 onClick={handleSubmit}
                                 disabled={isSubmitting}
-                                className={`w-full px-6 py-3 text-white rounded-lg shadow-md md:w-auto md:py-2 transition-all ${
+                                className={`w-full px-8 py-3 text-white rounded-lg shadow-md transition-all ${
                                     isSubmitting
                                         ? "bg-gray-400 dark:bg-gray-600 cursor-not-allowed"
                                         : "bg-[#1e3a8a] dark:bg-blue-700 hover:bg-blue-900 dark:hover:bg-blue-600 transform hover:scale-105 active:scale-95"
@@ -435,6 +423,17 @@ export default function SafetyObservationForm({
                                 ) : (
                                     "Enviar Observación"
                                 )}
+                            </button>
+                            <button
+                                onClick={handleSaveDraft}
+                                disabled={isSubmitting}
+                                className={`w-full px-8 py-2.5 text-sm border border-gray-300 dark:border-gray-600 text-gray-600 dark:text-gray-300 rounded-lg transition-all ${
+                                    isSubmitting
+                                        ? "opacity-50 cursor-not-allowed"
+                                        : "hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-400"
+                                }`}
+                            >
+                                Guardar Borrador
                             </button>
                         </div>
                     )}
