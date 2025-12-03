@@ -42,11 +42,11 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     // Detectar si es dispositivo móvil/táctil
     useEffect(() => {
         const checkMobile = () => {
-            setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+            setIsMobile(window.innerWidth < 768 || "ontouchstart" in window);
         };
         checkMobile();
-        window.addEventListener('resize', checkMobile);
-        return () => window.removeEventListener('resize', checkMobile);
+        window.addEventListener("resize", checkMobile);
+        return () => window.removeEventListener("resize", checkMobile);
     }, []);
 
     const [activeMetric, setActiveMetric] = useState(null);
