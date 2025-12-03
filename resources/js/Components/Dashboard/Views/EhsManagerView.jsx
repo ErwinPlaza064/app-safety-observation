@@ -37,6 +37,17 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     const [hoveredObservation, setHoveredObservation] = useState(null);
     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
     const hoverTimeoutRef = useRef(null);
+    const [isMobile, setIsMobile] = useState(false);
+
+    // Detectar si es dispositivo móvil/táctil
+    useEffect(() => {
+        const checkMobile = () => {
+            setIsMobile(window.innerWidth < 768 || 'ontouchstart' in window);
+        };
+        checkMobile();
+        window.addEventListener('resize', checkMobile);
+        return () => window.removeEventListener('resize', checkMobile);
+    }, []);
 
     const [activeMetric, setActiveMetric] = useState(null);
 
@@ -86,6 +97,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     const handleCloseModal = () => setSelectedObservation(null);
 
     const handleRowMouseEnter = (obs, event) => {
+        if (isMobile) return; // No mostrar hover en móvil
         const rect = event.currentTarget.getBoundingClientRect();
         hoverTimeoutRef.current = setTimeout(() => {
             setHoverPosition({
@@ -570,10 +582,12 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 observation={selectedObservation}
                 onClose={handleCloseModal}
             />
-            <ObservationHoverCard
-                observation={hoveredObservation}
-                position={hoverPosition}
-            />
+            {!isMobile && (
+                <ObservationHoverCard
+                    observation={hoveredObservation}
+                    position={hoverPosition}
+                />
+            )}
         </div>
     );
 }
