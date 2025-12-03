@@ -49,7 +49,7 @@ export default function Dashboard({
             notificationCount={ehsStats ? ehsStats.open : 0}
             notifications={ehsStats ? ehsStats.recent : []}
         >
-            <Head title="Panel de Control" />
+            <Head title="Dashboard" />
 
             <div className="py-6 sm:py-12">
                 <div className="px-4 mx-auto space-y-4 sm:space-y-6 max-w-7xl sm:px-6 lg:px-8">
