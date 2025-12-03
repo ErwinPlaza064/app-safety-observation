@@ -1,5 +1,5 @@
 import { useForm } from "@inertiajs/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Modal from "@/Components/Modal";
 import PrimaryButton from "@/Components/PrimaryButton";
 import SecondaryButton from "@/Components/SecondaryButton";
@@ -14,6 +14,7 @@ export default function EditUserModal({
     show,
     user,
     currentUser,
+    areas = [],
     onClose,
     onDelete,
 }) {
@@ -26,6 +27,9 @@ export default function EditUserModal({
         is_ehs_manager: false,
     });
 
+    const [suspensionReason, setSuspensionReason] = useState("");
+    const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+
     useEffect(() => {
         if (user) {
             setData({
@@ -36,6 +40,8 @@ export default function EditUserModal({
                 position: user.position || "",
                 is_ehs_manager: !!user.is_ehs_manager,
             });
+            setSuspensionReason("");
+            setShowSuspendConfirm(false);
         } else {
             reset();
         }
@@ -51,6 +57,20 @@ export default function EditUserModal({
         );
     };
 
+    const toggleSuspension = () => {
+        router.post(
+            route("admin.users.toggle-suspension", user.id),
+            { reason: suspensionReason },
+            {
+                onSuccess: () => {
+                    setShowSuspendConfirm(false);
+                    onClose();
+                },
+                preserveScroll: true,
+            }
+        );
+    };
+
     const submit = (e) => {
         e.preventDefault();
         patch(route("admin.users.update", user.id), {
@@ -59,7 +79,7 @@ export default function EditUserModal({
     };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="4xl">
+        <Modal show={show} onClose={onClose} maxWidth="xl">
             <div className="flex items-center justify-between px-6 py-4 border-b border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                 <h2 className="text-xl font-semibold text-gray-800 dark:text-gray-200">
                     Editar Usuario
@@ -85,8 +105,8 @@ export default function EditUserModal({
             </div>
 
             <form onSubmit={submit}>
-                <div className="p-6 space-y-6 max-h-[70vh] overflow-y-auto">
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-3">
+                <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div className="md:col-span-2">
                             <InputLabel
                                 htmlFor="name"
@@ -143,20 +163,28 @@ export default function EditUserModal({
                         <InputError message={errors.email} className="mt-2" />
                     </div>
 
-                    <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
+                    <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <InputLabel
                                 htmlFor="area"
                                 value="Área / Departamento"
                             />
-                            <TextInput
+                            <select
                                 id="area"
-                                className="block w-full mt-1"
+                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
                                 value={data.area}
                                 onChange={(e) =>
                                     setData("area", e.target.value)
                                 }
-                            />
+                            >
+                                <option value="">Seleccionar área...</option>
+                                {areas &&
+                                    areas.map((area) => (
+                                        <option key={area.id} value={area.name}>
+                                            {area.name}
+                                        </option>
+                                    ))}
+                            </select>
                             <InputError
                                 message={errors.area}
                                 className="mt-2"
@@ -204,6 +232,117 @@ export default function EditUserModal({
                             </label>
                         </div>
                     </div>
+
+                    {/* Sección de Suspensión */}
+                    {user &&
+                        currentUser &&
+                        user.id !== currentUser.id &&
+                        !user.is_super_admin && (
+                            <div className="pt-4 border-t border-gray-100 dark:border-gray-700">
+                                <h3 className="mb-4 text-sm font-medium text-gray-900 dark:text-gray-100">
+                                    Estado de la Cuenta
+                                </h3>
+
+                                {user.is_suspended ? (
+                                    <div className="p-4 rounded-lg bg-red-50 dark:bg-red-900/20">
+                                        <div className="flex items-center gap-3">
+                                            <div className="flex-shrink-0">
+                                                <svg
+                                                    className="w-5 h-5 text-red-500"
+                                                    fill="none"
+                                                    stroke="currentColor"
+                                                    viewBox="0 0 24 24"
+                                                >
+                                                    <path
+                                                        strokeLinecap="round"
+                                                        strokeLinejoin="round"
+                                                        strokeWidth="2"
+                                                        d="M18.364 18.364A9 9 0 005.636 5.636m12.728 12.728A9 9 0 015.636 5.636m12.728 12.728L5.636 5.636"
+                                                    />
+                                                </svg>
+                                            </div>
+                                            <div className="flex-1">
+                                                <p className="text-sm font-medium text-red-800 dark:text-red-300">
+                                                    Cuenta Suspendida
+                                                </p>
+                                                {user.suspension_reason && (
+                                                    <p className="mt-1 text-sm text-red-600 dark:text-red-400">
+                                                        Motivo:{" "}
+                                                        {user.suspension_reason}
+                                                    </p>
+                                                )}
+                                            </div>
+                                            <button
+                                                type="button"
+                                                onClick={toggleSuspension}
+                                                className="px-3 py-1.5 text-sm font-medium text-green-700 bg-green-100 rounded-lg hover:bg-green-200 dark:bg-green-900/30 dark:text-green-400 dark:hover:bg-green-900/50 transition-colors"
+                                            >
+                                                Reactivar
+                                            </button>
+                                        </div>
+                                    </div>
+                                ) : (
+                                    <div>
+                                        {!showSuspendConfirm ? (
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    setShowSuspendConfirm(true)
+                                                }
+                                                className="text-sm font-medium text-yellow-600 dark:text-yellow-400 hover:text-yellow-800 dark:hover:text-yellow-300 hover:underline focus:outline-none"
+                                            >
+                                                Suspender cuenta temporalmente
+                                            </button>
+                                        ) : (
+                                            <div className="p-4 rounded-lg bg-yellow-50 dark:bg-yellow-900/20">
+                                                <p className="mb-3 text-sm font-medium text-yellow-800 dark:text-yellow-300">
+                                                    ¿Estás seguro de suspender
+                                                    esta cuenta?
+                                                </p>
+                                                <div className="mb-3">
+                                                    <TextInput
+                                                        type="text"
+                                                        placeholder="Motivo de la suspensión (opcional)"
+                                                        value={suspensionReason}
+                                                        onChange={(e) =>
+                                                            setSuspensionReason(
+                                                                e.target.value
+                                                            )
+                                                        }
+                                                        className="w-full text-sm"
+                                                    />
+                                                </div>
+                                                <div className="flex gap-2">
+                                                    <button
+                                                        type="button"
+                                                        onClick={
+                                                            toggleSuspension
+                                                        }
+                                                        className="px-3 py-1.5 text-sm font-medium text-white bg-yellow-600 rounded-lg hover:bg-yellow-700 transition-colors"
+                                                    >
+                                                        Confirmar Suspensión
+                                                    </button>
+                                                    <button
+                                                        type="button"
+                                                        onClick={() => {
+                                                            setShowSuspendConfirm(
+                                                                false
+                                                            );
+                                                            setSuspensionReason(
+                                                                ""
+                                                            );
+                                                        }}
+                                                        className="px-3 py-1.5 text-sm font-medium text-gray-600 bg-gray-100 rounded-lg hover:bg-gray-200 dark:bg-gray-700 dark:text-gray-300 dark:hover:bg-gray-600 transition-colors"
+                                                    >
+                                                        Cancelar
+                                                    </button>
+                                                </div>
+                                            </div>
+                                        )}
+                                    </div>
+                                )}
+                            </div>
+                        )}
                 </div>
 
                 {/* ... Footer igual que antes ... */}

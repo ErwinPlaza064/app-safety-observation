@@ -12,6 +12,28 @@ export default function UsersTable({ users, onUserClick }) {
         });
     };
 
+    const getStatusBadge = (userData) => {
+        if (userData.is_suspended) {
+            return (
+                <span className="text-xs font-bold text-red-600 dark:text-red-400">
+                    ● Suspendido
+                </span>
+            );
+        }
+        if (userData.email_verified_at) {
+            return (
+                <span className="text-xs font-bold text-green-600 dark:text-green-400">
+                    ● Verificado
+                </span>
+            );
+        }
+        return (
+            <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
+                ● Pendiente
+            </span>
+        );
+    };
+
     const userList = users.data || [];
     const links = users.links || [];
 
@@ -55,14 +77,26 @@ export default function UsersTable({ users, onUserClick }) {
                                     <tr
                                         key={userData.id}
                                         onClick={() => onUserClick(userData)}
-                                        className="transition-colors cursor-pointer hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                        className={`transition-colors cursor-pointer ${
+                                            userData.is_suspended
+                                                ? "opacity-60 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100/50 dark:hover:bg-red-900/20"
+                                                : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                        }`}
                                     >
                                         <td className="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
                                             {userData.employee_number}
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-900 dark:text-gray-100 whitespace-nowrap">
                                             <div className="flex flex-col">
-                                                <span>{userData.name}</span>
+                                                <span
+                                                    className={
+                                                        userData.is_suspended
+                                                            ? "line-through"
+                                                            : ""
+                                                    }
+                                                >
+                                                    {userData.name}
+                                                </span>
                                                 <span className="text-xs text-gray-500 dark:text-gray-400">
                                                     {userData.email}
                                                 </span>
@@ -95,15 +129,7 @@ export default function UsersTable({ users, onUserClick }) {
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-sm whitespace-nowrap">
-                                            {userData.email_verified_at ? (
-                                                <span className="text-xs font-bold text-green-600 dark:text-green-400">
-                                                    ● Verificado
-                                                </span>
-                                            ) : (
-                                                <span className="text-xs font-bold text-yellow-600 dark:text-yellow-400">
-                                                    ● Pendiente
-                                                </span>
-                                            )}
+                                            {getStatusBadge(userData)}
                                         </td>
                                     </tr>
                                 ))

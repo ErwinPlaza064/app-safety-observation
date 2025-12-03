@@ -63,6 +63,7 @@ export default function Dashboard({
                         <SuperAdminView
                             stats={stats}
                             users={users}
+                            areas={areas}
                             onUserClick={openEditModal}
                             filters={filters}
                             filterAreas={filterAreas}
@@ -97,6 +98,7 @@ export default function Dashboard({
                 show={editingUser !== null}
                 user={editingUser}
                 currentUser={user}
+                areas={areas}
                 onClose={closeEditModal}
                 onDelete={handleDeleteFromEdit}
             />

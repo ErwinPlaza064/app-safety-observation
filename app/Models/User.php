@@ -25,6 +25,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'area',
         'position',
         'is_ehs_manager',
+        'is_suspended',
+        'suspended_at',
+        'suspension_reason',
     ];
 
     /**
@@ -49,7 +52,17 @@ class User extends Authenticatable implements MustVerifyEmail
             'password' => 'hashed',
             'is_ehs_manager' => 'boolean',
             'is_super_admin' => 'boolean',
+            'is_suspended' => 'boolean',
+            'suspended_at' => 'datetime',
         ];
+    }
+
+    /**
+     * Check if user is suspended
+     */
+    public function isSuspended(): bool
+    {
+        return $this->is_suspended === true;
     }
 
     /**

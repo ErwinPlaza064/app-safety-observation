@@ -4,6 +4,7 @@ use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\AreaController;
 use App\Services\MicrosoftGraphMailer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
@@ -193,6 +194,16 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])
         ->name('users.resend-verification');
+        Route::post('/users/{user}/toggle-suspension', [UserManagementController::class, 'toggleSuspension'])
+        ->name('users.toggle-suspension');
+    });
+
+    // --- ADMINISTRACIÓN DE ÁREAS (Super Admin) ---
+    Route::middleware(['verified'])->prefix('admin/areas')->name('areas.')->group(function () {
+        Route::post('/', [AreaController::class, 'store'])->name('store');
+        Route::put('/{area}', [AreaController::class, 'update'])->name('update');
+        Route::post('/{area}/toggle-status', [AreaController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{area}', [AreaController::class, 'destroy'])->name('destroy');
     });
 
     // --- OBSERVACIONES (Rutas limpias y agrupadas) ---

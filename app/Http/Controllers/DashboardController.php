@@ -52,8 +52,9 @@ class DashboardController extends Controller
                     elseif ($role === 'employee') $query->where('is_super_admin', false)->where('is_ehs_manager', false);
                 })
                 ->when(request('status'), function ($query, $status) {
-                    if ($status === 'verified') $query->whereNotNull('email_verified_at');
+                    if ($status === 'verified') $query->whereNotNull('email_verified_at')->where('is_suspended', false);
                     elseif ($status === 'pending') $query->whereNull('email_verified_at');
+                    elseif ($status === 'suspended') $query->where('is_suspended', true);
                 })
                 ->orderByDesc('created_at');
 
@@ -62,6 +63,8 @@ class DashboardController extends Controller
             $data['filters'] = request()->only(['search', 'area', 'role', 'status']);
             $data['filterAreas'] = User::select('area')->distinct()->whereNotNull('area')->pluck('area');
 
+            // Áreas para el tab de gestión de áreas
+            $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
         }
 
         // ==========================================

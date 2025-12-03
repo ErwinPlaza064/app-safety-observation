@@ -71,6 +71,46 @@ class UserManagementController extends Controller
         return back()->with('success', 'Correo de verificación reenviado exitosamente.');
     }
 
+    /**
+     * Suspender o reactivar un usuario
+     */
+    public function toggleSuspension(Request $request, User $user)
+    {
+        // No permitir auto-suspensión
+        if ($user->id === $request->user()->id) {
+            return back()->with('error', 'No puedes suspender tu propia cuenta.');
+        }
+
+        // No permitir suspender a otros super admins
+        if ($user->is_super_admin && !$user->is_suspended) {
+            return back()->with('error', 'No puedes suspender a otro Super Admin.');
+        }
+
+        if ($user->is_suspended) {
+            // Reactivar usuario
+            $user->update([
+                'is_suspended' => false,
+                'suspended_at' => null,
+                'suspension_reason' => null,
+            ]);
+
+            return back()->with('success', 'Usuario reactivado exitosamente.');
+        } else {
+            // Suspender usuario
+            $request->validate([
+                'reason' => ['nullable', 'string', 'max:255'],
+            ]);
+
+            $user->update([
+                'is_suspended' => true,
+                'suspended_at' => now(),
+                'suspension_reason' => $request->input('reason', 'Suspendido por administrador'),
+            ]);
+
+            return back()->with('success', 'Usuario suspendido exitosamente.');
+        }
+    }
+
     public function destroy(Request $request, User $user)
     {
         if ($user->id === $request->user()->id) {
