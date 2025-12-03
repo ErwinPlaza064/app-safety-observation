@@ -7,6 +7,7 @@ import { CgFileDocument, CgDanger } from "react-icons/cg";
 import { BiPulse, BiTrendingUp } from "react-icons/bi";
 import { IoMdClose } from "react-icons/io";
 import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
+import ObservationHoverCard from "@/Components/Dashboard/ObservationHoverCard";
 
 export default function EhsManagerView({ user, stats, areas, filters }) {
     const [customDrillDown, setCustomDrillDown] = useState({
@@ -33,6 +34,9 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     };
 
     const [selectedObservation, setSelectedObservation] = useState(null);
+    const [hoveredObservation, setHoveredObservation] = useState(null);
+    const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
+    const hoverTimeoutRef = useRef(null);
 
     const [activeMetric, setActiveMetric] = useState(null);
 
@@ -80,6 +84,24 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
     };
 
     const handleCloseModal = () => setSelectedObservation(null);
+
+    const handleRowMouseEnter = (obs, event) => {
+        const rect = event.currentTarget.getBoundingClientRect();
+        hoverTimeoutRef.current = setTimeout(() => {
+            setHoverPosition({
+                x: rect.left + rect.width / 2,
+                y: rect.top,
+            });
+            setHoveredObservation(obs);
+        }, 400);
+    };
+
+    const handleRowMouseLeave = () => {
+        if (hoverTimeoutRef.current) {
+            clearTimeout(hoverTimeoutRef.current);
+        }
+        setHoveredObservation(null);
+    };
 
     const getCategoryColor = (index) => {
         const colors = [
@@ -418,6 +440,8 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                                     <tr
                                         key={obs.id}
                                         onClick={() => handleRowClick(obs)}
+                                        onMouseEnter={(e) => handleRowMouseEnter(obs, e)}
+                                        onMouseLeave={handleRowMouseLeave}
                                         className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                     >
                                         <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
@@ -524,6 +548,10 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                 show={!!selectedObservation}
                 observation={selectedObservation}
                 onClose={handleCloseModal}
+            />
+            <ObservationHoverCard
+                observation={hoveredObservation}
+                position={hoverPosition}
             />
         </div>
     );
