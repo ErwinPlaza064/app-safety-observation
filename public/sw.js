@@ -95,13 +95,13 @@ self.addEventListener("fetch", (event) => {
         "/_ignition",
         "/livewire",
     ];
-    
+
     if (excludedPaths.some((path) => url.pathname.startsWith(path))) {
         return;
     }
 
     // Solo cachear assets estáticos (imágenes, CSS, JS compilado)
-    const isStaticAsset = 
+    const isStaticAsset =
         url.pathname.startsWith("/build/") ||
         url.pathname.startsWith("/images/") ||
         url.pathname.startsWith("/fonts/") ||
