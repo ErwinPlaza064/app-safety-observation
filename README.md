@@ -40,6 +40,347 @@ El sistema está construido con una arquitectura moderna utilizando **Laravel 11
 -   **Gestión de Usuarios:** CRUD completo de usuarios con asignación de roles (Empleado, EHS Manager, Super Admin).
 -   **Control Total:** Capacidad de eliminar o editar cualquier registro del sistema.
 
+## 📐 Arquitectura y Diagramas
+
+### 🏗️ Arquitectura del Sistema
+
+```mermaid
+flowchart TB
+    subgraph Cliente["🖥️ Cliente (Browser)"]
+        React["React 18"]
+        Inertia["Inertia.js"]
+        Tailwind["Tailwind CSS"]
+    end
+
+    subgraph Servidor["⚙️ Servidor (Laravel 11)"]
+        Routes["Routes<br/>(web.php, auth.php)"]
+        Middleware["Middleware<br/>(Auth, Verified)"]
+        Controllers["Controllers"]
+        Models["Eloquent Models"]
+        Services["Services<br/>(GraphMailer)"]
+        Queue["Queue Worker"]
+    end
+
+    subgraph Storage["🗄️ Almacenamiento"]
+        MySQL[("MySQL/MariaDB")]
+        FileSystem[("Storage<br/>Imágenes")]
+    end
+
+    subgraph External["☁️ Servicios Externos"]
+        Graph["Microsoft Graph API"]
+        SMTP["SMTP Server"]
+    end
+
+    React <--> Inertia
+    Inertia <--> Routes
+    Routes --> Middleware
+    Middleware --> Controllers
+    Controllers <--> Models
+    Controllers --> Services
+    Models <--> MySQL
+    Services --> FileSystem
+    Services --> Queue
+    Queue --> Graph
+    Queue --> SMTP
+```
+
+### 🔄 Flujo del Ciclo de Vida de una Observación
+
+```mermaid
+stateDiagram-v2
+    [*] --> Borrador: Usuario inicia reporte
+    
+    Borrador --> Borrador: Autoguardado (30s)
+    Borrador --> Enviada: Submit del formulario
+    
+    Enviada --> EnRevision: EHS Manager abre el caso
+    
+    EnRevision --> Cerrada: Aprobada/Resuelta
+    EnRevision --> Enviada: Requiere más información
+    
+    Cerrada --> Reabierta: Reabrir caso
+    Reabierta --> EnRevision: Nueva revisión
+    
+    Cerrada --> [*]: Caso finalizado
+
+    note right of Borrador
+        is_draft = true
+        Sin folio asignado
+    end note
+
+    note right of Enviada
+        is_draft = false
+        Folio generado
+        status = 'open'
+    end note
+
+    note right of Cerrada
+        status = 'closed'
+        closed_at = timestamp
+        closure_notes = texto
+    end note
+```
+
+### 🗃️ Diagrama Entidad-Relación (ERD)
+
+```mermaid
+erDiagram
+    USERS ||--o{ OBSERVATIONS : "crea"
+    USERS ||--o{ OBSERVATIONS : "cierra"
+    USERS ||--o{ OBSERVATIONS : "revisa"
+    OBSERVATIONS ||--o{ OBSERVATION_IMAGES : "tiene"
+    OBSERVATIONS }o--o{ CATEGORIES : "pertenece"
+    OBSERVATIONS }o--|| AREAS : "ubicada_en"
+
+    USERS {
+        int id PK
+        string employee_number UK
+        string name
+        string email UK
+        string password
+        string area
+        string position
+        boolean is_ehs_manager
+        boolean is_super_admin
+        boolean is_suspended
+        datetime suspended_at
+        string suspension_reason
+        datetime email_verified_at
+    }
+
+    OBSERVATIONS {
+        int id PK
+        int user_id FK
+        int area_id FK
+        string folio UK
+        date observation_date
+        string observed_person
+        enum observation_type "unsafe_act|unsafe_condition|safe_act"
+        text description
+        enum status "open|closed"
+        boolean is_draft
+        int closed_by FK
+        datetime closed_at
+        text closure_notes
+        int reviewed_by FK
+        datetime reviewed_at
+    }
+
+    OBSERVATION_IMAGES {
+        int id PK
+        int observation_id FK
+        string image_path
+        datetime created_at
+    }
+
+    CATEGORIES {
+        int id PK
+        string name
+        boolean is_active
+        int sort_order
+    }
+
+    AREAS {
+        int id PK
+        string name
+        string code UK
+        string description
+        boolean is_active
+    }
+
+    CATEGORY_OBSERVATION {
+        int observation_id FK
+        int category_id FK
+    }
+```
+
+### 🔐 Sistema de Roles y Permisos
+
+```mermaid
+flowchart LR
+    subgraph Roles["👥 Roles del Sistema"]
+        SA["🔴 Super Admin"]
+        EHS["🟡 EHS Manager"]
+        EMP["🟢 Empleado"]
+    end
+
+    subgraph Permisos["🔑 Permisos"]
+        P1["Ver Dashboard"]
+        P2["Crear Observaciones"]
+        P3["Ver Observaciones Propias"]
+        P4["Ver Todas las Observaciones"]
+        P5["Cerrar/Reabrir Observaciones"]
+        P6["Exportar Reportes"]
+        P7["Gestionar Usuarios"]
+        P8["Gestionar Áreas"]
+        P9["Eliminar Cualquier Registro"]
+    end
+
+    SA --> P1 & P2 & P3 & P4 & P5 & P6 & P7 & P8 & P9
+    EHS --> P1 & P2 & P3 & P4 & P5 & P6
+    EMP --> P1 & P2 & P3
+```
+
+### 📊 Diagrama de Secuencia: Crear Observación
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor U as Usuario
+    participant F as Frontend (React)
+    participant I as Inertia.js
+    participant C as ObservationController
+    participant M as Observation Model
+    participant DB as MySQL
+    participant S as Storage
+
+    U->>F: Llena formulario multi-pasos
+    
+    loop Cada 30 segundos
+        F->>I: Auto-guardar borrador
+        I->>C: POST /observations/draft
+        C->>M: updateOrCreate(is_draft: true)
+        M->>DB: INSERT/UPDATE
+        DB-->>M: OK
+        M-->>C: Observation
+        C-->>I: JSON Response
+        I-->>F: Mostrar "Guardado"
+    end
+
+    U->>F: Click "Enviar"
+    F->>F: Validar campos
+    F->>I: POST /observations
+    I->>C: store(request)
+    C->>C: Generar Folio único
+    C->>M: create(is_draft: false)
+    M->>DB: INSERT observation
+    
+    alt Tiene imágenes
+        loop Por cada imagen
+            C->>S: store(image)
+            S-->>C: path
+            C->>DB: INSERT observation_image
+        end
+    end
+
+    DB-->>M: OK
+    M-->>C: Observation creada
+    C-->>I: Redirect to dashboard
+    I-->>F: Renderizar vista
+    F-->>U: "Observación enviada ✅"
+```
+
+### 🚀 Diagrama de Despliegue (IIS)
+
+```mermaid
+flowchart TB
+    subgraph Internet["🌐 Internet"]
+        Client["Cliente/Browser"]
+    end
+
+    subgraph Server["🖥️ Windows Server + IIS"]
+        subgraph IIS["IIS 10.0"]
+            URLRewrite["URL Rewrite Module"]
+            FastCGI["FastCGI Handler"]
+        end
+        
+        subgraph PHP["PHP 8.2+"]
+            Laravel["Laravel App"]
+            Artisan["Artisan CLI"]
+        end
+
+        subgraph Services["Servicios en Background"]
+            QueueWorker["Queue Worker<br/>(NSSM Service)"]
+            Scheduler["Task Scheduler<br/>(Cron Jobs)"]
+        end
+
+        subgraph Storage["Almacenamiento"]
+            Logs["storage/logs"]
+            Cache["storage/cache"]
+            Images["storage/app/public"]
+        end
+    end
+
+    subgraph Database["🗄️ Base de Datos"]
+        MySQL[("MySQL 8.0")]
+    end
+
+    Client -->|HTTPS:443| URLRewrite
+    URLRewrite --> FastCGI
+    FastCGI --> Laravel
+    Laravel <--> MySQL
+    Laravel --> Logs
+    Laravel --> Cache
+    Laravel --> Images
+    Artisan --> QueueWorker
+    Scheduler --> Artisan
+    QueueWorker --> Laravel
+```
+
+### 📧 Flujo de Notificaciones por Email
+
+```mermaid
+flowchart LR
+    subgraph Trigger["🎯 Disparadores"]
+        T1["Registro de Usuario"]
+        T2["Observación Revisada"]
+        T3["Verificación Email"]
+    end
+
+    subgraph Queue["📬 Cola de Jobs"]
+        Job["Notification Job"]
+    end
+
+    subgraph Mailer["📧 Mailer"]
+        direction TB
+        Check{"¿Método?"}
+        SMTP["SMTP Gmail"]
+        Graph["Microsoft Graph API"]
+    end
+
+    subgraph Destino["📥 Destino"]
+        Email["Bandeja Usuario"]
+    end
+
+    T1 & T2 & T3 --> Job
+    Job --> Check
+    Check -->|config = smtp| SMTP
+    Check -->|config = graph| Graph
+    SMTP --> Email
+    Graph --> Email
+```
+
+### 🗂️ Estructura de Carpetas del Proyecto
+
+```mermaid
+flowchart TB
+    Root["📁 safety-observation"]
+    
+    Root --> App["📁 app/"]
+    Root --> Config["📁 config/"]
+    Root --> Database["📁 database/"]
+    Root --> Public["📁 public/"]
+    Root --> Resources["📁 resources/"]
+    Root --> Routes["📁 routes/"]
+    Root --> Storage["📁 storage/"]
+    Root --> Scripts["📁 scripts/"]
+
+    App --> Controllers["Controllers/<br/>API & Web"]
+    App --> Models["Models/<br/>Eloquent"]
+    App --> Services["Services/<br/>GraphMailer"]
+    App --> Notifications["Notifications/<br/>Email"]
+
+    Resources --> JS["js/<br/>React Components"]
+    Resources --> Views["views/<br/>Blade Templates"]
+    Resources --> CSS["css/<br/>Tailwind"]
+
+    Scripts --> Deploy["deployment/"]
+    Scripts --> Queue["queue/"]
+    Scripts --> Monitor["monitoring/"]
+```
+
+---
+
 ## 🛠️ Tecnologías Utilizadas
 
 -   **Backend:** Laravel 11, PHP 8.2+
