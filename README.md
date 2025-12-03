@@ -89,18 +89,18 @@ flowchart TB
 ```mermaid
 stateDiagram-v2
     [*] --> Borrador: Usuario inicia reporte
-    
+
     Borrador --> Borrador: Autoguardado (30s)
     Borrador --> Enviada: Submit del formulario
-    
+
     Enviada --> EnRevision: EHS Manager abre el caso
-    
+
     EnRevision --> Cerrada: Aprobada/Resuelta
     EnRevision --> Enviada: Requiere más información
-    
+
     Cerrada --> Reabierta: Reabrir caso
     Reabierta --> EnRevision: Nueva revisión
-    
+
     Cerrada --> [*]: Caso finalizado
 
     note right of Borrador
@@ -235,7 +235,7 @@ sequenceDiagram
     participant S as Storage
 
     U->>F: Llena formulario multi-pasos
-    
+
     loop Cada 30 segundos
         F->>I: Auto-guardar borrador
         I->>C: POST /observations/draft
@@ -254,7 +254,7 @@ sequenceDiagram
     C->>C: Generar Folio único
     C->>M: create(is_draft: false)
     M->>DB: INSERT observation
-    
+
     alt Tiene imágenes
         loop Por cada imagen
             C->>S: store(image)
@@ -283,7 +283,7 @@ flowchart TB
             URLRewrite["URL Rewrite Module"]
             FastCGI["FastCGI Handler"]
         end
-        
+
         subgraph PHP["PHP 8.2+"]
             Laravel["Laravel App"]
             Artisan["Artisan CLI"]
@@ -355,7 +355,7 @@ flowchart LR
 ```mermaid
 flowchart TB
     Root["📁 safety-observation"]
-    
+
     Root --> App["📁 app/"]
     Root --> Config["📁 config/"]
     Root --> Database["📁 database/"]
