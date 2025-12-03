@@ -20,11 +20,11 @@ export default function ForgotPassword({ status }) {
         <GuestLayout>
             <Head title="Recuperar Contraseña" />
 
-            <h2 className="mb-6 text-xl font-semibold text-center text-blue-900">
+            <h2 className="mb-6 text-xl font-semibold text-center text-blue-900 dark:text-blue-300">
                 Recuperar Contraseña
             </h2>
 
-            <div className="mb-4 text-sm text-center text-gray-600">
+            <div className="mb-4 text-sm text-center text-gray-600 dark:text-gray-300">
                 ¿Olvidó su contraseña?
                 <br />
                 <br />
@@ -61,7 +61,7 @@ export default function ForgotPassword({ status }) {
 
                 <Link
                     href="/"
-                    className="flex items-end justify-end py-2 text-sm text-gray-600 underline rounded-md hover:text-gray-900 "
+                    className="flex items-end justify-end py-2 text-sm text-gray-600 dark:text-gray-400 underline rounded-md hover:text-gray-900 dark:hover:text-gray-200"
                 >
                     Regresar al inicio
                 </Link>

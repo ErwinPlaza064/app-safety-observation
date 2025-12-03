@@ -18,7 +18,6 @@ export default function ResetPassword({ token, email }) {
     const [showPasswordConfirmation, setShowPasswordConfirmation] =
         useState(false);
 
-    // Calcular la fortaleza de la contraseña
     const passwordStrength = useMemo(() => {
         const password = data.password;
         if (!password) return null;
@@ -34,7 +33,6 @@ export default function ResetPassword({ token, email }) {
         if (/[0-9]/.test(password)) strength++;
         if (/[^A-Za-z0-9]/.test(password)) strength++;
 
-        // Determinar nivel
         if (strength <= 2) {
             label = "Débil";
             color = "bg-red-500";
@@ -64,7 +62,7 @@ export default function ResetPassword({ token, email }) {
         <GuestLayout>
             <Head title="Restablecer Contraseña" />
 
-            <h2 className="mb-6 text-xl font-semibold text-center text-blue-900">
+            <h2 className="mb-6 text-xl font-semibold text-center text-blue-900 dark:text-blue-300">
                 Restablecer Contraseña
             </h2>
 
@@ -105,7 +103,7 @@ export default function ResetPassword({ token, email }) {
                         <button
                             type="button"
                             onClick={() => setShowPassword(!showPassword)}
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             {showPassword ? (
                                 <svg
@@ -146,11 +144,10 @@ export default function ResetPassword({ token, email }) {
                         </button>
                     </div>
 
-                    {/* Indicador de fortaleza de contraseña */}
                     {passwordStrength && (
                         <div className="mt-2">
                             <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs text-gray-600">
+                                <span className="text-xs text-gray-600 dark:text-gray-400">
                                     Fortaleza de la contraseña:
                                 </span>
                                 <span
@@ -168,7 +165,7 @@ export default function ResetPassword({ token, email }) {
                                     {passwordStrength.label}
                                 </span>
                             </div>
-                            <div className="w-full h-2 overflow-hidden bg-gray-200 rounded-full">
+                            <div className="w-full h-2 overflow-hidden bg-gray-200 rounded-full dark:bg-gray-700">
                                 <div
                                     className={`h-full transition-all duration-300 ${passwordStrength.color}`}
                                     style={{
@@ -176,7 +173,7 @@ export default function ResetPassword({ token, email }) {
                                     }}
                                 ></div>
                             </div>
-                            <p className="mt-1 text-xs text-gray-500">
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Use mayúsculas, minúsculas, números y símbolos
                                 para una contraseña más segura.
                             </p>
@@ -213,7 +210,7 @@ export default function ResetPassword({ token, email }) {
                                     !showPasswordConfirmation
                                 )
                             }
-                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-700"
+                            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300"
                         >
                             {showPasswordConfirmation ? (
                                 <svg
