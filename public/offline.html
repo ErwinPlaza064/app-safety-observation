@@ -51,7 +51,8 @@
                 padding: 32px;
                 width: 100%;
                 max-width: 380px;
-                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1),
+                    0 2px 4px -2px rgba(0, 0, 0, 0.1);
             }
 
             .card-header {
@@ -120,8 +121,13 @@
             }
 
             @keyframes pulse-dot {
-                0%, 100% { opacity: 1; }
-                50% { opacity: 0.4; }
+                0%,
+                100% {
+                    opacity: 1;
+                }
+                50% {
+                    opacity: 0.4;
+                }
             }
 
             .btn {
@@ -282,9 +288,12 @@
             <div class="card-header">
                 <div class="icon">
                     <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                            d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414">
-                        </path>
+                        <path
+                            stroke-linecap="round"
+                            stroke-linejoin="round"
+                            stroke-width="2"
+                            d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414"
+                        ></path>
                     </svg>
                 </div>
                 <h2>Sin Conexión</h2>
@@ -297,23 +306,33 @@
             </div>
 
             <div class="pending-badge" id="pendingBadge">
-                📋 <strong><span id="pendingCount">0</span> observación(es)</strong> guardadas localmente
+                📋
+                <strong
+                    ><span id="pendingCount">0</span> observación(es)</strong
+                >
+                guardadas localmente
             </div>
 
             <button class="btn btn-primary" onclick="updateStatus()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
-                    </path>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
+                    ></path>
                 </svg>
                 Reintentar conexión
             </button>
 
             <button class="btn btn-secondary" onclick="toggleCachedPages()">
                 <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4">
-                    </path>
+                    <path
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        stroke-width="2"
+                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4"
+                    ></path>
                 </svg>
                 Ver páginas en caché
             </button>
@@ -327,20 +346,47 @@
                 <h3>Disponible sin conexión</h3>
                 <ul class="info-list">
                     <li>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                            ></path>
                         </svg>
                         Páginas visitadas anteriormente
                     </li>
                     <li>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                            ></path>
                         </svg>
                         Crear observaciones (sync automático)
                     </li>
                     <li>
-                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        <svg
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                stroke-width="2"
+                                d="M5 13l4 4L19 7"
+                            ></path>
                         </svg>
                         Imágenes e iconos cacheados
                     </li>
@@ -363,7 +409,10 @@
             async function checkServerAvailable() {
                 try {
                     const controller = new AbortController();
-                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+                    const timeoutId = setTimeout(
+                        () => controller.abort(),
+                        3000
+                    );
 
                     const response = await fetch("/manifest.json", {
                         method: "GET",
@@ -374,12 +423,18 @@
                     clearTimeout(timeoutId);
 
                     if (response.ok) {
-                        const serverCheck = await fetch("/sanctum/csrf-cookie", {
-                            method: "GET",
-                            cache: "no-store",
-                        }).catch(() => null);
+                        const serverCheck = await fetch(
+                            "/sanctum/csrf-cookie",
+                            {
+                                method: "GET",
+                                cache: "no-store",
+                            }
+                        ).catch(() => null);
 
-                        return serverCheck && (serverCheck.ok || serverCheck.status === 204);
+                        return (
+                            serverCheck &&
+                            (serverCheck.ok || serverCheck.status === 204)
+                        );
                     }
                     return false;
                 } catch (error) {
@@ -424,7 +479,10 @@
             }
 
             async function checkPendingObservations() {
-                if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+                if (
+                    "serviceWorker" in navigator &&
+                    navigator.serviceWorker.controller
+                ) {
                     const messageChannel = new MessageChannel();
                     messageChannel.port1.onmessage = (event) => {
                         const count = event.data.count || 0;
@@ -465,24 +523,40 @@
                         const keys = await cache.keys();
                         keys.forEach((request) => {
                             const url = new URL(request.url);
-                            if (!url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|ico|json)$/i)) {
+                            if (
+                                !url.pathname.match(
+                                    /\.(js|css|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|ico|json)$/i
+                                )
+                            ) {
                                 allUrls.push(url.pathname);
                             }
                         });
                     }
 
-                    allUrls = [...new Set(allUrls)].filter(u => u !== '/offline.html').sort();
+                    allUrls = [...new Set(allUrls)]
+                        .filter((u) => u !== "/offline.html")
+                        .sort();
 
                     if (allUrls.length === 0) {
-                        cachedList.innerHTML = '<li class="no-cache">No hay páginas en caché</li>';
+                        cachedList.innerHTML =
+                            '<li class="no-cache">No hay páginas en caché</li>';
                     } else {
-                        cachedList.innerHTML = allUrls.map((url) => {
-                            const name = url === "/" ? "Inicio" : url.split('/').filter(Boolean).join(' › ');
-                            return `<li><a href="${url}">${name}</a></li>`;
-                        }).join("");
+                        cachedList.innerHTML = allUrls
+                            .map((url) => {
+                                const name =
+                                    url === "/"
+                                        ? "Inicio"
+                                        : url
+                                              .split("/")
+                                              .filter(Boolean)
+                                              .join(" › ");
+                                return `<li><a href="${url}">${name}</a></li>`;
+                            })
+                            .join("");
                     }
                 } catch (error) {
-                    cachedList.innerHTML = '<li class="no-cache">Error al cargar caché</li>';
+                    cachedList.innerHTML =
+                        '<li class="no-cache">Error al cargar caché</li>';
                 }
             }
 
