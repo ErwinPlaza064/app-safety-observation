@@ -47,7 +47,12 @@
 
         <!-- Service Worker Registration -->
         <script>
-            if ('serviceWorker' in navigator) {
+            // Solo registrar SW en producción o localhost (evita errores con certificados auto-firmados)
+            const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
+            const isProduction = window.location.hostname !== '10.110.100.84'; // IP de desarrollo
+            const shouldRegisterSW = 'serviceWorker' in navigator && (isLocalhost || isProduction);
+
+            if (shouldRegisterSW) {
                 window.addEventListener('load', async () => {
                     try {
                         const registration = await navigator.serviceWorker.register('/sw.js');
