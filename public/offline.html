@@ -16,281 +16,416 @@
             body {
                 font-family: "Figtree", -apple-system, BlinkMacSystemFont,
                     "Segoe UI", Roboto, sans-serif;
-                background: linear-gradient(135deg, #1e3a8a 0%, #3b82f6 100%);
+                background: #ffffff;
                 min-height: 100vh;
                 display: flex;
+                flex-direction: column;
                 align-items: center;
                 justify-content: center;
                 padding: 20px;
+                color: #1e293b;
             }
 
-            .container {
-                background: white;
-                border-radius: 20px;
-                padding: 40px;
-                max-width: 450px;
-                width: 100%;
+            .logo-section {
                 text-align: center;
-                box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+                margin-bottom: 24px;
             }
 
-            .icon {
-                width: 80px;
-                height: 80px;
-                margin: 0 auto 24px;
+            .logo-section img {
+                height: 50px;
+                width: 50px;
+                border-radius: 12px;
+                margin-bottom: 8px;
+            }
+
+            .logo-section h1 {
+                color: #1e3a8a;
+                font-size: 18px;
+                font-weight: 600;
+            }
+
+            .card {
+                background: #ffffff;
+                border: 1px solid #e2e8f0;
+                border-radius: 16px;
+                padding: 32px;
+                width: 100%;
+                max-width: 380px;
+                box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -2px rgba(0, 0, 0, 0.1);
+            }
+
+            .card-header {
+                text-align: center;
+                margin-bottom: 24px;
+            }
+
+            .card-header .icon {
+                width: 64px;
+                height: 64px;
                 background: #fef3c7;
                 border-radius: 50%;
                 display: flex;
                 align-items: center;
                 justify-content: center;
-                animation: pulse 2s infinite;
+                margin: 0 auto 16px;
             }
 
-            @keyframes pulse {
-                0%,
-                100% {
-                    transform: scale(1);
-                }
-                50% {
-                    transform: scale(1.05);
-                }
-            }
-
-            .icon svg {
-                width: 40px;
-                height: 40px;
+            .card-header .icon svg {
+                width: 32px;
+                height: 32px;
                 color: #f59e0b;
             }
 
-            h1 {
+            .card-header h2 {
                 color: #1e3a8a;
-                font-size: 24px;
+                font-size: 20px;
                 font-weight: 600;
-                margin-bottom: 12px;
-            }
-
-            p {
-                color: #64748b;
-                font-size: 16px;
-                line-height: 1.6;
-                margin-bottom: 24px;
-            }
-
-            .btn {
-                display: inline-flex;
-                align-items: center;
-                justify-content: center;
-                gap: 8px;
-                background: #1e3a8a;
-                color: white;
-                padding: 12px 24px;
-                border-radius: 10px;
-                text-decoration: none;
-                font-weight: 500;
-                transition: all 0.2s;
-                border: none;
-                cursor: pointer;
-                font-size: 16px;
-                margin: 5px;
-            }
-
-            .btn:hover {
-                background: #1e40af;
-                transform: translateY(-2px);
-            }
-
-            .btn:active {
-                transform: translateY(0);
-            }
-
-            .btn-secondary {
-                background: #64748b;
-            }
-
-            .btn-secondary:hover {
-                background: #475569;
-            }
-
-            .status {
-                margin-top: 24px;
-                padding: 12px;
-                background: #f1f5f9;
-                border-radius: 10px;
-                font-size: 14px;
-                color: #64748b;
-            }
-
-            .status.online {
-                background: #dcfce7;
-                color: #16a34a;
-            }
-
-            .logo {
-                margin-bottom: 20px;
-            }
-
-            .logo img {
-                height: 40px;
-            }
-
-            .offline-info {
-                margin-top: 20px;
-                padding: 16px;
-                background: #eff6ff;
-                border-radius: 10px;
-                border-left: 4px solid #3b82f6;
-                text-align: left;
-            }
-
-            .offline-info h3 {
-                color: #1e3a8a;
-                font-size: 14px;
                 margin-bottom: 8px;
             }
 
-            .offline-info ul {
+            .card-header p {
                 color: #64748b;
-                font-size: 13px;
-                padding-left: 20px;
+                font-size: 14px;
             }
 
-            .offline-info li {
-                margin-bottom: 4px;
+            .status-box {
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 12px 16px;
+                margin-bottom: 20px;
+                display: flex;
+                align-items: center;
+                gap: 10px;
+                font-size: 13px;
+                color: #64748b;
+            }
+
+            .status-box.online {
+                background: #f0fdf4;
+                border-color: #bbf7d0;
+                color: #16a34a;
+            }
+
+            .status-box .dot {
+                width: 8px;
+                height: 8px;
+                border-radius: 50%;
+                background: #94a3b8;
+                animation: pulse-dot 2s infinite;
+            }
+
+            .status-box.online .dot {
+                background: #22c55e;
+            }
+
+            @keyframes pulse-dot {
+                0%, 100% { opacity: 1; }
+                50% { opacity: 0.4; }
+            }
+
+            .btn {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                gap: 8px;
+                width: 100%;
+                padding: 12px 20px;
+                border-radius: 9999px;
+                font-size: 14px;
+                font-weight: 500;
+                cursor: pointer;
+                transition: all 0.2s;
+                border: none;
+            }
+
+            .btn-primary {
+                background: #1e3a8a;
+                color: white;
+            }
+
+            .btn-primary:hover {
+                background: #1e40af;
+            }
+
+            .btn-secondary {
+                background: transparent;
+                color: #64748b;
+                border: 1px solid #e2e8f0;
+                margin-top: 10px;
+            }
+
+            .btn-secondary:hover {
+                background: #f8fafc;
+                color: #1e293b;
+            }
+
+            .btn svg {
+                width: 18px;
+                height: 18px;
+            }
+
+            .info-section {
+                margin-top: 20px;
+                padding-top: 20px;
+                border-top: 1px solid #e2e8f0;
+            }
+
+            .info-section h3 {
+                font-size: 12px;
+                color: #94a3b8;
+                text-transform: uppercase;
+                letter-spacing: 0.5px;
+                margin-bottom: 12px;
+            }
+
+            .info-list {
+                list-style: none;
+            }
+
+            .info-list li {
+                display: flex;
+                align-items: center;
+                gap: 8px;
+                font-size: 13px;
+                color: #64748b;
+                padding: 6px 0;
+            }
+
+            .info-list li svg {
+                width: 16px;
+                height: 16px;
+                color: #22c55e;
+                flex-shrink: 0;
             }
 
             .pending-badge {
                 display: none;
-                margin-top: 16px;
-                padding: 10px 16px;
                 background: #fef3c7;
+                border: 1px solid #fcd34d;
                 border-radius: 8px;
+                padding: 12px 16px;
+                margin-bottom: 16px;
+                font-size: 13px;
                 color: #92400e;
-                font-size: 14px;
             }
 
             .pending-badge.show {
                 display: block;
             }
 
-            .buttons {
-                display: flex;
-                flex-wrap: wrap;
-                justify-content: center;
-                gap: 10px;
+            .cached-pages {
+                display: none;
+                margin-top: 16px;
+                background: #f8fafc;
+                border: 1px solid #e2e8f0;
+                border-radius: 8px;
+                padding: 12px;
+                max-height: 150px;
+                overflow-y: auto;
+            }
+
+            .cached-pages.show {
+                display: block;
+            }
+
+            .cached-pages h4 {
+                font-size: 12px;
+                color: #94a3b8;
+                margin-bottom: 8px;
+                text-transform: uppercase;
+            }
+
+            .cached-pages ul {
+                list-style: none;
+            }
+
+            .cached-pages li a {
+                display: block;
+                padding: 8px 12px;
+                color: #1e3a8a;
+                text-decoration: none;
+                font-size: 13px;
+                border-radius: 6px;
+                transition: background 0.2s;
+            }
+
+            .cached-pages li a:hover {
+                background: #e2e8f0;
+            }
+
+            .cached-pages .no-cache {
+                color: #94a3b8;
+                font-size: 12px;
+                padding: 8px;
+            }
+
+            .footer {
+                margin-top: 24px;
+                text-align: center;
+                font-size: 12px;
+                color: #94a3b8;
             }
         </style>
     </head>
     <body>
-        <div class="container">
-            <div class="logo">
-                <img
-                    src="/images/icons/icon-192x192.png"
-                    alt="WASION"
-                    style="height: 60px; border-radius: 12px"
-                    onerror="this.style.display='none'"
-                />
+        <div class="logo-section">
+            <img
+                src="/images/icons/icon-192x192.png"
+                alt="WASION"
+                onerror="this.style.display='none'"
+            />
+            <h1>Safety Observation</h1>
+        </div>
+
+        <div class="card">
+            <div class="card-header">
+                <div class="icon">
+                    <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414">
+                        </path>
+                    </svg>
+                </div>
+                <h2>Sin Conexión</h2>
+                <p>El servidor no está disponible en este momento</p>
             </div>
 
-            <div class="icon">
-                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path
-                        stroke-linecap="round"
-                        stroke-linejoin="round"
-                        stroke-width="2"
-                        d="M18.364 5.636a9 9 0 010 12.728m0 0l-2.829-2.829m2.829 2.829L21 21M15.536 8.464a5 5 0 010 7.072m0 0l-2.829-2.829m-4.243 2.829a4.978 4.978 0 01-1.414-2.83m-1.414 5.658a9 9 0 01-2.167-9.238m7.824 2.167a1 1 0 111.414 1.414m-1.414-1.414L3 3m8.293 8.293l1.414 1.414"
-                    ></path>
-                </svg>
+            <div class="status-box" id="status">
+                <span class="dot"></span>
+                <span id="statusText">Verificando conexión...</span>
             </div>
-
-            <h1>Modo Sin Conexión</h1>
-
-            <p>
-                No hay conexión a Internet. Algunas funciones están disponibles
-                de forma limitada.
-            </p>
 
             <div class="pending-badge" id="pendingBadge">
-                <strong>📋 Tienes observaciones pendientes</strong><br />
-                <span id="pendingCount">0</span> observación(es) se
-                sincronizarán cuando vuelvas a conectarte.
+                📋 <strong><span id="pendingCount">0</span> observación(es)</strong> guardadas localmente
             </div>
 
-            <div class="buttons">
-                <button class="btn" onclick="window.location.reload()">
-                    <svg
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"
-                        ></path>
-                    </svg>
-                    Reintentar
-                </button>
+            <button class="btn btn-primary" onclick="updateStatus()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15">
+                    </path>
+                </svg>
+                Reintentar conexión
+            </button>
 
-                <button class="btn btn-secondary" onclick="forceSync()">
-                    <svg
-                        width="20"
-                        height="20"
-                        fill="none"
-                        stroke="currentColor"
-                        viewBox="0 0 24 24"
-                    >
-                        <path
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
-                            d="M7 16V4m0 0L3 8m4-4l4 4m6 0v12m0 0l4-4m-4 4l-4-4"
-                        ></path>
-                    </svg>
-                    Forzar Sync
-                </button>
+            <button class="btn btn-secondary" onclick="toggleCachedPages()">
+                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                        d="M5 8h14M5 8a2 2 0 110-4h14a2 2 0 110 4M5 8v10a2 2 0 002 2h10a2 2 0 002-2V8m-9 4h4">
+                    </path>
+                </svg>
+                Ver páginas en caché
+            </button>
+
+            <div class="cached-pages" id="cachedPages">
+                <h4>Páginas disponibles offline</h4>
+                <ul id="cachedList"></ul>
             </div>
 
-            <div class="status" id="status">Verificando conexión...</div>
-
-            <div class="offline-info">
-                <h3>💡 Funciones disponibles offline:</h3>
-                <ul>
-                    <li>Ver páginas visitadas anteriormente (en caché)</li>
-                    <li>Crear observaciones (se guardan localmente)</li>
-                    <li>Ver imágenes e iconos cacheados</li>
+            <div class="info-section">
+                <h3>Disponible sin conexión</h3>
+                <ul class="info-list">
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Páginas visitadas anteriormente
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Crear observaciones (sync automático)
+                    </li>
+                    <li>
+                        <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                        </svg>
+                        Imágenes e iconos cacheados
+                    </li>
                 </ul>
             </div>
         </div>
 
+        <div class="footer">
+            © 2025 Wasion México. Todos los derechos reservados.
+        </div>
+
         <script>
             const statusEl = document.getElementById("status");
+            const statusText = document.getElementById("statusText");
             const pendingBadge = document.getElementById("pendingBadge");
             const pendingCount = document.getElementById("pendingCount");
+            let checkInterval = null;
+            let isChecking = false;
 
-            // Verificar estado de conexión
-            function updateStatus() {
-                if (navigator.onLine) {
-                    statusEl.textContent =
-                        "✓ Conexión detectada - Recargando...";
-                    statusEl.classList.add("online");
-                    setTimeout(() => window.location.reload(), 1500);
-                } else {
-                    statusEl.textContent = "○ Sin conexión a Internet";
-                    statusEl.classList.remove("online");
+            async function checkServerAvailable() {
+                try {
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 3000);
+
+                    const response = await fetch("/manifest.json", {
+                        method: "GET",
+                        cache: "no-store",
+                        signal: controller.signal,
+                    });
+
+                    clearTimeout(timeoutId);
+
+                    if (response.ok) {
+                        const serverCheck = await fetch("/sanctum/csrf-cookie", {
+                            method: "GET",
+                            cache: "no-store",
+                        }).catch(() => null);
+
+                        return serverCheck && (serverCheck.ok || serverCheck.status === 204);
+                    }
+                    return false;
+                } catch (error) {
+                    return false;
                 }
             }
 
-            // Obtener observaciones pendientes
-            async function checkPendingObservations() {
-                if (
-                    "serviceWorker" in navigator &&
-                    navigator.serviceWorker.controller
-                ) {
-                    const messageChannel = new MessageChannel();
+            async function updateStatus() {
+                if (isChecking) return;
+                isChecking = true;
 
+                if (!navigator.onLine) {
+                    statusText.textContent = "Sin conexión a Internet";
+                    statusEl.classList.remove("online");
+                    isChecking = false;
+                    return;
+                }
+
+                statusText.textContent = "Verificando servidor...";
+                statusEl.classList.remove("online");
+
+                const serverAvailable = await checkServerAvailable();
+
+                if (serverAvailable) {
+                    statusText.textContent = "Conectado - Redirigiendo...";
+                    statusEl.classList.add("online");
+
+                    if (checkInterval) {
+                        clearInterval(checkInterval);
+                        checkInterval = null;
+                    }
+
+                    setTimeout(() => {
+                        window.location.href = "/";
+                    }, 1000);
+                } else {
+                    statusText.textContent = "Servidor no disponible";
+                    statusEl.classList.remove("online");
+                }
+
+                isChecking = false;
+            }
+
+            async function checkPendingObservations() {
+                if ("serviceWorker" in navigator && navigator.serviceWorker.controller) {
+                    const messageChannel = new MessageChannel();
                     messageChannel.port1.onmessage = (event) => {
                         const count = event.data.count || 0;
                         if (count > 0) {
@@ -298,7 +433,6 @@
                             pendingCount.textContent = count;
                         }
                     };
-
                     navigator.serviceWorker.controller.postMessage(
                         { type: "GET_OFFLINE_COUNT" },
                         [messageChannel.port2]
@@ -306,38 +440,74 @@
                 }
             }
 
-            // Forzar sincronización
-            async function forceSync() {
-                if (
-                    "serviceWorker" in navigator &&
-                    navigator.serviceWorker.controller
-                ) {
-                    statusEl.textContent = "🔄 Intentando sincronizar...";
+            function toggleCachedPages() {
+                const cachedPagesDiv = document.getElementById("cachedPages");
 
-                    const messageChannel = new MessageChannel();
+                if (cachedPagesDiv.classList.contains("show")) {
+                    cachedPagesDiv.classList.remove("show");
+                    return;
+                }
 
-                    messageChannel.port1.onmessage = (event) => {
-                        if (event.data.success) {
-                            statusEl.textContent =
-                                "✅ Sincronización completada";
-                            checkPendingObservations();
-                        } else {
-                            statusEl.textContent = "❌ Error en sincronización";
-                        }
-                    };
+                loadCachedPages();
+                cachedPagesDiv.classList.add("show");
+            }
 
-                    navigator.serviceWorker.controller.postMessage(
-                        { type: "FORCE_SYNC" },
-                        [messageChannel.port2]
-                    );
+            async function loadCachedPages() {
+                const cachedList = document.getElementById("cachedList");
+                cachedList.innerHTML = '<li class="no-cache">Cargando...</li>';
+
+                try {
+                    const cacheNames = await caches.keys();
+                    let allUrls = [];
+
+                    for (const cacheName of cacheNames) {
+                        const cache = await caches.open(cacheName);
+                        const keys = await cache.keys();
+                        keys.forEach((request) => {
+                            const url = new URL(request.url);
+                            if (!url.pathname.match(/\.(js|css|png|jpg|jpeg|gif|svg|webp|woff|woff2|ttf|ico|json)$/i)) {
+                                allUrls.push(url.pathname);
+                            }
+                        });
+                    }
+
+                    allUrls = [...new Set(allUrls)].filter(u => u !== '/offline.html').sort();
+
+                    if (allUrls.length === 0) {
+                        cachedList.innerHTML = '<li class="no-cache">No hay páginas en caché</li>';
+                    } else {
+                        cachedList.innerHTML = allUrls.map((url) => {
+                            const name = url === "/" ? "Inicio" : url.split('/').filter(Boolean).join(' › ');
+                            return `<li><a href="${url}">${name}</a></li>`;
+                        }).join("");
+                    }
+                } catch (error) {
+                    cachedList.innerHTML = '<li class="no-cache">Error al cargar caché</li>';
                 }
             }
 
-            window.addEventListener("online", updateStatus);
-            window.addEventListener("offline", updateStatus);
+            window.addEventListener("online", () => {
+                updateStatus();
+                // Solo verificar automáticamente cada 30 segundos para no sobrecargar
+                if (!checkInterval) {
+                    checkInterval = setInterval(updateStatus, 30000);
+                }
+            });
 
+            window.addEventListener("offline", () => {
+                if (checkInterval) {
+                    clearInterval(checkInterval);
+                    checkInterval = null;
+                }
+                updateStatus();
+            });
+
+            // Verificar una vez al cargar
             updateStatus();
             checkPendingObservations();
+
+            // No iniciar intervalo automático - el usuario puede hacer click en "Reintentar"
+            // Esto reduce significativamente las peticiones al servidor
         </script>
     </body>
 </html>
