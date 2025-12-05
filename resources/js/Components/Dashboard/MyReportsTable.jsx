@@ -22,8 +22,7 @@ export default function MyReportsTable({ observations, onRowClick }) {
                 </thead>
                 <tbody>
                     {observations.map((obs) => {
-                        const isReadyToClose =
-                            obs.reviewed_at && obs.status === "en_progreso";
+                        const isReadyToClose = obs.status === "en_progreso";
                         return (
                             <tr
                                 key={obs.id}

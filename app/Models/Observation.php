@@ -13,6 +13,7 @@ class Observation extends Model
         'user_id',
         'area_id',
         'observation_date',
+        'payroll_number',
         'observed_person',
         'observation_type',
         'description',

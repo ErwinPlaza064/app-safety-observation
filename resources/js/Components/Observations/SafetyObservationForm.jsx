@@ -38,6 +38,7 @@ export default function SafetyObservationForm({
         observation_date: savedDraft?.observation_date
             ? savedDraft.observation_date.split("T")[0]
             : new Date().toISOString().split("T")[0],
+        payroll_number: savedDraft?.payroll_number || "",
         observed_person: savedDraft?.observed_person || "",
         area_id:
             savedDraft?.area_id ||
@@ -76,6 +77,7 @@ export default function SafetyObservationForm({
         formData.description,
         formData.category_ids,
         formData.observation_type,
+        formData.payroll_number,
         formData.observed_person,
         formData.area_id,
         formData.observation_date,

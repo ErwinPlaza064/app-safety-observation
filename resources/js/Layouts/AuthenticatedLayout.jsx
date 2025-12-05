@@ -139,23 +139,27 @@ export default function AuthenticatedLayout({
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
-                            <div>
-                                <NotificationBell
-                                    user={user}
-                                    count={notificationCount}
-                                    list={notifications}
-                                />
-                            </div>
+                            {(user.is_ehs_manager || user.is_super_admin) && (
+                                <div>
+                                    <NotificationBell
+                                        user={user}
+                                        count={notificationCount}
+                                        list={notifications}
+                                    />
+                                </div>
+                            )}
                         </div>
 
                         <div className="flex items-center -me-2 sm:hidden">
-                            <div>
-                                <NotificationBell
-                                    user={user}
-                                    count={notificationCount}
-                                    list={notifications}
-                                />
-                            </div>
+                            {(user.is_ehs_manager || user.is_super_admin) && (
+                                <div>
+                                    <NotificationBell
+                                        user={user}
+                                        count={notificationCount}
+                                        list={notifications}
+                                    />
+                                </div>
+                            )}
 
                             <button
                                 onClick={() =>

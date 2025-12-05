@@ -21,6 +21,7 @@ class ObservationController extends Controller
     {
         $validated = $request->validate([
             'observation_date' => 'required|date',
+            'payroll_number' => 'nullable|string|max:20',
             'observed_person' => 'nullable|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
@@ -40,6 +41,7 @@ class ObservationController extends Controller
         if ($observation) {
             $observation->update([
                 'observation_date' => $validated['observation_date'],
+                'payroll_number' => $validated['payroll_number'],
                 'observed_person' => $validated['observed_person'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
@@ -53,6 +55,7 @@ class ObservationController extends Controller
             $observation = Observation::create([
                 'user_id' => $user->id,
                 'observation_date' => $validated['observation_date'],
+                'payroll_number' => $validated['payroll_number'],
                 'observed_person' => $validated['observed_person'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
@@ -93,6 +96,7 @@ class ObservationController extends Controller
 
         $validated = $request->validate([
             'observation_date' => 'required|date',
+            'payroll_number' => 'nullable|string|max:20',
             'observed_person' => 'nullable|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
@@ -105,6 +109,7 @@ class ObservationController extends Controller
 
         $observation->update([
             'observation_date' => $validated['observation_date'],
+            'payroll_number' => $validated['payroll_number'],
             'observed_person' => $validated['observed_person'],
             'area_id' => $validated['area_id'],
             'observation_type' => $validated['observation_type'],

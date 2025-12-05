@@ -161,7 +161,7 @@ export default function EmployeeView({
                                     : "text-gray-600 dark:text-gray-300"
                             }`}
                         >
-                            Listas para Cerrar
+                            Abiertas
                         </h3>
                         <div
                             className={`p-1 rounded-full ${
@@ -208,7 +208,7 @@ export default function EmployeeView({
                         >
                             {employeeNotifications.length > 0
                                 ? "¡Puedes cerrar!"
-                                : "Revisadas por EHS"}
+                                : "En progreso"}
                         </span>
                     </div>
                     {employeeNotifications.length > 0 && (
@@ -296,8 +296,8 @@ export default function EmployeeView({
                 reports={employeeNotifications}
                 onClose={() => setShowReadyToCloseModal(false)}
                 onRowClick={handleModalRowClick}
-                customTitle="Listas para Cerrar"
-                customSubtitle="Estas observaciones ya fueron revisadas por EHS y puedes marcarlas como cerradas"
+                customTitle="Observaciones Abiertas"
+                customSubtitle="Estas observaciones están en progreso y puedes marcarlas como cerradas"
             />
 
             <ObservationDetailsModal

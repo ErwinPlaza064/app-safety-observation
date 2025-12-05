@@ -73,19 +73,35 @@ export default function ObserverInfoStep({ formData, onChange }) {
                 </div>
             </div>
 
-            <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Persona Observada/Numero Nomina o Título de la Situación
-                </label>
-                <input
-                    type="text"
-                    placeholder="Nombre de la persona observada o Titulo de la situación"
-                    value={formData.observed_person}
-                    onChange={(e) =>
-                        onChange("observed_person", e.target.value)
-                    }
-                    className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
-                />
+            <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
+                <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        N. Nómina
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Número de nómina"
+                        value={formData.payroll_number}
+                        onChange={(e) =>
+                            onChange("payroll_number", e.target.value)
+                        }
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
+                    />
+                </div>
+                <div>
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Persona Observada o Título de la Situación
+                    </label>
+                    <input
+                        type="text"
+                        placeholder="Nombre de la persona observada o Título de la situación"
+                        value={formData.observed_person}
+                        onChange={(e) =>
+                            onChange("observed_person", e.target.value)
+                        }
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
+                    />
+                </div>
             </div>
         </div>
     );
