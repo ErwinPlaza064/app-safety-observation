@@ -82,15 +82,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
         setParams({ ...params, [e.target.name]: e.target.value });
     };
 
-    const handleRowClick = async (obs) => {
-        if (obs.status === "en_progreso" && !obs.reviewed_at) {
-            try {
-                await axios.post(route("observations.mark-reviewed", obs.id));
-                obs.reviewed_at = new Date().toISOString();
-            } catch (error) {
-                console.log("Error marcando como revisada:", error);
-            }
-        }
+    const handleRowClick = (obs) => {
         setSelectedObservation(obs);
     };
 
@@ -554,25 +546,6 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                             });
                         }, 400);
                     } else {
-                        // Marcar como revisada si está en progreso
-                        if (
-                            item.status === "en_progreso" &&
-                            !item.reviewed_at
-                        ) {
-                            axios
-                                .post(
-                                    route("observations.mark-reviewed", item.id)
-                                )
-                                .then(() => {
-                                    item.reviewed_at = new Date().toISOString();
-                                })
-                                .catch((error) => {
-                                    console.log(
-                                        "Error marcando como revisada:",
-                                        error
-                                    );
-                                });
-                        }
                         setTimeout(() => setSelectedObservation(item), 100);
                     }
                 }}

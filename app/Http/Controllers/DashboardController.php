@@ -91,7 +91,7 @@ class DashboardController extends Controller
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                                         ->where('is_draft', false)
-                                        ->with(['area', 'user', 'images', 'categories', 'reviewedByUser'])
+                                        ->with(['area', 'user', 'images', 'categories'])
                                         ->latest('observation_date')
                                         ->take(10)
                                         ->get();
@@ -111,7 +111,7 @@ class DashboardController extends Controller
             $openObservations = Observation::where('user_id', $user->id)
                 ->where('is_draft', false)
                 ->where('status', 'en_progreso')
-                ->with(['area', 'reviewedByUser'])
+                ->with(['area'])
                 ->latest('created_at')
                 ->get();
 

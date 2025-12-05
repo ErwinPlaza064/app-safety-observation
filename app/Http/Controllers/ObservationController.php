@@ -11,7 +11,6 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 use App\Exports\ObservationsExport;
 use Maatwebsite\Excel\Facades\Excel;
 use Barryvdh\DomPDF\Facade\Pdf;
-use App\Notifications\ObservationReviewedNotification;
 
 class ObservationController extends Controller
 {
@@ -149,29 +148,12 @@ class ObservationController extends Controller
 
     public function show(Observation $observation)
     {
-        $user = Auth::user();
-
-        // Si es un EHS manager viendo la observación y aún no ha sido revisada, marcarla como revisada
-        if ($user->is_ehs_manager && !$observation->reviewed_at && $observation->status === 'en_progreso') {
-            $observation->update([
-                'reviewed_at' => now(),
-                'reviewed_by' => $user->id,
-            ]);
-
-            // Cargar el área para la notificación
-            $observation->load('area');
-
-            // Enviar notificación por correo al empleado que creó la observación
-            $observation->user->notify(new ObservationReviewedNotification($observation, $user));
-        }
-
         $observation->load([
             'user',
             'area',
             'categories',
             'images',
-            'closedByUser',
-            'reviewedByUser'
+            'closedByUser'
         ]);
 
         return Inertia::render('Observations/Show', [
@@ -231,41 +213,6 @@ class ObservationController extends Controller
         ]);
 
         return redirect()->back()->with('success', 'Observación reabierta');
-    }
-
-    public function markAsReviewed(Observation $observation)
-    {
-        $user = Auth::user();
-
-        // Solo usuarios EHS pueden marcar como revisado
-        if (!$user->is_ehs_manager) {
-            abort(403);
-        }
-
-        // Solo marcar si aún no ha sido revisada y está en progreso
-        if (!$observation->reviewed_at && $observation->status === 'en_progreso') {
-            $observation->update([
-                'reviewed_at' => now(),
-                'reviewed_by' => $user->id,
-            ]);
-
-            // Cargar relaciones necesarias para la notificación
-            $observation->load(['user', 'area']);
-
-            // Enviar notificación por correo al empleado que creó la observación
-            $observation->user->notify(new ObservationReviewedNotification($observation, $user));
-
-            return response()->json([
-                'success' => true,
-                'message' => 'Observación marcada como revisada',
-                'reviewed_at' => $observation->reviewed_at->format('d/m/Y H:i'),
-            ]);
-        }
-
-        return response()->json([
-            'success' => false,
-            'message' => 'La observación ya fue revisada anteriormente',
-        ]);
     }
 
     public function destroy(Observation $observation)

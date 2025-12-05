@@ -2,13 +2,11 @@ import { useState, useEffect, useRef } from "react";
 import { Link } from "@inertiajs/react";
 import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
-import { FiCheckCircle } from "react-icons/fi";
 
 export default function NotificationBell({ user, count = 0, list = [] }) {
-    const isEhsManager = user.is_ehs_manager && !user.is_super_admin;
-    const isEmployee = !user.is_ehs_manager && !user.is_super_admin;
+    const isEhsManager = user.is_ehs_manager || user.is_super_admin;
 
-    if (!isEhsManager && !isEmployee) return null;
+    if (!isEhsManager) return null;
 
     const [badgeCount, setBadgeCount] = useState(0);
     const [viewedNotifications, setViewedNotifications] = useState(new Set());
@@ -19,7 +17,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            if (isEmployee && count > 0) {
+            if (count > 0) {
                 setBadgeCount(count);
             }
             prevCountRef.current = count;
@@ -66,67 +64,6 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
             hour: "2-digit",
             minute: "2-digit",
         });
-    };
-
-    const renderEmployeeNotification = (notif) => {
-        const isNew = newNotifications.has(notif.id);
-        return (
-            <Dropdown.Link
-                key={notif.id}
-                href={route("observations.show", notif.id)}
-                className={`relative transition-all border-b border-gray-50 dark:border-gray-700 ${
-                    isNew
-                        ? "bg-green-50 dark:bg-green-900/30 border-l-4 border-l-green-500 dark:border-l-green-400 shadow-md hover:shadow-lg"
-                        : "hover:bg-green-50 dark:hover:bg-green-900/20"
-                }`}
-            >
-                <div className="flex flex-col gap-1 py-1">
-                    <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                            {isNew && (
-                                <span className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></span>
-                            )}
-                            <FiCheckCircle className="w-4 h-4 text-green-600 dark:text-green-400" />
-                            <span className="text-xs font-bold text-green-600 uppercase dark:text-green-400">
-                                Lista para cerrar
-                            </span>
-                        </div>
-                        <div className="flex items-center gap-1">
-                            {isNew && (
-                                <span className="px-1.5 py-0.5 text-[9px] font-bold text-white bg-green-500 rounded-full uppercase">
-                                    Nueva
-                                </span>
-                            )}
-                        </div>
-                    </div>
-
-                    <span
-                        className={`text-sm font-medium truncate ${
-                            isNew
-                                ? "text-gray-800 dark:text-white font-semibold"
-                                : "text-gray-600 dark:text-gray-300"
-                        }`}
-                    >
-                        {notif.description?.substring(0, 50)}...
-                    </span>
-
-                    <div className="flex items-center justify-between">
-                        <span className="text-xs text-blue-500 dark:text-blue-400">
-                            {notif.area?.name || "Sin área"}
-                        </span>
-                        <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                            Revisado: {timeAgo(notif.reviewed_at)}
-                        </span>
-                    </div>
-
-                    {notif.reviewed_by_user && (
-                        <span className="text-[10px] text-gray-500 dark:text-gray-400">
-                            Por: {notif.reviewed_by_user.name}
-                        </span>
-                    )}
-                </div>
-            </Dropdown.Link>
-        );
     };
 
     const renderEhsNotification = (notif) => {
@@ -198,11 +135,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                         <BiBell className="w-7 h-7 lg:w-6 lg:h-6" />
 
                         {badgeCount > 0 && (
-                            <span
-                                className={`absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white rounded-full animate-pulse border-2 border-white dark:border-gray-800 ${
-                                    isEmployee ? "bg-green-500" : "bg-red-500"
-                                }`}
-                            >
+                            <span className="absolute top-0 right-0 flex items-center justify-center w-4 h-4 text-[10px] font-bold text-white bg-red-500 rounded-full animate-pulse border-2 border-white dark:border-gray-800">
                                 {badgeCount}
                             </span>
                         )}
@@ -210,30 +143,18 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                 </Dropdown.Trigger>
 
                 <Dropdown.Content width="80">
-                    <div
-                        className={`px-4 py-2 text-xs font-semibold uppercase border-b border-gray-200 dark:border-gray-600 ${
-                            isEmployee
-                                ? "text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800"
-                                : "text-gray-400 dark:text-gray-500 bg-gray-50 dark:bg-gray-800"
-                        }`}
-                    >
-                        {isEmployee ? "Listas para Cerrar" : "Recientes"}
+                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-200 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
+                        Recientes
                     </div>
 
                     <div className="overflow-y-auto max-h-64">
                         {list.length > 0 ? (
                             list
                                 .slice(0, 5)
-                                .map((notif) =>
-                                    isEmployee
-                                        ? renderEmployeeNotification(notif)
-                                        : renderEhsNotification(notif)
-                                )
+                                .map((notif) => renderEhsNotification(notif))
                         ) : (
                             <div className="px-4 py-6 text-sm text-center text-gray-500 dark:text-gray-400">
-                                {isEmployee
-                                    ? "No tienes observaciones revisadas pendientes de cerrar"
-                                    : "No hay notificaciones recientes"}
+                                No hay notificaciones recientes
                             </div>
                         )}
                     </div>
@@ -252,9 +173,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                             href={route("dashboard")}
                             className="block w-full px-4 py-2 text-xs font-bold text-center text-blue-600 uppercase transition-colors dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30"
                         >
-                            {isEmployee
-                                ? "Ver mis Reportes"
-                                : "Ver Todo el Tablero"}
+                            Ver Todo el Tablero
                         </Link>
                     </div>
                 </Dropdown.Content>

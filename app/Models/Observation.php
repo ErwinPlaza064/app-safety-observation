@@ -23,15 +23,12 @@ class Observation extends Model
         'closed_at',
         'closed_by',
         'closure_notes',
-        'reviewed_at',
-        'reviewed_by',
     ];
 
     protected $casts = [
         'observation_date' => 'date',
         'is_draft' => 'boolean',
         'closed_at' => 'datetime',
-        'reviewed_at' => 'datetime',
     ];
 
 
@@ -59,11 +56,6 @@ class Observation extends Model
     public function closedByUser()
     {
         return $this->belongsTo(User::class, 'closed_by');
-    }
-
-    public function reviewedByUser()
-    {
-        return $this->belongsTo(User::class, 'reviewed_by');
     }
 
     public function scopeSubmitted($query)
