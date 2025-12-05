@@ -284,13 +284,23 @@
                     <div class="info-value">{{ $obs->area->name }}</div>
                 </div>
             </div>
-            @if($obs->observed_person)
+            @if($obs->payroll_number || $obs->observed_person)
             <div class="info-row">
+                @if($obs->payroll_number)
+                <div class="info-item">
+                    <div class="info-label">N. Nómina:</div>
+                    <div class="info-value">{{ $obs->payroll_number }}</div>
+                </div>
+                @endif
+                @if($obs->observed_person)
                 <div class="info-item">
                     <div class="info-label">Persona observada:</div>
                     <div class="info-value">{{ $obs->observed_person }}</div>
                 </div>
+                @endif
+                @if(!$obs->payroll_number || !$obs->observed_person)
                 <div class="info-item"></div>
+                @endif
             </div>
             @endif
         </div>

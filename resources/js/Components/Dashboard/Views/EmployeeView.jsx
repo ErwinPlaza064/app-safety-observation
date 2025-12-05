@@ -114,12 +114,12 @@ export default function EmployeeView({
 
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
                 <div
-                    onClick={() => handleCardClick("en_progreso")}
+                    onClick={() => handleCardClick("all")}
                     className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm dark:bg-gray-800 dark:border-blue-400 sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
                 >
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
-                            En Progreso
+                            Total de Reportes
                         </h3>
                         <svg
                             className="w-6 h-6 text-blue-500 dark:text-blue-400"
@@ -131,16 +131,16 @@ export default function EmployeeView({
                                 strokeLinecap="round"
                                 strokeLinejoin="round"
                                 strokeWidth={2}
-                                d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"
+                                d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
                             />
                         </svg>
                     </div>
                     <div className="flex items-end justify-between">
                         <span className="text-3xl font-bold text-gray-800 dark:text-gray-100 sm:text-4xl">
-                            {userStats?.in_progress || 0}
+                            {userStats?.total || 0}
                         </span>
                         <span className="text-xs text-gray-500 dark:text-gray-400 sm:text-sm">
-                            En seguimiento
+                            Registros totales
                         </span>
                     </div>
                 </div>

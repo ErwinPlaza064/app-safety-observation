@@ -39,6 +39,53 @@ export default function DrillDownModal({
                 <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                     {data && data.length > 0 ? (
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                            {type === "participation" && (
+                                <>
+                                    <thead className="sticky top-0 text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
+                                        <tr>
+                                            <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                Empleado
+                                            </th>
+                                            <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                Área
+                                            </th>
+                                            <th className="px-4 py-2 text-right bg-gray-50 dark:bg-gray-700">
+                                                Reportes
+                                            </th>
+                                        </tr>
+                                    </thead>
+                                    <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                        {data.map((item, index) => (
+                                            <tr
+                                                key={index}
+                                                onClick={() =>
+                                                    onItemClick &&
+                                                    onItemClick(item)
+                                                }
+                                                className="transition-colors border-l-4 border-transparent cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-500 dark:hover:border-purple-400"
+                                            >
+                                                <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                                                    <div>
+                                                        {item.name}
+                                                        <div className="text-xs font-normal text-gray-500 dark:text-gray-400">
+                                                            {item.email}
+                                                        </div>
+                                                    </div>
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                                    {item.area}
+                                                </td>
+                                                <td className="px-4 py-3 text-right">
+                                                    <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300">
+                                                        {item.count}
+                                                    </span>
+                                                </td>
+                                            </tr>
+                                        ))}
+                                    </tbody>
+                                </>
+                            )}
+
                             {type === "recidivism" && (
                                 <>
                                     <thead className="sticky top-0 text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">

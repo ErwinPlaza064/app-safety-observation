@@ -9,7 +9,13 @@ import { IoMdClose } from "react-icons/io";
 import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
 import ObservationHoverCard from "@/Components/Dashboard/ObservationHoverCard";
 
-export default function EhsManagerView({ user, stats, areas, filters }) {
+export default function EhsManagerView({
+    user,
+    stats,
+    areas,
+    filters,
+    canViewAllPlants,
+}) {
     const [customDrillDown, setCustomDrillDown] = useState({
         title: "",
         data: [],
@@ -129,8 +135,8 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         Estadísticas y Métricas de Seguridad
                     </p>
                 </div>
-                <div className="flex gap-3 mt-4 md:mt-0">
-                    <div className="flex items-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-full shadow-sm">
+                <div className="flex flex-col w-full gap-3 mt-4 md:flex-row md:w-auto md:mt-0">
+                    <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-full shadow-sm">
                         <span className="relative flex w-2.5 h-2.5">
                             <span className="absolute inline-flex w-full h-full bg-blue-400 rounded-full opacity-75 animate-ping"></span>
                             <span className="relative inline-flex w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
@@ -140,9 +146,29 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         </span>
                     </div>
                     <a
+                        href={route("observations.export.csv")}
+                        target="_blank"
+                        className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800 flex items-center justify-center"
+                    >
+                        <svg
+                            className="w-4 h-4 mr-2"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"
+                            />
+                        </svg>
+                        Exportar CSV
+                    </a>
+                    <a
                         href={route("observations.export.pdf")}
                         target="_blank"
-                        className="px-4 py-2 bg-[#1e3a8a] text-white rounded-lg text-sm font-medium hover:bg-blue-900 flex items-center"
+                        className="px-4 py-2 bg-[#1e3a8a] text-white rounded-lg text-sm font-medium hover:bg-blue-900 flex items-center justify-center"
                     >
                         <svg
                             className="w-4 h-4 mr-2"
@@ -161,7 +187,7 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </a>
                 </div>
             </div>
-            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+            <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
                 <div
                     onClick={() => setActiveMetric("total")}
                     className="cursor-pointer transition-transform hover:scale-[1.02]"
@@ -214,66 +240,99 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         }
                     />
                 </div>
-            </div>
-            <div className="grid grid-cols-1 gap-6 lg:grid-cols-3">
-                <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
-                    <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        <svg
-                            className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
-                        >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                            />
-                        </svg>
-                        Distribución por Planta
-                    </h3>
-                    <div className="space-y-4">
-                        {stats.by_plant.map((plant, index) => (
-                            <div
-                                key={index}
-                                onClick={() =>
-                                    handleGenericClick(
-                                        `Reportes: ${plant.name}`,
-                                        plant.list
-                                    )
-                                }
-                                className="cursor-pointer group"
+                <div
+                    onClick={() => setActiveMetric("participation")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                    title={`${stats.employees_reporting} de ${stats.total_employees} empleados han reportado`}
+                >
+                    <EhsMetricCard
+                        title="Participación"
+                        value={`${stats.participation_rate}%`}
+                        subtitle="Empleados activos"
+                        color="purple"
+                        icon={
+                            <svg
+                                className="w-6 h-6 text-purple-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                             >
-                                <div className="flex justify-between mb-1 text-sm">
-                                    <span className="font-medium text-gray-600 transition-colors dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
-                                        {plant.name}
-                                    </span>
-                                    <span className="font-semibold text-gray-800 dark:text-gray-100">
-                                        {plant.count}
-                                    </span>
-                                </div>
-                                <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
-                                    <div
-                                        className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
-                                        style={{
-                                            width: `${
-                                                (plant.count /
-                                                    Math.max(
-                                                        ...stats.by_plant.map(
-                                                            (p) => p.count
-                                                        ),
-                                                        1
-                                                    )) *
-                                                100
-                                            }%`,
-                                        }}
-                                    ></div>
-                                </div>
-                            </div>
-                        ))}
-                    </div>
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
+                            </svg>
+                        }
+                    />
                 </div>
+            </div>
+            <div
+                className={`grid grid-cols-1 gap-6 ${
+                    canViewAllPlants ? "lg:grid-cols-3" : "lg:grid-cols-2"
+                }`}
+            >
+                {canViewAllPlants && (
+                    <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
+                        <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <svg
+                                className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                            </svg>
+                            Distribución por Planta
+                        </h3>
+                        <div className="space-y-4">
+                            {stats.by_plant.map((plant, index) => (
+                                <div
+                                    key={index}
+                                    onClick={() =>
+                                        handleGenericClick(
+                                            `Reportes: ${plant.name}`,
+                                            plant.list
+                                        )
+                                    }
+                                    className="cursor-pointer group"
+                                >
+                                    <div className="flex justify-between mb-1 text-sm">
+                                        <span className="font-medium text-gray-600 transition-colors dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                            {plant.name}
+                                        </span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-100">
+                                            {plant.count}
+                                        </span>
+                                    </div>
+                                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
+                                        <div
+                                            className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
+                                            style={{
+                                                width: `${
+                                                    (plant.count /
+                                                        Math.max(
+                                                            ...stats.by_plant.map(
+                                                                (p) => p.count
+                                                            ),
+                                                            1
+                                                        )) *
+                                                    100
+                                                }%`,
+                                            }}
+                                        ></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
 
                 <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
                     <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -389,20 +448,21 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     </div>
 
                     <div className="flex flex-col w-full gap-2 sm:flex-row md:w-auto">
-                        <select
-                            name="area_id"
-                            value={params.area_id}
-                            onChange={handleFilterChange}
-                            className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
-                        >
-                            <option value="">Todas las Plantas</option>
-                            {areas &&
-                                areas.map((area) => (
+                        {areas && areas.length > 1 && (
+                            <select
+                                name="area_id"
+                                value={params.area_id}
+                                onChange={handleFilterChange}
+                                className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
+                            >
+                                <option value="">Filtrar por Planta</option>
+                                {areas.map((area) => (
                                     <option key={area.id} value={area.id}>
                                         {area.name}
                                     </option>
                                 ))}
-                        </select>
+                            </select>
+                        )}
 
                         <select
                             name="status"
@@ -517,6 +577,8 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         ? "Reportes Cerrados"
                         : activeMetric === "total"
                         ? "Total del Mes"
+                        : activeMetric === "participation"
+                        ? "Empleados que han Reportado"
                         : ""
                 }
                 data={
@@ -532,6 +594,8 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                         ? stats.closed_list
                         : activeMetric === "total"
                         ? stats.total_month_list
+                        : activeMetric === "participation"
+                        ? stats.employees_reporting_list
                         : []
                 }
                 type={activeMetric === "custom" ? "open" : activeMetric}
@@ -539,6 +603,14 @@ export default function EhsManagerView({ user, stats, areas, filters }) {
                     setActiveMetric(null);
                     if (activeMetric === "recidivism") {
                         setParams({ ...params, search: item.observed_person });
+                        setTimeout(() => {
+                            searchSectionRef.current?.scrollIntoView({
+                                behavior: "smooth",
+                                block: "center",
+                            });
+                        }, 400);
+                    } else if (activeMetric === "participation") {
+                        setParams({ ...params, search: item.name });
                         setTimeout(() => {
                             searchSectionRef.current?.scrollIntoView({
                                 behavior: "smooth",

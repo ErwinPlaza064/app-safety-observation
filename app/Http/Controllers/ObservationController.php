@@ -243,17 +243,20 @@ class ObservationController extends Controller
         $query = Observation::with(['user', 'area', 'categories'])->submitted();
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
-            $managerArea = Area::where('name', $user->area)->first();
-            $managerAreaId = $managerArea ? $managerArea->id : null;
+            $canViewAllPlants = $user->email === 'ehsplanta1@wasion.com';
 
-            if ($managerAreaId) {
-                $query->where('area_id', $managerAreaId);
-            } else {
+            if (!$canViewAllPlants) {
+                $managerArea = Area::where('name', $user->area)->first();
+                $managerAreaId = $managerArea ? $managerArea->id : null;
 
-                $query->when(request('area_id'), function ($q, $areaId) {
-                    $q->where('area_id', $areaId);
-                });
+                if ($managerAreaId) {
+                    $query->where('area_id', $managerAreaId);
+                }
             }
+
+            $query->when(request('area_id'), function ($q, $areaId) {
+                $q->where('area_id', $areaId);
+            });
         } else {
             $query->when(request('area_id'), function ($q, $areaId) {
                 $q->where('area_id', $areaId);
@@ -294,5 +297,16 @@ class ObservationController extends Controller
                   ->setPaper('a4', 'portrait');
 
         return $pdf->download('reporte_seguridad_' . date('Y-m-d') . '.pdf');
+    }
+
+    public function exportCsv(Request $request)
+    {
+        $query = $this->getFilteredQuery();
+
+        return Excel::download(
+            new ObservationsExport($query),
+            'reporte_seguridad_' . date('Y-m-d') . '.xlsx',
+            \Maatwebsite\Excel\Excel::XLSX
+        );
     }
 }

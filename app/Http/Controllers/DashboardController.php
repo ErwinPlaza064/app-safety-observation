@@ -123,12 +123,27 @@ class DashboardController extends Controller
         // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
 
-            $data['areas'] = Area::where('is_active', true)->get();
+            // Verificar si el usuario puede ver todas las plantas
+            $canViewAllPlants = $user->email === 'ehsplanta1@wasion.com';
+
+            // Si puede ver todas las plantas, mostrar todas; si no, solo su planta
+            if ($canViewAllPlants) {
+                $data['areas'] = Area::where('is_active', true)->get();
+            } else {
+                // Solo mostrar su propia planta
+                $userPlant = Area::where('name', $user->area)->first();
+                $data['areas'] = $userPlant ? collect([$userPlant]) : collect([]);
+            }
 
             $userPlant = Area::where('name', $user->area)->first();
             $defaultAreaId = $userPlant ? $userPlant->id : null;
 
-            $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
+            // Si el usuario NO puede ver todas las plantas, forzar su área por defecto
+            if (!$canViewAllPlants) {
+                $currentAreaId = $defaultAreaId;
+            } else {
+                $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
+            }
 
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [
@@ -164,10 +179,13 @@ class DashboardController extends Controller
                 ->take(20)
                 ->get();
 
-            $applyFilters = function($q) use ($currentAreaId) {
+            $applyFilters = function($q) use ($currentAreaId, $canViewAllPlants, $defaultAreaId) {
                 $q->submitted();
 
-                if ($currentAreaId) {
+                // Si no puede ver todas las plantas, siempre filtrar por su área
+                if (!$canViewAllPlants && $defaultAreaId) {
+                    $q->where('area_id', $defaultAreaId);
+                } elseif ($currentAreaId) {
                     $q->where('area_id', $currentAreaId);
                 }
 
@@ -231,6 +249,65 @@ class DashboardController extends Controller
 
             $repeatOffendersCount = $repeatOffendersList->count();
 
+            // Calcular índice de participación de empleados
+            $totalEmployees = User::where('is_ehs_manager', false)
+                ->where('is_super_admin', false)
+                ->count();
+
+            $employeesWhoReportedCount = User::where('is_ehs_manager', false)
+                ->where('is_super_admin', false)
+                ->whereHas('observations', function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                    $q->submitted();
+                    // Aplicar el mismo filtro de área que en las demás estadísticas
+                    if (!$canViewAllPlants && $defaultAreaId) {
+                        $q->where('area_id', $defaultAreaId);
+                    } elseif (request('area_id')) {
+                        $q->where('area_id', request('area_id'));
+                    }
+                })
+                ->count();
+
+            // Obtener listado de empleados que han reportado con sus observaciones
+            $employeesReportingList = User::where('is_ehs_manager', false)
+                ->where('is_super_admin', false)
+                ->whereHas('observations', function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                    $q->submitted();
+                    if (!$canViewAllPlants && $defaultAreaId) {
+                        $q->where('area_id', $defaultAreaId);
+                    } elseif (request('area_id')) {
+                        $q->where('area_id', request('area_id'));
+                    }
+                })
+                ->with(['observations' => function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId, $baseRelations) {
+                    $q->submitted()->with($baseRelations);
+                    if (!$canViewAllPlants && $defaultAreaId) {
+                        $q->where('area_id', $defaultAreaId);
+                    } elseif (request('area_id')) {
+                        $q->where('area_id', request('area_id'));
+                    }
+                }])
+                ->withCount(['observations' => function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                    $q->submitted();
+                    if (!$canViewAllPlants && $defaultAreaId) {
+                        $q->where('area_id', $defaultAreaId);
+                    } elseif (request('area_id')) {
+                        $q->where('area_id', request('area_id'));
+                    }
+                }])
+                ->orderByDesc('observations_count')
+                ->get()
+                ->map(function($employee) {
+                    return [
+                        'name' => $employee->name,
+                        'email' => $employee->email,
+                        'area' => $employee->area,
+                        'count' => $employee->observations_count,
+                        'list' => $employee->observations
+                    ];
+                });
+
+            $participationRate = $totalEmployees > 0 ? round(($employeesWhoReportedCount / $totalEmployees) * 100) : 0;
+
             // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas
             $observationsByPlant = Area::where('is_active', true)
             ->with(['observations' => function($q) use ($baseRelations) {
@@ -280,10 +357,16 @@ class DashboardController extends Controller
                 'high_risk_list' => $highRiskList,
                 'recidivism' => $repeatOffendersCount,
                 'recidivism_list' => $repeatOffendersList,
-                'by_plant' => $observationsByPlant,
+                'participation_rate' => $participationRate,
+                'employees_reporting' => $employeesWhoReportedCount,
+                'employees_reporting_list' => $employeesReportingList,
+                'total_employees' => $totalEmployees,
+                'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations
             ];
+
+            $data['canViewAllPlants'] = $canViewAllPlants;
 
             $data['filters'] = request()->only(['search', 'status']);
             $data['filters']['area_id'] = $currentAreaId;

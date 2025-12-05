@@ -22,6 +22,7 @@ export default function Dashboard({
     filteredReports,
     employeeNotifications,
     employeeNotificationCount,
+    canViewAllPlants,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -75,6 +76,7 @@ export default function Dashboard({
                                 stats={ehsStats}
                                 areas={areas}
                                 filters={filters}
+                                canViewAllPlants={canViewAllPlants}
                             />
                         ) : (
                             <EmptyState message="Cargando..." submessage="" />

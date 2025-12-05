@@ -26,14 +26,18 @@ El sistema está construido con una arquitectura moderna utilizando **Laravel 11
 -   **Reporte de Observaciones:** Formulario multi-pasos intuitivo para registrar actos inseguros, condiciones inseguras o actos seguros.
 -   **Autoguardado Inteligente:** Sistema de persistencia automática (drafts) que guarda el progreso cada 30 segundos o al detener la escritura, permitiendo retomar el reporte más tarde incluso tras recargar la página.
 -   **Evidencia Fotográfica:** Carga múltiple de imágenes para respaldar los reportes.
+-   **Campos Separados:** N. Nómina y Persona Observada como campos independientes para mejor trazabilidad.
+-   **Cierre Inmediato:** Los empleados pueden cerrar sus propias observaciones sin necesidad de aprobación.
 -   **Historial Personal:** Visualización de estatus de reportes propios (Abiertos/Cerrados).
 
 ### 📊 Para Gerentes EHS
 
--   **Dashboard Ejecutivo:** Vista centralizada con KPIs en tiempo real (Tasa de resolución, Reincidencia, Total del mes).
+-   **Dashboard Ejecutivo:** Vista centralizada con KPIs en tiempo real (Tasa de resolución, Riesgo Alto, Total del mes, Índice de Participación).
+-   **Índice de Participación:** Métrica que muestra qué porcentaje de empleados está reportando activamente.
 -   **Análisis de Datos:** Gráficas de distribución por planta y top de categorías críticas.
 -   **Gestión de Reportes:** Tabla detallada de observaciones recientes con modales de vista rápida.
--   **Exportación:** Generación de reportes en **PDF** y **CSV** (Excel) con un solo clic.
+-   **Control por Planta:** Gerentes EHS solo ven datos de su planta asignada (excepto cuenta privilegiada que ve todas).
+-   **Exportación:** Generación de reportes en **PDF** y **Excel (XLSX)** con formato profesional y filtros aplicados.
 
 ### 🛡️ Para Super Administradores
 
@@ -93,40 +97,32 @@ stateDiagram-v2
     Borrador --> Borrador: Autoguardado (30s)
     Borrador --> Abierta: Submit del formulario
 
-    Abierta --> Revisada: EHS Manager revisa
-
-    state notificacion <<fork>>
-    Revisada --> notificacion: Sistema notifica
-    notificacion --> ListaParaCerrar: 📧 Notificación al Empleado
-
-    ListaParaCerrar --> Cerrada: Empleado cierra su observación
+    Abierta --> Cerrada: Empleado cierra su observación
 
     Cerrada --> [*]: Caso finalizado
 
     note right of Borrador
         is_draft = true
         Sin folio asignado
+        Auto-guardado cada 30s
     end note
 
     note right of Abierta
         is_draft = false
-        Folio generado
-        status = 'open'
-    end note
-
-    note right of Revisada
-        reviewed_by = EHS Manager
-        reviewed_at = timestamp
+        Folio generado (OBS-YYYYMMDD-UserID-Timestamp)
+        status = 'en_progreso'
+        El empleado puede cerrarlo en cualquier momento
     end note
 
     note right of Cerrada
-        status = 'closed'
+        status = 'cerrada'
         closed_by = Empleado (creador)
         closed_at = timestamp
+        Opcional: closure_notes
     end note
 ```
 
-### 🔔 Flujo de Revisión y Notificación
+### 🔔 Flujo de Creación y Cierre de Observaciones
 
 ```mermaid
 sequenceDiagram
@@ -136,18 +132,23 @@ sequenceDiagram
     actor M as 👔 EHS Manager
 
     E->>S: Crea observación
-    S->>S: Genera folio único
-    S-->>E: ✅ Observación enviada
+    S->>S: Genera folio único (OBS-YYYYMMDD-UID-TS)
+    S-->>E: ✅ Observación enviada (status: en_progreso)
 
-    M->>S: Revisa observación
-    S->>S: Marca como revisada (reviewed_at)
-    S->>E: 📧 Notificación: "Lista para cerrar"
+    Note over E,M: La observación está disponible<br/>inmediatamente para consulta
 
-    Note over E,S: El empleado ve la notificación<br/>en su dashboard
+    M->>S: Consulta dashboard
+    S-->>M: Muestra estadísticas y observaciones
+
+    Note over E,S: El empleado puede cerrar<br/>su observación en cualquier momento
 
     E->>S: Cierra su observación
     S->>S: Registra cierre (closed_at, closed_by)
+    S->>S: Actualiza status a 'cerrada'
     S-->>E: ✅ Observación cerrada
+
+    M->>S: Consulta dashboard actualizado
+    S-->>M: Estadísticas reflejan el cambio
 ```
 
 ### 🗃️ Diagrama Entidad-Relación (ERD)
@@ -156,7 +157,6 @@ sequenceDiagram
 erDiagram
     USERS ||--o{ OBSERVATIONS : "crea"
     USERS ||--o{ OBSERVATIONS : "cierra"
-    USERS ||--o{ OBSERVATIONS : "revisa"
     OBSERVATIONS ||--o{ OBSERVATION_IMAGES : "tiene"
     OBSERVATIONS }o--o{ CATEGORIES : "pertenece"
     OBSERVATIONS }o--|| AREAS : "ubicada_en"
@@ -183,16 +183,15 @@ erDiagram
         int area_id FK
         string folio UK
         date observation_date
-        string observed_person
-        enum observation_type "unsafe_act|unsafe_condition|safe_act"
+        string payroll_number "N. Nómina"
+        string observed_person "Persona Observada"
+        enum observation_type "acto_inseguro|condicion_insegura|acto_seguro"
         text description
-        enum status "open|closed"
+        enum status "en_progreso|cerrada|borrador"
         boolean is_draft
         int closed_by FK
         datetime closed_at
         text closure_notes
-        int reviewed_by FK
-        datetime reviewed_at
     }
 
     OBSERVATION_IMAGES {
@@ -237,22 +236,23 @@ flowchart LR
         P1["Ver Dashboard"]
         P2["Crear Observaciones"]
         P3["Ver Observaciones Propias"]
-        P4["Ver Todas las Observaciones"]
-        P5["Revisar Observaciones"]
+        P4["Ver Observaciones de su Planta"]
+        P5["Ver Todas las Plantas (Solo ehsplanta1@wasion.com)"]
         P6["Cerrar Observaciones Propias"]
-        P7["Exportar Reportes PDF/CSV"]
+        P7["Exportar Reportes PDF/Excel"]
         P8["Gestionar Usuarios"]
         P9["Gestionar Áreas"]
         P10["Suspender/Reactivar Cuentas"]
         P11["Reenviar Email Verificación"]
+        P12["Ver Índice de Participación"]
     end
 
-    SA --> P1 & P2 & P3 & P8 & P9 & P10 & P11
-    EHS --> P1 & P2 & P3 & P4 & P5 & P7
+    SA --> P1 & P2 & P3 & P5 & P7 & P8 & P9 & P10 & P11
+    EHS --> P1 & P2 & P3 & P4 & P6 & P7 & P12
     EMP --> P1 & P2 & P3 & P6
 ```
 
-> **📌 Flujo de cierre:** El empleado crea la observación → EHS Manager la revisa y marca como "revisada" → El empleado recibe notificación → El empleado cierra su propia observación.
+> **📌 Flujo simplificado:** El empleado crea la observación → La observación queda disponible inmediatamente → EHS Manager puede ver estadísticas y reportes → El empleado puede cerrar su observación cuando lo considere necesario.
 
 ### 📊 Diagrama de Secuencia: Crear Observación
 
@@ -284,8 +284,8 @@ sequenceDiagram
     F->>F: Validar campos
     F->>I: POST /observations
     I->>C: store(request)
-    C->>C: Generar Folio único
-    C->>M: create(is_draft: false)
+    C->>C: Generar Folio único (OBS-YYYYMMDD-UserID-Timestamp)
+    C->>M: create(is_draft: false, status: 'en_progreso')
     M->>DB: INSERT observation
 
     alt Tiene imágenes
@@ -356,8 +356,7 @@ flowchart TB
 flowchart LR
     subgraph Trigger["🎯 Disparadores"]
         T1["Registro de Usuario"]
-        T2["Observación Revisada"]
-        T3["Verificación Email"]
+        T2["Verificación Email"]
     end
 
     subgraph Queue["📬 Cola de Jobs"]
@@ -375,7 +374,7 @@ flowchart LR
         Email["Bandeja Usuario"]
     end
 
-    T1 & T2 & T3 --> Job
+    T1 & T2 --> Job
     Job --> Check
     Check -->|config = smtp| SMTP
     Check -->|config = graph| Graph
@@ -421,8 +420,9 @@ flowchart TB
 -   **Estilos:** Tailwind CSS
 -   **Base de Datos:** MySQL / MariaDB
 -   **Paquetes Clave:**
-    -   `maatwebsite/excel`: Exportación a Excel/CSV.
+    -   `maatwebsite/excel`: Exportación a Excel/CSV con formato profesional.
     -   `barryvdh/laravel-dompdf`: Generación de reportes PDF.
+    -   `microsoft/microsoft-graph`: Integración con Microsoft Graph API para envío de emails.
     -   `react-icons`: Iconografía dinámica.
 
 ## ⚙️ Instalación y Configuración
