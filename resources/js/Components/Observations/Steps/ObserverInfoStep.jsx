@@ -1,4 +1,4 @@
-export default function ObserverInfoStep({ formData, onChange }) {
+export default function ObserverInfoStep({ formData, onChange, errors }) {
     return (
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="flex items-center mb-6">
@@ -76,21 +76,41 @@ export default function ObserverInfoStep({ formData, onChange }) {
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        N. Nómina
+                        N. Nómina <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        placeholder="Número de nómina"
+                        placeholder="00000"
                         value={formData.payroll_number}
-                        onChange={(e) =>
-                            onChange("payroll_number", e.target.value)
-                        }
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
+                        onChange={(e) => {
+                            const value = e.target.value.replace(/\D/g, ""); // Solo números
+                            if (value.length <= 5) {
+                                onChange("payroll_number", value);
+                            }
+                        }}
+                        maxLength={5}
+                        required
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 ${
+                            errors?.payroll_number
+                                ? "border-red-500 dark:border-red-500"
+                                : ""
+                        }`}
                     />
+                    {errors?.payroll_number && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.payroll_number}
+                        </p>
+                    )}
+                    {!errors?.payroll_number && (
+                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                            Exactamente 5 dígitos numéricos
+                        </p>
+                    )}
                 </div>
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Persona Observada o Título de la Situación
+                        Persona Observada o Título de la Situación{" "}
+                        <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
@@ -99,8 +119,18 @@ export default function ObserverInfoStep({ formData, onChange }) {
                         onChange={(e) =>
                             onChange("observed_person", e.target.value)
                         }
-                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400"
+                        required
+                        className={`w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 ${
+                            errors?.observed_person
+                                ? "border-red-500 dark:border-red-500"
+                                : ""
+                        }`}
                     />
+                    {errors?.observed_person && (
+                        <p className="mt-1 text-xs text-red-500">
+                            {errors.observed_person}
+                        </p>
+                    )}
                 </div>
             </div>
         </div>

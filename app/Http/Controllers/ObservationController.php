@@ -20,8 +20,8 @@ class ObservationController extends Controller
     {
         $validated = $request->validate([
             'observation_date' => 'required|date',
-            'payroll_number' => 'nullable|string|max:20',
-            'observed_person' => 'nullable|string|max:255',
+            'payroll_number' => 'required|digits:5',
+            'observed_person' => 'required|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
             'category_ids' => 'required|array|min:1',
@@ -30,6 +30,10 @@ class ObservationController extends Controller
             'photos' => 'nullable|array|max:5',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
             'is_draft' => 'boolean',
+        ], [
+            'payroll_number.required' => 'El número de nómina es obligatorio',
+            'payroll_number.digits' => 'El número de nómina debe tener exactamente 5 dígitos',
+            'observed_person.required' => 'La persona observada o título es obligatorio',
         ]);
 
         $user = Auth::user();

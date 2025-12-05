@@ -146,6 +146,24 @@ export default function SafetyObservationForm({
 
     const validateStep = (step) => {
         const newErrors = {};
+
+        if (step === 1) {
+            if (
+                !formData.payroll_number ||
+                formData.payroll_number.length !== 5
+            ) {
+                newErrors.payroll_number =
+                    "El número de nómina debe tener exactamente 5 dígitos";
+            }
+            if (
+                !formData.observed_person ||
+                formData.observed_person.trim() === ""
+            ) {
+                newErrors.observed_person =
+                    "La persona observada o título es obligatorio";
+            }
+        }
+
         if (step === 2 && !formData.observation_type)
             newErrors.observation_type =
                 "Debe seleccionar un tipo de observación";
@@ -320,6 +338,7 @@ export default function SafetyObservationForm({
                     <ObserverInfoStep
                         formData={formData}
                         onChange={handleInputChange}
+                        errors={errors}
                     />
                 )}
 
