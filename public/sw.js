@@ -1,19 +1,10 @@
-// ============================================
-// WASION Safety Observer - Service Worker v5
-// Con: Modo Offline Real, Caché de Assets, Background Sync
-// ============================================
-
 const CACHE_VERSION = "v7";
 const STATIC_CACHE = `wasion-static-${CACHE_VERSION}`;
 const DYNAMIC_CACHE = `wasion-dynamic-${CACHE_VERSION}`;
 const OFFLINE_CACHE = `wasion-offline-${CACHE_VERSION}`;
 
-// Nombre de la cola para Background Sync
 const SYNC_QUEUE = "offline-observations";
 
-// ============================================
-// ARCHIVOS PARA PRE-CACHEAR (Shell de la App)
-// ============================================
 const PRECACHE_ASSETS = [
     "/offline.html",
     "/manifest.json",
@@ -28,9 +19,6 @@ const PRECACHE_ASSETS = [
     "/images/wasion-logo.svg",
 ];
 
-// ============================================
-// RUTAS EXCLUIDAS (NUNCA cachear, pero mostrar offline si falla)
-// ============================================
 const EXCLUDED_PATHS = [
     "/sanctum",
     "/csrf",
@@ -42,7 +30,6 @@ const EXCLUDED_PATHS = [
     "/__vite",
 ];
 
-// Rutas de autenticación (no cachear, pero mostrar offline si falla)
 const AUTH_PATHS = [
     "/login",
     "/logout",
@@ -52,14 +39,7 @@ const AUTH_PATHS = [
     "/verify-email",
 ];
 
-// ============================================
-// RUTAS QUE SE PUEDEN USAR OFFLINE
-// ============================================
 const OFFLINE_CAPABLE_PATHS = ["/dashboard", "/observations", "/profile"];
-
-// ============================================
-// UTILIDADES
-// ============================================
 
 function shouldExclude(pathname) {
     return EXCLUDED_PATHS.some((path) => pathname.startsWith(path));
@@ -94,19 +74,11 @@ function isApiRequest(pathname) {
     return pathname.startsWith("/api/") || pathname.startsWith("/observations");
 }
 
-// ============================================
-// INSTALACIÓN
-// ============================================
 self.addEventListener("install", (event) => {
-    console.log("[SW] 📦 Instalando Service Worker v4...");
-
     event.waitUntil(
         caches
             .open(STATIC_CACHE)
             .then((cache) => {
-                console.log("[SW] 💾 Pre-cacheando archivos estáticos...");
-
-                // Cachear cada archivo individualmente para manejar errores
                 return Promise.allSettled(
                     PRECACHE_ASSETS.map(async (url) => {
                         try {
@@ -128,9 +100,6 @@ self.addEventListener("install", (event) => {
     );
 });
 
-// ============================================
-// ACTIVACIÓN
-// ============================================
 self.addEventListener("activate", (event) => {
     console.log("[SW] 🚀 Activando Service Worker v4...");
 
@@ -141,7 +110,6 @@ self.addEventListener("activate", (event) => {
                 return Promise.all(
                     cacheNames
                         .filter((name) => {
-                            // Eliminar cachés de versiones anteriores
                             return (
                                 name.startsWith("wasion-") &&
                                 !name.endsWith(CACHE_VERSION)
@@ -162,26 +130,19 @@ self.addEventListener("activate", (event) => {
     );
 });
 
-// ============================================
-// FETCH - Interceptar peticiones
-// ============================================
 self.addEventListener("fetch", (event) => {
     const { request } = event;
     const url = new URL(request.url);
 
-    // Solo manejar requests del mismo origen
     if (url.origin !== self.location.origin) {
         return;
     }
 
-    // Ignorar rutas técnicas completamente
     if (shouldExclude(url.pathname)) {
         return;
     }
 
-    // Ignorar requests que no sean GET (excepto para Background Sync)
     if (request.method !== "GET") {
-        // Si es POST a observations y estamos offline, guardar para sync
         if (
             request.method === "POST" &&
             url.pathname.includes("/observations")
@@ -191,44 +152,33 @@ self.addEventListener("fetch", (event) => {
         return;
     }
 
-    // RUTAS DE AUTH: Network Only pero con fallback offline
     if (isAuthPath(url.pathname)) {
         event.respondWith(networkOnlyWithOfflineFallback(request));
         return;
     }
 
-    // ESTRATEGIA PARA ASSETS ESTÁTICOS: Cache First
     if (isStaticAsset(url.pathname)) {
         event.respondWith(cacheFirstStrategy(request));
         return;
     }
 
-    // ESTRATEGIA PARA NAVEGACIÓN: Network First con Offline Fallback
     if (request.mode === "navigate") {
         event.respondWith(networkFirstWithOfflineFallback(request));
         return;
     }
 
-    // ESTRATEGIA PARA API: Network First con Caché
     if (isApiRequest(url.pathname)) {
         event.respondWith(networkFirstStrategy(request));
         return;
     }
 
-    // DEFAULT: Network First
     event.respondWith(networkFirstStrategy(request));
 });
 
-// ============================================
-// ESTRATEGIAS DE CACHÉ
-// ============================================
-
-// Cache First - Para assets estáticos
 async function cacheFirstStrategy(request) {
     const cachedResponse = await caches.match(request);
 
     if (cachedResponse) {
-        // Actualizar caché en background (silenciosamente)
         updateCacheInBackground(request);
         return cachedResponse;
     }
@@ -243,8 +193,6 @@ async function cacheFirstStrategy(request) {
 
         return networkResponse;
     } catch (error) {
-        // No loggear - es esperado cuando estamos offline
-        // Intentar devolver un placeholder apropiado según el tipo
         const url = new URL(request.url);
         if (url.pathname.endsWith(".ico")) {
             return new Response("", { status: 204 });
@@ -256,7 +204,6 @@ async function cacheFirstStrategy(request) {
     }
 }
 
-// Network First - Para contenido dinámico
 async function networkFirstStrategy(request) {
     try {
         const networkResponse = await fetch(request);
@@ -287,7 +234,6 @@ async function networkFirstStrategy(request) {
     }
 }
 
-// Network First con Offline Fallback - Para navegación
 async function networkFirstWithOfflineFallback(request) {
     try {
         const networkResponse = await fetch(request);
@@ -300,56 +246,40 @@ async function networkFirstWithOfflineFallback(request) {
 
         return networkResponse;
     } catch (error) {
-        // Intentar servir desde caché
         const cachedResponse = await caches.match(request);
 
         if (cachedResponse) {
             return cachedResponse;
         }
 
-        // Si no hay caché, mostrar página offline
         return caches.match("/offline.html");
     }
 }
 
-// Network Only con Offline Fallback - Para rutas de autenticación
-// No cachea la respuesta pero muestra offline.html si el servidor no responde
 async function networkOnlyWithOfflineFallback(request) {
     try {
         const networkResponse = await fetch(request);
         return networkResponse;
     } catch (error) {
-        // El servidor no responde, mostrar página offline
         return caches.match("/offline.html");
     }
 }
 
-// Actualizar caché en background (DESHABILITADO para reducir peticiones)
-// Solo se actualiza cuando el usuario recarga la página
 function updateCacheInBackground(request) {
-    // Deshabilitado para optimizar rendimiento
-    // El caché se actualiza solo en la instalación del SW o cuando el usuario recarga
     return;
 }
 
-// ============================================
-// BACKGROUND SYNC - Observaciones Offline
-// ============================================
-
-// Guardar observación para sincronizar después
 async function handleOfflinePost(request) {
     try {
         // Intentar enviar normalmente
         const response = await fetch(request.clone());
         return response;
     } catch (error) {
-        // Si falla, guardar para sync posterior
         console.log("[SW] 📴 Guardando observación para sync posterior...");
 
         try {
             const requestData = await request.clone().text();
 
-            // Guardar en IndexedDB
             await saveToOfflineQueue({
                 url: request.url,
                 method: request.method,
@@ -358,7 +288,6 @@ async function handleOfflinePost(request) {
                 timestamp: Date.now(),
             });
 
-            // Registrar background sync si está disponible
             if ("sync" in self.registration) {
                 await self.registration.sync.register(SYNC_QUEUE);
                 console.log("[SW] 📝 Background sync registrado");
@@ -390,10 +319,6 @@ async function handleOfflinePost(request) {
         }
     }
 }
-
-// ============================================
-// INDEXEDDB - Para datos offline
-// ============================================
 
 const DB_NAME = "wasion-offline-db";
 const DB_VERSION = 1;
@@ -454,10 +379,6 @@ async function removeFromOfflineQueue(id) {
     });
 }
 
-// ============================================
-// BACKGROUND SYNC EVENT
-// ============================================
-
 self.addEventListener("sync", (event) => {
     console.log("[SW] 🔄 Background Sync activado:", event.tag);
 
@@ -504,17 +425,12 @@ async function syncOfflineObservations() {
                 }
             } catch (error) {
                 console.error(`[SW] ❌ Error sincronizando ${item.id}:`, error);
-                // Mantener en cola para reintentar
             }
         }
     } catch (error) {
         console.error("[SW] Error en syncOfflineObservations:", error);
     }
 }
-
-// ============================================
-// NOTIFICACIONES
-// ============================================
 
 async function notifyUser(title, body) {
     if (self.registration.showNotification) {
@@ -527,10 +443,6 @@ async function notifyUser(title, body) {
         });
     }
 }
-
-// ============================================
-// MENSAJES DESDE EL CLIENTE
-// ============================================
 
 self.addEventListener("message", (event) => {
     const { type, payload } = event.data || {};
@@ -564,10 +476,6 @@ self.addEventListener("message", (event) => {
             break;
     }
 });
-
-// ============================================
-// PERIODIC SYNC (si está disponible)
-// ============================================
 
 self.addEventListener("periodicsync", (event) => {
     if (event.tag === "sync-observations") {
