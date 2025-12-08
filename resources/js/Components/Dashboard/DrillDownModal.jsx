@@ -10,7 +10,7 @@ export default function DrillDownModal({
     onItemClick,
 }) {
     return (
-        <Modal show={show} onClose={onClose} maxWidth="2xl">
+        <Modal show={show} onClose={onClose} maxWidth="lg">
             <div className="p-6">
                 <div className="flex items-center justify-between pb-4 mb-5 border-b border-gray-100 dark:border-gray-700">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">

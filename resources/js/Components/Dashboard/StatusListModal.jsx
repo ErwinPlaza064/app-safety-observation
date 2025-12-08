@@ -31,7 +31,7 @@ export default function StatusListModal({
     };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="4xl">
+        <Modal show={show} onClose={onClose} maxWidth="xl">
             <div
                 className={`flex items-center justify-between px-6 py-4 border-b dark:border-gray-700 ${
                     headerStyles[status] || "bg-gray-50 dark:bg-gray-800"
@@ -50,7 +50,7 @@ export default function StatusListModal({
                         {customTitle || titles[status] || "Listado de Reportes"}
                     </h3>
                     {(customSubtitle || subtitles[status]) && (
-                        <p className="text-sm text-gray-500 dark:text-gray-400 mt-1">
+                        <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
                             {customSubtitle || subtitles[status]}
                         </p>
                     )}
@@ -79,7 +79,7 @@ export default function StatusListModal({
                 {status === "ready_to_close" &&
                     reports &&
                     reports.length > 0 && (
-                        <div className="mb-4 p-3 bg-green-50 dark:bg-green-900/20 border border-green-200 dark:border-green-800 rounded-lg">
+                        <div className="p-3 mb-4 border border-green-200 rounded-lg bg-green-50 dark:bg-green-900/20 dark:border-green-800">
                             <p className="text-sm text-green-700 dark:text-green-300">
                                 <span className="font-semibold">💡 Tip:</span>{" "}
                                 Haz click en cualquier reporte para ver los
@@ -94,7 +94,7 @@ export default function StatusListModal({
                         onRowClick={onRowClick}
                     />
                 ) : (
-                    <div className="p-8 text-center text-gray-500 dark:text-gray-400 border-2 border-dashed dark:border-gray-700 rounded-lg">
+                    <div className="p-8 text-center text-gray-500 border-2 border-dashed rounded-lg dark:text-gray-400 dark:border-gray-700">
                         {status === "ready_to_close"
                             ? "No tienes observaciones pendientes de cerrar. Cuando EHS revise tus reportes, aparecerán aquí."
                             : "No se encontraron reportes en este estado."}

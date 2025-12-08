@@ -113,10 +113,7 @@ export default function EmployeeView({
             </div>
 
             <div className="grid grid-cols-1 gap-4 sm:gap-6 md:grid-cols-3">
-                <div
-                    onClick={() => handleCardClick("all")}
-                    className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm dark:bg-gray-800 dark:border-blue-400 sm:p-6 rounded-xl hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700"
-                >
+                <div className="p-4 transition bg-white border-l-4 border-blue-500 shadow-sm dark:bg-gray-800 dark:border-blue-400 sm:p-6 rounded-xl">
                     <div className="flex items-center justify-between mb-4">
                         <h3 className="text-base font-medium text-gray-600 dark:text-gray-300 sm:text-lg">
                             Total de Reportes

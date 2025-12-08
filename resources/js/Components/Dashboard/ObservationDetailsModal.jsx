@@ -74,7 +74,7 @@ export default function ObservationDetailsModal({
     };
 
     return (
-        <Modal show={show} onClose={onClose} maxWidth="4xl">
+        <Modal show={show} onClose={onClose} maxWidth="xl">
             <div className="flex items-start justify-between px-6 py-5 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                 <div>
                     <h2 className="mt-10 text-xl font-bold text-gray-800 dark:text-gray-200 lg:mt-7">
