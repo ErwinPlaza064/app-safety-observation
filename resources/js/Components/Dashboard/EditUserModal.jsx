@@ -233,7 +233,6 @@ export default function EditUserModal({
                         </div>
                     </div>
 
-                    {/* Sección de Suspensión */}
                     {user &&
                         currentUser &&
                         user.id !== currentUser.id &&
@@ -345,7 +344,6 @@ export default function EditUserModal({
                         )}
                 </div>
 
-                {/* ... Footer igual que antes ... */}
                 <div className="px-6 py-4 border-t border-gray-200 dark:border-gray-700 bg-gray-50 dark:bg-gray-800">
                     <div className="flex flex-col-reverse gap-4 sm:flex-row sm:items-center sm:justify-between">
                         <div className="flex justify-center sm:justify-start">
