@@ -1,9 +1,9 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.zip", "nodejs", "npm"]
+nixPkgs = ["php82", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.dom", "php82Extensions.tokenizer", "nodejs", "npm"]
 
 [phases.build]
 cmds = [
-    "composer install --no-dev --optimize-autoloader --no-scripts",
+    "composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs",
     "npm ci --legacy-peer-deps",
     "npm run build"
 ]
@@ -17,3 +17,4 @@ cmds = [
 
 [start]
 cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"
+
