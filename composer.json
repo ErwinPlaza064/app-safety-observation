@@ -16,6 +16,7 @@
         "laravel/tinker": "^2.9",
         "maatwebsite/excel": "^3.1",
         "microsoft/microsoft-graph": "^2.51",
+        "resend/resend-laravel": "^1.1",
         "tightenco/ziggy": "^2.0"
     },
     "require-dev": {
