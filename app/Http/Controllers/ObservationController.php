@@ -169,7 +169,7 @@ class ObservationController extends Controller
 
     public function index(Request $request)
     {
-        $query = Observation::with(['user', 'area', 'categories'])
+        $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])
             ->submitted()
             ->latest('observation_date');
 
@@ -272,7 +272,7 @@ class ObservationController extends Controller
     {
         $user = Auth::user();
 
-        $query = Observation::with(['user', 'area', 'categories'])->submitted();
+        $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])->submitted();
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
             $canViewAllPlants = $user->email === 'ehsplanta1@wasion.com';

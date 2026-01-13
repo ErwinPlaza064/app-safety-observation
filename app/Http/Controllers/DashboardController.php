@@ -149,7 +149,8 @@ class DashboardController extends Controller
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [
                 'user:id,name,email,area',
-                'area:id,name'
+                'area:id,name',
+                'closedByUser:id,name'
             ];
 
             $query = Observation::with(array_merge($baseRelations, ['categories:id,name', 'images:id,observation_id,path']))
