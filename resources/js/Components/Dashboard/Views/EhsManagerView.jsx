@@ -21,6 +21,10 @@ export default function EhsManagerView({
         data: [],
     });
 
+    const [selectedPayroll, setSelectedPayroll] = useState(null);
+    const [historyData, setHistoryData] = useState([]);
+    const [loadingHistory, setLoadingHistory] = useState(false);
+
     useEffect(() => {
         const intervalId = setInterval(() => {
             router.reload({
@@ -86,6 +90,39 @@ export default function EhsManagerView({
 
     const handleFilterChange = (e) => {
         setParams({ ...params, [e.target.name]: e.target.value });
+    };
+
+    const fetchHistory = async (payrollNumber) => {
+        setLoadingHistory(true);
+        try {
+            const response = await axios.get(route("dashboard"), {
+                params: { search: payrollNumber },
+            });
+            // La respuesta de Inertia viene en props si usamos axios directamente a veces es complicado, 
+            // pero podemos usar router.get con "only" para traer solo lo necesario sin recargar todo.
+            router.get(
+                route("dashboard"),
+                { search: payrollNumber },
+                {
+                    preserveState: true,
+                    only: ["ehsStats"],
+                    onSuccess: (page) => {
+                        setHistoryData(page.props.ehsStats.recent);
+                        setLoadingHistory(false);
+                    },
+                }
+            );
+        } catch (error) {
+            console.error(error);
+            setLoadingHistory(false);
+        }
+    };
+
+    const handleRecidivismClick = (item) => {
+        setActiveMetric(null);
+        setSelectedPayroll(item);
+        setParams({ ...params, search: item.payroll_number });
+        // El useEffect se encargará de recargar los datos
     };
 
     const handleRowClick = (obs) => {
@@ -477,89 +514,174 @@ export default function EhsManagerView({
                     </div>
                 </div>
             </div>
-            <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 rounded-xl">
-                <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
-                    <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
-                        Observaciones Recientes
-                    </h3>
-                    <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">
-                        {stats.recent.length} mostrados
-                    </span>
-                </div>
-                <div className="overflow-x-auto">
-                    <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                        <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
-                            <tr>
-                                <th className="px-6 py-3">Observada</th>
-                                <th className="px-6 py-3">Descripción</th>
-                                <th className="px-6 py-3">Observador</th>
-                                <th className="px-6 py-3">Ubicación</th>
-                                <th className="px-6 py-3">Estado</th>
-                                <th className="px-6 py-3">Fecha</th>
-                            </tr>
-                        </thead>
-                        <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                            {stats.recent.length > 0 ? (
-                                stats.recent.map((obs) => (
-                                    <tr
-                                        key={obs.id}
-                                        onClick={() => handleRowClick(obs)}
-                                        onMouseEnter={(e) =>
-                                            handleRowMouseEnter(obs, e)
-                                        }
-                                        onMouseLeave={handleRowMouseLeave}
-                                        className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
-                                    >
-                                        <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                                            {obs.observed_person}
-                                        </td>
-                                        <td className="max-w-xs px-6 py-4 text-gray-900 truncate dark:text-gray-200">
-                                            {obs.description}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                            {obs.user?.name}
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                            {obs.area?.name}
-                                        </td>
-                                        <td className="px-6 py-4">
-                                            <span
-                                                className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                    obs.status === "en_progreso"
-                                                        ? "bg-blue-100 text-blue-800"
-                                                        : obs.status ===
-                                                          "cerrada"
-                                                        ? "bg-green-100 text-green-800"
-                                                        : "bg-gray-100 text-gray-800"
-                                                }`}
-                                            >
-                                                {obs.status === "en_progreso"
-                                                    ? "Abierta"
-                                                    : obs.status}
-                                            </span>
-                                        </td>
-                                        <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                            {new Date(
-                                                obs.observation_date
-                                            ).toLocaleDateString()}
-                                        </td>
+            {params.search && (selectedPayroll || params.search.length > 0) ? (
+                <div className="space-y-4 animate-fade-in">
+                    <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
+                        <div className="flex items-center gap-4">
+                            <div className="p-3 bg-blue-600 rounded-lg shadow-lg">
+                                <CgFileDocument className="w-6 h-6 text-white" />
+                            </div>
+                            <div>
+                                <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
+                                    Historial: {selectedPayroll?.observed_person || params.search}
+                                </h3>
+                                <p className="text-sm text-blue-700 dark:text-blue-300">
+                                    {selectedPayroll ? `Nómina: ${selectedPayroll.payroll_number}` : 'Búsqueda personalizada'}
+                                </p>
+                            </div>
+                        </div>
+                        <button
+                            onClick={() => {
+                                setSelectedPayroll(null);
+                                setParams({ ...params, search: "" });
+                            }}
+                            className="px-4 py-2 text-sm font-semibold text-blue-700 dark:text-blue-300 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-lg hover:bg-blue-50 dark:hover:bg-blue-900/50 transition-all flex items-center gap-2"
+                        >
+                            <IoMdClose className="w-4 h-4" />
+                            Regresar al Dashboard
+                        </button>
+                    </div>
+
+                    <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 rounded-xl border border-gray-100 dark:border-gray-700">
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th className="px-6 py-3">Folio</th>
+                                        <th className="px-6 py-3">Fecha</th>
+                                        <th className="px-6 py-3">Descripción</th>
+                                        <th className="px-6 py-3">Ubicación</th>
+                                        <th className="px-6 py-3">Estado</th>
                                     </tr>
-                                ))
-                            ) : (
-                                <tr>
-                                    <td
-                                        colSpan="6"
-                                        className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
-                                    >
-                                        No se encontraron observaciones con esos
-                                        filtros.
-                                    </td>
-                                </tr>
-                            )}
-                        </tbody>
-                    </table>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {stats.recent.map((obs) => (
+                                        <tr
+                                            key={obs.id}
+                                            onClick={() => handleRowClick(obs)}
+                                            className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                        >
+                                            <td className="px-6 py-4 font-bold text-blue-600 dark:text-blue-400">
+                                                #{obs.id}
+                                            </td>
+                                            <td className="px-6 py-4 whitespace-nowrap">
+                                                {new Date(
+                                                    obs.observation_date
+                                                ).toLocaleDateString()}
+                                            </td>
+                                            <td className="px-6 py-4 max-w-md">
+                                                <p className="truncate" title={obs.description}>
+                                                    {obs.description}
+                                                </p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {obs.area?.name}
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                <span
+                                                    className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                        obs.status === "en_progreso"
+                                                            ? "bg-blue-100 text-blue-800"
+                                                            : "bg-green-100 text-green-800"
+                                                    }`}
+                                                >
+                                                    {obs.status === "en_progreso" ? "Abierta" : "Cerrada"}
+                                                </span>
+                                            </td>
+                                        </tr>
+                                    ))}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
                 </div>
-            </div>
+            ) : (
+                <>
+                    <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 rounded-xl">
+                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+                            <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
+                                Observaciones Recientes
+                            </h3>
+                            <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">
+                                {stats.recent.length} mostrados
+                            </span>
+                        </div>
+                        <div className="overflow-x-auto">
+                            <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
+                                <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
+                                    <tr>
+                                        <th className="px-6 py-3">Observada</th>
+                                        <th className="px-6 py-3">Descripción</th>
+                                        <th className="px-6 py-3">Observador</th>
+                                        <th className="px-6 py-3">Ubicación</th>
+                                        <th className="px-6 py-3">Estado</th>
+                                        <th className="px-6 py-3">Fecha</th>
+                                    </tr>
+                                </thead>
+                                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                                    {stats.recent.length > 0 ? (
+                                        stats.recent.map((obs) => (
+                                            <tr
+                                                key={obs.id}
+                                                onClick={() => handleRowClick(obs)}
+                                                onMouseEnter={(e) =>
+                                                    handleRowMouseEnter(obs, e)
+                                                }
+                                                onMouseLeave={handleRowMouseLeave}
+                                                className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            >
+                                                <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                                    {obs.observed_person}
+                                                </td>
+                                                <td className="max-w-xs px-6 py-4 text-gray-900 truncate dark:text-gray-200">
+                                                    {obs.description}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                                                    {obs.user?.name}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                                                    {obs.area?.name}
+                                                </td>
+                                                <td className="px-6 py-4">
+                                                    <span
+                                                        className={`px-2 py-1 rounded-full text-xs font-semibold ${
+                                                            obs.status === "en_progreso"
+                                                                ? "bg-blue-100 text-blue-800"
+                                                                : obs.status ===
+                                                                  "cerrada"
+                                                                ? "bg-green-100 text-green-800"
+                                                                : "bg-gray-100 text-gray-800"
+                                                        }`}
+                                                    >
+                                                        {obs.status === "en_progreso"
+                                                            ? "Abierta"
+                                                            : obs.status}
+                                                    </span>
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                                                    {new Date(
+                                                        obs.observation_date
+                                                    ).toLocaleDateString()}
+                                                </td>
+                                            </tr>
+                                        ))
+                                    ) : (
+                                        <tr>
+                                            <td
+                                                colSpan="6"
+                                                className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
+                                            >
+                                                No se encontraron observaciones con esos
+                                                filtros.
+                                            </td>
+                                        </tr>
+                                    )}
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                </>
+            )}
 
             <DrillDownModal
                 show={!!activeMetric}
@@ -600,16 +722,10 @@ export default function EhsManagerView({
                 }
                 type={activeMetric === "custom" ? "open" : activeMetric}
                 onItemClick={(item) => {
-                    setActiveMetric(null);
                     if (activeMetric === "recidivism") {
-                        setParams({ ...params, search: item.observed_person });
-                        setTimeout(() => {
-                            searchSectionRef.current?.scrollIntoView({
-                                behavior: "smooth",
-                                block: "center",
-                            });
-                        }, 400);
+                        handleRecidivismClick(item);
                     } else if (activeMetric === "participation") {
+                        setActiveMetric(null);
                         setParams({ ...params, search: item.name });
                         setTimeout(() => {
                             searchSectionRef.current?.scrollIntoView({
@@ -618,6 +734,7 @@ export default function EhsManagerView({
                             });
                         }, 400);
                     } else {
+                        setActiveMetric(null);
                         setTimeout(() => setSelectedObservation(item), 100);
                     }
                 }}

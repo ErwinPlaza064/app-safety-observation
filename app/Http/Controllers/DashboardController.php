@@ -161,6 +161,7 @@ class DashboardController extends Controller
                     $q->where('folio', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")
                         ->orWhere('observed_person', 'like', "%{$search}%")
+                        ->orWhere('payroll_number', 'like', "%{$search}%")
                         ->orWhereHas('user', function ($u) use ($search) {
                             $u->where('name', 'like', "%{$search}%");
                         });
