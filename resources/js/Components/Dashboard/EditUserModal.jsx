@@ -57,6 +57,19 @@ export default function EditUserModal({
         );
     };
 
+    const manualVerify = () => {
+        router.post(
+            route("admin.users.manual-verify", user.id),
+            {},
+            {
+                onSuccess: () => {
+                    onClose();
+                },
+                preserveScroll: true,
+            }
+        );
+    };
+
     const toggleSuspension = () => {
         router.post(
             route("admin.users.toggle-suspension", user.id),
@@ -178,6 +191,12 @@ export default function EditUserModal({
                                 }
                             >
                                 <option value="">Seleccionar área...</option>
+                                {/* Si el usuario tiene un área asignada que no está en la lista, mostrarla primero */}
+                                {data.area && areas && !areas.some(area => area.name === data.area) && (
+                                    <option value={data.area}>
+                                        {data.area} (área actual)
+                                    </option>
+                                )}
                                 {areas &&
                                     areas.map((area) => (
                                         <option key={area.id} value={area.name}>
@@ -360,13 +379,22 @@ export default function EditUserModal({
                                 )}
 
                             {user && !user.email_verified_at && (
-                                <button
-                                    type="button"
-                                    onClick={resendVerification}
-                                    className="text-sm font-medium text-blue-600 dark:text-blue-400 transition-colors hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none sm:ml-4"
-                                >
-                                    Reenviar verificación
-                                </button>
+                                <>
+                                    <button
+                                        type="button"
+                                        onClick={manualVerify}
+                                        className="text-sm font-medium text-green-600 dark:text-green-400 transition-colors hover:text-green-800 dark:hover:text-green-300 hover:underline focus:outline-none sm:ml-4"
+                                    >
+                                        Marcar como Verificado
+                                    </button>
+                                    <button
+                                        type="button"
+                                        onClick={resendVerification}
+                                        className="text-sm font-medium text-blue-600 dark:text-blue-400 transition-colors hover:text-blue-800 dark:hover:text-blue-300 hover:underline focus:outline-none sm:ml-4"
+                                    >
+                                        Reenviar verificación
+                                    </button>
+                                </>
                             )}
                         </div>
                         <div className="flex flex-col gap-3 sm:flex-row sm:w-auto">

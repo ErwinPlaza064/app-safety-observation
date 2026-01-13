@@ -33,15 +33,16 @@ Route::get('/test-email', function () {
             'From Name' => config('mail.from.name'),
         ];
 
-        Mail::raw('✅ Este es un correo de prueba enviado desde el Sistema de Observaciones de Seguridad de Wasion.' . "\n\n" .
-                  '📧 Remitente: ' . config('mail.from.address') . "\n" .
-                  '📬 Destinatario: ' . $recipient . "\n" .
-                  '🕐 Fecha y hora: ' . now()->format('d/m/Y H:i:s') . "\n\n" .
-                  'Si recibes este mensaje, la configuración SMTP está funcionando correctamente.',
+        Mail::raw(
+            '✅ Este es un correo de prueba enviado desde el Sistema de Observaciones de Seguridad de Wasion.' . "\n\n" .
+                '📧 Remitente: ' . config('mail.from.address') . "\n" .
+                '📬 Destinatario: ' . $recipient . "\n" .
+                '🕐 Fecha y hora: ' . now()->format('d/m/Y H:i:s') . "\n\n" .
+                'Si recibes este mensaje, la configuración SMTP está funcionando correctamente.',
             function ($message) use ($recipient) {
                 $message->to($recipient)
-                        ->subject('✅ Prueba de Correo - Wasion Safety Observation')
-                        ->priority(1);
+                    ->subject('✅ Prueba de Correo - Wasion Safety Observation')
+                    ->priority(1);
             }
         );
 
@@ -64,7 +65,6 @@ Route::get('/test-email', function () {
                 '4. Agrega observacionwasion@gmail.com a tus contactos seguros',
             ]
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
     } catch (\Exception $e) {
         $endTime = microtime(true);
         $duration = round(($endTime - $startTime) * 1000, 2);
@@ -91,15 +91,15 @@ Route::get('/test-graph-email', function () {
         $mailer = app(MicrosoftGraphMailer::class);
 
         $body = '<html><body>' .
-                '<h2>✅ Prueba de Microsoft Graph API</h2>' .
-                '<p>Este correo fue enviado usando OAuth2 con Microsoft Graph.</p>' .
-                '<ul>' .
-                '<li><strong>Remitente:</strong> ' . config('services.microsoft.sender_email') . '</li>' .
-                '<li><strong>Destinatario:</strong> ' . $recipient . '</li>' .
-                '<li><strong>Fecha:</strong> ' . now()->format('d/m/Y H:i:s') . '</li>' .
-                '</ul>' .
-                '<p>Si recibes este mensaje, OAuth2 está funcionando correctamente.</p>' .
-                '</body></html>';
+            '<h2>✅ Prueba de Microsoft Graph API</h2>' .
+            '<p>Este correo fue enviado usando OAuth2 con Microsoft Graph.</p>' .
+            '<ul>' .
+            '<li><strong>Remitente:</strong> ' . config('services.microsoft.sender_email') . '</li>' .
+            '<li><strong>Destinatario:</strong> ' . $recipient . '</li>' .
+            '<li><strong>Fecha:</strong> ' . now()->format('d/m/Y H:i:s') . '</li>' .
+            '</ul>' .
+            '<p>Si recibes este mensaje, OAuth2 está funcionando correctamente.</p>' .
+            '</body></html>';
 
         $mailer->send(
             $recipient,
@@ -123,7 +123,6 @@ Route::get('/test-graph-email', function () {
                 'sender' => config('services.microsoft.sender_email'),
             ],
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
     } catch (\Exception $e) {
         $endTime = microtime(true);
         $duration = round(($endTime - $startTime) * 1000, 2);
@@ -148,8 +147,8 @@ Route::get('/test-verification-email', function () {
     try {
         Mail::send('emails.verify-test', ['name' => 'Erwin Dayan Martinez Plaza'], function ($message) use ($recipient) {
             $message->to($recipient)
-                    ->subject('Verificar Dirección de Correo Electrónico')
-                    ->priority(1);
+                ->subject('Verificar Dirección de Correo Electrónico')
+                ->priority(1);
         });
 
         return response()->json([
@@ -163,7 +162,6 @@ Route::get('/test-verification-email', function () {
             ],
             'note' => 'Este es el mismo tipo de correo que se envía al registrarse. Revisa tu bandeja y spam.'
         ], 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE);
-
     } catch (\Exception $e) {
         return response()->json([
             'success' => false,
@@ -198,9 +196,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])
-        ->name('users.resend-verification');
+            ->name('users.resend-verification');
+        Route::post('/users/{user}/manual-verify', [UserManagementController::class, 'manualVerify'])
+            ->name('users.manual-verify');
         Route::post('/users/{user}/toggle-suspension', [UserManagementController::class, 'toggleSuspension'])
-        ->name('users.toggle-suspension');
+            ->name('users.toggle-suspension');
     });
 
     // --- ADMINISTRACIÓN DE ÁREAS (Super Admin) ---
@@ -229,7 +229,6 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::put('/{observation}/close', [ObservationController::class, 'close'])->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])->name('reopen');
     });
-
 });
 
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

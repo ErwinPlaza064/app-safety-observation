@@ -49,12 +49,12 @@ class UserManagementController extends Controller
         ]);
 
         $user->update([
-        'name' => $validated['name'],
-        'email' => $validated['email'],
-        'employee_number' => $validated['employee_number'],
-        'area' => $validated['area'],
-        'position' => $validated['position'],
-        'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+            'name' => $validated['name'],
+            'email' => $validated['email'],
+            'employee_number' => $validated['employee_number'],
+            'area' => $validated['area'],
+            'position' => $validated['position'],
+            'is_ehs_manager' => $request->boolean('is_ehs_manager'),
         ]);
 
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
@@ -69,6 +69,22 @@ class UserManagementController extends Controller
         $user->sendEmailVerificationNotification();
 
         return back()->with('success', 'Correo de verificación reenviado exitosamente.');
+    }
+
+    /**
+     * Verificar manualmente un usuario (sin necesidad de código)
+     */
+    public function manualVerify(User $user)
+    {
+        if ($user->hasVerifiedEmail()) {
+            return back()->with('error', 'El usuario ya está verificado.');
+        }
+
+        $user->update([
+            'email_verified_at' => now(),
+        ]);
+
+        return back()->with('success', 'Usuario verificado manualmente exitosamente.');
     }
 
     /**
