@@ -30,17 +30,18 @@ class DashboardController extends Controller
             ];
 
             $usersQuery = User::query()
-                ->addSelect(['last_activity' => DB::table('sessions')
-                    ->select('last_activity')
-                    ->whereColumn('user_id', 'users.id')
-                    ->orderByDesc('last_activity')
-                    ->limit(1)
+                ->addSelect([
+                    'last_activity' => DB::table('sessions')
+                        ->select('last_activity')
+                        ->whereColumn('user_id', 'users.id')
+                        ->orderByDesc('last_activity')
+                        ->limit(1)
                 ])
                 ->when(request('search'), function ($query, $search) {
                     $query->where(function ($q) use ($search) {
                         $q->where('name', 'like', "%{$search}%")
-                        ->orWhere('email', 'like', "%{$search}%")
-                        ->orWhere('employee_number', 'like', "%{$search}%");
+                            ->orWhere('email', 'like', "%{$search}%")
+                            ->orWhere('employee_number', 'like', "%{$search}%");
                     });
                 })
                 ->when(request('area'), function ($query, $area) {
@@ -90,16 +91,16 @@ class DashboardController extends Controller
             }
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
-                                        ->where('is_draft', false)
-                                        ->with(['area', 'user', 'images', 'categories'])
-                                        ->latest('observation_date')
-                                        ->take(10)
-                                        ->get();
+                ->where('is_draft', false)
+                ->with(['area', 'user', 'images', 'categories'])
+                ->latest('observation_date')
+                ->take(10)
+                ->get();
 
             $draft = Observation::where('user_id', $user->id)
-                        ->where('is_draft', true)
-                        ->latest()
-                        ->first();
+                ->where('is_draft', true)
+                ->latest()
+                ->first();
 
             if ($draft) {
                 $draft->load(['categories', 'images']);
@@ -156,13 +157,13 @@ class DashboardController extends Controller
 
             if (request('search')) {
                 $search = request('search');
-                $query->where(function($q) use ($search) {
+                $query->where(function ($q) use ($search) {
                     $q->where('folio', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('observed_person', 'like', "%{$search}%")
-                    ->orWhereHas('user', function($u) use ($search) {
-                        $u->where('name', 'like', "%{$search}%");
-                    });
+                        ->orWhere('description', 'like', "%{$search}%")
+                        ->orWhere('observed_person', 'like', "%{$search}%")
+                        ->orWhereHas('user', function ($u) use ($search) {
+                            $u->where('name', 'like', "%{$search}%");
+                        });
                 });
             }
 
@@ -179,7 +180,7 @@ class DashboardController extends Controller
                 ->take(20)
                 ->get();
 
-            $applyFilters = function($q) use ($currentAreaId, $canViewAllPlants, $defaultAreaId) {
+            $applyFilters = function ($q) use ($currentAreaId, $canViewAllPlants, $defaultAreaId) {
                 $q->submitted();
 
                 // Si no puede ver todas las plantas, siempre filtrar por su área
@@ -218,6 +219,7 @@ class DashboardController extends Controller
             $closedRate = $totalAll > 0 ? round(($closed / $totalAll) * 100) : 0;
 
             $highRiskCategories = [
+                'EPP (Equipo de Protección Personal)',
                 'Manejo de SQP',
                 'Ingesta de sustancias',
                 'Trabajos Eléctricos',
@@ -231,7 +233,7 @@ class DashboardController extends Controller
             if ($open > 0) {
                 $highRiskList = $applyFilters(Observation::query())
                     ->where('status', 'en_progreso')
-                    ->whereHas('categories', function($q) use ($highRiskCategories) {
+                    ->whereHas('categories', function ($q) use ($highRiskCategories) {
                         $q->whereIn('name', $highRiskCategories);
                     })
                     ->with($baseRelations)
@@ -256,7 +258,7 @@ class DashboardController extends Controller
 
             $employeesWhoReportedCount = User::where('is_ehs_manager', false)
                 ->where('is_super_admin', false)
-                ->whereHas('observations', function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                ->whereHas('observations', function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
                     $q->submitted();
                     // Aplicar el mismo filtro de área que en las demás estadísticas
                     if (!$canViewAllPlants && $defaultAreaId) {
@@ -270,7 +272,7 @@ class DashboardController extends Controller
             // Obtener listado de empleados que han reportado con sus observaciones
             $employeesReportingList = User::where('is_ehs_manager', false)
                 ->where('is_super_admin', false)
-                ->whereHas('observations', function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                ->whereHas('observations', function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
                     $q->submitted();
                     if (!$canViewAllPlants && $defaultAreaId) {
                         $q->where('area_id', $defaultAreaId);
@@ -278,7 +280,7 @@ class DashboardController extends Controller
                         $q->where('area_id', request('area_id'));
                     }
                 })
-                ->with(['observations' => function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId, $baseRelations) {
+                ->with(['observations' => function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId, $baseRelations) {
                     $q->submitted()->with($baseRelations);
                     if (!$canViewAllPlants && $defaultAreaId) {
                         $q->where('area_id', $defaultAreaId);
@@ -286,7 +288,7 @@ class DashboardController extends Controller
                         $q->where('area_id', request('area_id'));
                     }
                 }])
-                ->withCount(['observations' => function($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
+                ->withCount(['observations' => function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
                     $q->submitted();
                     if (!$canViewAllPlants && $defaultAreaId) {
                         $q->where('area_id', $defaultAreaId);
@@ -296,7 +298,7 @@ class DashboardController extends Controller
                 }])
                 ->orderByDesc('observations_count')
                 ->get()
-                ->map(function($employee) {
+                ->map(function ($employee) {
                     return [
                         'name' => $employee->name,
                         'email' => $employee->email,
@@ -310,40 +312,40 @@ class DashboardController extends Controller
 
             // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas
             $observationsByPlant = Area::where('is_active', true)
-            ->with(['observations' => function($q) use ($baseRelations) {
-                $q->submitted()->latest()->with($baseRelations);
-            }])
-            ->withCount(['observations' => function($q) {
-                $q->submitted();
-            }])
-            ->get()
-            ->map(function($area){
-                return [
-                    'name' => $area->name,
-                    'count' => $area->observations_count,
-                    'list' => $area->observations
-                ];
-            });
+                ->with(['observations' => function ($q) use ($baseRelations) {
+                    $q->submitted()->latest()->with($baseRelations);
+                }])
+                ->withCount(['observations' => function ($q) {
+                    $q->submitted();
+                }])
+                ->get()
+                ->map(function ($area) {
+                    return [
+                        'name' => $area->name,
+                        'count' => $area->observations_count,
+                        'list' => $area->observations
+                    ];
+                });
 
-        // OPTIMIZACIÓN: Top categorías con relaciones selectivas
-        $topCategories = Category::where('is_active', true)
-            ->with(['observations' => function($q) use ($applyFilters, $baseRelations) {
-                $applyFilters($q)->with($baseRelations)->latest();
-            }])
-            ->withCount(['observations' => function($q) use ($applyFilters) {
-                $applyFilters($q);
-            }])
-            ->orderByDesc('observations_count')
-            ->take(5)
-            ->get()
-            ->map(function($cat){
-                return [
-                    'id' => $cat->id,
-                    'name' => $cat->name,
-                    'count' => $cat->observations_count,
-                    'list' => $cat->observations
-                ];
-            });
+            // OPTIMIZACIÓN: Top categorías con relaciones selectivas
+            $topCategories = Category::where('is_active', true)
+                ->with(['observations' => function ($q) use ($applyFilters, $baseRelations) {
+                    $applyFilters($q)->with($baseRelations)->latest();
+                }])
+                ->withCount(['observations' => function ($q) use ($applyFilters) {
+                    $applyFilters($q);
+                }])
+                ->orderByDesc('observations_count')
+                ->take(5)
+                ->get()
+                ->map(function ($cat) {
+                    return [
+                        'id' => $cat->id,
+                        'name' => $cat->name,
+                        'count' => $cat->observations_count,
+                        'list' => $cat->observations
+                    ];
+                });
 
 
             $data['ehsStats'] = [
