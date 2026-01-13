@@ -84,7 +84,8 @@ class ObservationController extends Controller
             }
         }
 
-        return redirect()->back()->with('success',
+        return redirect()->back()->with(
+            'success',
             $request->boolean('is_draft')
                 ? 'Borrador guardado exitosamente'
                 : 'Observación enviada exitosamente'
@@ -138,7 +139,8 @@ class ObservationController extends Controller
             }
         }
 
-        return redirect()->back()->with('success',
+        return redirect()->back()->with(
+            'success',
             $request->boolean('is_draft')
                 ? 'Borrador actualizado exitosamente'
                 : 'Observación actualizada y enviada'
@@ -195,12 +197,38 @@ class ObservationController extends Controller
     public function close(Request $request, Observation $observation)
     {
         if (Auth::user()->is_ehs_manager || $observation->user_id === Auth::id()) {
+            $validated = $request->validate([
+                'closure_notes' => 'required|string|min:10',
+                'photos' => 'nullable|array|max:5',
+                'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+            ], [
+                'closure_notes.required' => 'El comentario de cierre es obligatorio',
+                'closure_notes.min' => 'El comentario debe tener al menos 10 caracteres',
+            ]);
+
             $observation->update([
                 'status' => 'cerrada',
                 'closed_at' => now(),
                 'closed_by' => Auth::id(),
+                'closure_notes' => $validated['closure_notes'],
             ]);
-            return redirect()->back()->with('success', 'Observación cerrada exitosamente');
+
+            if ($request->hasFile('photos')) {
+                foreach ($request->file('photos') as $index => $photo) {
+                    $path = $photo->store('observations/' . $observation->id . '/closure', 'public');
+
+                    $nextOrder = $observation->images()->max('sort_order') + 1;
+
+                    $observation->images()->create([
+                        'path' => $path,
+                        'original_name' => $photo->getClientOriginalName(),
+                        'size' => $photo->getSize(),
+                        'sort_order' => $nextOrder + $index,
+                    ]);
+                }
+            }
+
+            return redirect()->back()->with('success', 'Observación cerrada exitosamente con evidencia');
         }
         abort(403);
     }
@@ -270,9 +298,9 @@ class ObservationController extends Controller
         $query->when(request('search'), function ($q, $search) {
             $q->where(function ($subQ) use ($search) {
                 $subQ->where('folio', 'like', "%{$search}%")
-                     ->orWhere('description', 'like', "%{$search}%")
-                     ->orWhere('observed_person', 'like', "%{$search}%")
-                     ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"));
+                    ->orWhere('description', 'like', "%{$search}%")
+                    ->orWhere('observed_person', 'like', "%{$search}%")
+                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"));
             });
         });
 
@@ -298,7 +326,7 @@ class ObservationController extends Controller
         ];
 
         $pdf = Pdf::loadView('exports.observations_pdf', compact('observations', 'stats'))
-                  ->setPaper('a4', 'portrait');
+            ->setPaper('a4', 'portrait');
 
         return $pdf->download('reporte_seguridad_' . date('Y-m-d') . '.pdf');
     }
