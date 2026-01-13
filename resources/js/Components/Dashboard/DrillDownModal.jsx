@@ -109,8 +109,19 @@ export default function DrillDownModal({
                                                 className="transition-colors border-l-4 border-transparent cursor-pointer hover:bg-purple-50 dark:hover:bg-purple-900/20 hover:border-purple-500 dark:hover:border-purple-400"
                                             >
                                                 <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
-                                                    {item.observed_person ||
-                                                        item.name}
+                                                    <div className="flex flex-col">
+                                                        <span>
+                                                            {
+                                                                item.observed_person
+                                                            }
+                                                        </span>
+                                                        <span className="text-xs font-normal text-gray-500">
+                                                            Nómina:{" "}
+                                                            {
+                                                                item.payroll_number
+                                                            }
+                                                        </span>
+                                                    </div>
                                                 </td>
                                                 <td className="px-4 py-3 text-right">
                                                     <span className="inline-flex items-center justify-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 dark:bg-purple-900/40 text-purple-800 dark:text-purple-300">
