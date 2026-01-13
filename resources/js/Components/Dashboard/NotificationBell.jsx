@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
 
@@ -11,14 +11,24 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
     const [badgeCount, setBadgeCount] = useState(0);
     const [viewedNotifications, setViewedNotifications] = useState(new Set());
     const [newNotifications, setNewNotifications] = useState(new Set());
+    const [dismissedIds, setDismissedIds] = useState(() => {
+        const saved = localStorage.getItem(`dismissed_notifs_${user.id}`);
+        return saved ? new Set(JSON.parse(saved)) : new Set();
+    });
+    
     const prevCountRef = useRef(count);
     const isFirstRender = useRef(true);
+
+    // Filtrar la lista de notificaciones para no mostrar las ya abiertas/descartadas
+    const filteredList = list.filter(n => !dismissedIds.has(n.id));
 
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            if (count > 0) {
-                setBadgeCount(count);
+            // Solo contar aquellas que no han sido descartadas
+            const initialCount = list.filter(n => !dismissedIds.has(n.id)).length;
+            if (initialCount > 0) {
+                setBadgeCount(initialCount);
             }
             prevCountRef.current = count;
             return;
@@ -43,18 +53,34 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         }
 
         prevCountRef.current = count;
-    }, [count, list]);
+    }, [count, list, dismissedIds]);
 
     const handleDropdownOpen = () => {
         const newViewedSet = new Set(viewedNotifications);
-        list.forEach((notif) => newViewedSet.add(notif.id));
+        filteredList.forEach((notif) => newViewedSet.add(notif.id));
         setViewedNotifications(newViewedSet);
 
         setNewNotifications(new Set());
         setBadgeCount(0);
     };
 
+    const handleNotificationClick = (id, href) => {
+        // Marcar como descartada
+        const updatedDismissed = new Set(dismissedIds);
+        updatedDismissed.add(id);
+        setDismissedIds(updatedDismissed);
+        localStorage.setItem(`dismissed_notifs_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
+        
+        // Navegar manualmente
+        router.get(href);
+    };
+
     const clearNotifications = () => {
+        // Descartar todas las actuales
+        const updatedDismissed = new Set(dismissedIds);
+        list.forEach(n => updatedDismissed.add(n.id));
+        setDismissedIds(updatedDismissed);
+        localStorage.setItem(`dismissed_notifs_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
         setBadgeCount(0);
     };
 
@@ -68,24 +94,26 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
 
     const renderEhsNotification = (notif) => {
         const isNew = newNotifications.has(notif.id);
+        const href = route("observations.show", notif.id);
+
         return (
-            <Dropdown.Link
+            <button
                 key={notif.id}
-                href={route("observations.show", notif.id)}
-                className={`relative transition-all border-b border-gray-50 dark:border-gray-700 ${
+                onClick={() => handleNotificationClick(notif.id, href)}
+                className={`w-full text-left px-4 py-3 relative transition-all border-b border-gray-50 dark:border-gray-700 block ${
                     isNew
-                        ? "bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-500 dark:border-l-blue-400 shadow-md hover:shadow-lg"
-                        : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                        ? "bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-500 dark:border-l-blue-400 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-900/40"
+                        : "hover:bg-gray-50 dark:hover:bg-gray-700/50"
                 }`}
             >
-                <div className="flex flex-col gap-1 py-1">
+                <div className="flex flex-col gap-1">
                     <div className="flex items-center justify-between">
                         <div className="flex items-center gap-2">
                             {isNew && (
                                 <span className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></span>
                             )}
                             <span
-                                className={`font-bold text-xs uppercase ${
+                                className={`font-bold text-[10px] uppercase tracking-wider ${
                                     notif.observation_type === "acto_inseguro"
                                         ? "text-orange-600 dark:text-orange-400"
                                         : notif.observation_type ===
@@ -110,20 +138,25 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                     </div>
 
                     <span
-                        className={`text-sm font-medium truncate ${
+                        className={`text-sm truncate ${
                             isNew
-                                ? "text-gray-800 dark:text-white font-semibold"
+                                ? "text-gray-900 dark:text-white font-semibold"
                                 : "text-gray-600 dark:text-gray-300"
                         }`}
                     >
                         {notif.description}
                     </span>
 
-                    <span className="text-xs text-blue-500 dark:text-blue-400">
-                        {notif.area?.name || "Sin área"}
-                    </span>
+                    <div className="flex items-center justify-between mt-1">
+                        <span className="text-[11px] font-medium text-blue-500 dark:text-blue-400">
+                            {notif.area?.name || "Sin área"}
+                        </span>
+                        <span className="text-[10px] text-gray-400 dark:text-gray-500 italic">
+                            #{notif.folio}
+                        </span>
+                    </div>
                 </div>
-            </Dropdown.Link>
+            </button>
         );
     };
 
@@ -143,35 +176,40 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                 </Dropdown.Trigger>
 
                 <Dropdown.Content width="80">
-                    <div className="px-4 py-2 text-xs font-semibold text-gray-400 uppercase border-b border-gray-200 dark:text-gray-500 bg-gray-50 dark:bg-gray-800 dark:border-gray-600">
-                        Recientes
+                    <div className="px-4 py-3 text-xs font-bold text-gray-500 uppercase border-b border-gray-200 dark:text-gray-400 bg-gray-50 dark:bg-gray-800 dark:border-gray-700">
+                        Notificaciones Recientes
                     </div>
 
-                    <div className="overflow-y-auto max-h-64">
-                        {list.length > 0 ? (
-                            list
-                                .slice(0, 5)
+                    <div className="overflow-y-auto max-h-80">
+                        {filteredList.length > 0 ? (
+                            filteredList
+                                .slice(0, 10)
                                 .map((notif) => renderEhsNotification(notif))
                         ) : (
-                            <div className="px-4 py-6 text-sm text-center text-gray-500 dark:text-gray-400">
-                                No hay notificaciones recientes
+                            <div className="px-6 py-10 text-sm text-center text-gray-500 dark:text-gray-400">
+                                <div className="flex flex-col items-center gap-2">
+                                    <svg className="w-8 h-8 text-gray-300 dark:text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                                    </svg>
+                                    <span>No hay notificaciones pendientes</span>
+                                </div>
                             </div>
                         )}
                     </div>
 
-                    <div className="border-t border-gray-100 dark:border-gray-600 bg-gray-50 dark:bg-gray-800">
-                        {badgeCount > 0 && (
+                    <div className="border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-800 p-2">
+                        {filteredList.length > 0 && (
                             <button
                                 onClick={clearNotifications}
-                                className="block w-full px-4 py-2 text-xs font-bold text-center text-gray-500 uppercase transition-colors border-b border-gray-200 dark:text-gray-400 dark:border-gray-600 hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-300"
+                                className="block w-full px-4 py-2 text-xs font-bold text-center text-gray-500 uppercase transition-colors rounded-lg hover:bg-gray-200 dark:hover:bg-gray-700 hover:text-gray-700 dark:hover:text-gray-200"
                             >
-                                Marcar como leídas
+                                Marcar todas como leídas
                             </button>
                         )}
 
                         <Link
                             href={route("dashboard")}
-                            className="block w-full px-4 py-2 text-xs font-bold text-center text-blue-600 uppercase transition-colors dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/30"
+                            className="block w-full px-4 py-2 mt-1 text-xs font-bold text-center text-blue-600 uppercase transition-colors rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
                         >
                             Ver Todo el Tablero
                         </Link>
