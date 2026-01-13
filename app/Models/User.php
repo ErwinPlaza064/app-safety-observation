@@ -28,6 +28,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'is_suspended',
         'suspended_at',
         'suspension_reason',
+        'email_verified_at',
     ];
 
     /**
@@ -75,12 +76,12 @@ class User extends Authenticatable implements MustVerifyEmail
 
 
     /**
- * Relación con observaciones de seguridad
- */
-public function observations()
-{
-    return $this->hasMany(Observation::class);
-}
+     * Relación con observaciones de seguridad
+     */
+    public function observations()
+    {
+        return $this->hasMany(Observation::class);
+    }
 
     /**
      * Check if user is Super Admin

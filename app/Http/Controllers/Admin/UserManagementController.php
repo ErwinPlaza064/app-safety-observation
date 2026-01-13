@@ -80,9 +80,7 @@ class UserManagementController extends Controller
             return back()->with('error', 'El usuario ya está verificado.');
         }
 
-        $user->update([
-            'email_verified_at' => now(),
-        ]);
+        $user->markEmailAsVerified();
 
         return back()->with('success', 'Usuario verificado manualmente exitosamente.');
     }
