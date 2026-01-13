@@ -206,13 +206,6 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                                 Marcar todas como leídas
                             </button>
                         )}
-
-                        <Link
-                            href={route("dashboard")}
-                            className="block w-full px-4 py-2 mt-1 text-xs font-bold text-center text-blue-600 uppercase transition-colors rounded-lg bg-blue-50 dark:bg-blue-900/20 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/40"
-                        >
-                            Ver Todo el Tablero
-                        </Link>
                     </div>
                 </Dropdown.Content>
             </Dropdown>
