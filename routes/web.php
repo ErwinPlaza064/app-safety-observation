@@ -9,6 +9,11 @@ use App\Services\MicrosoftGraphMailer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
 
+// Health check endpoint for Railway
+Route::get('/health', function () {
+    return response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()], 200);
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
