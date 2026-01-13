@@ -1,6 +1,6 @@
 {
     "$schema": "https://railway.app/railway.schema.json",
-    "_comment": "Deploy trigger - 2026-01-13 07:41",
+    "_comment": "Deploy trigger - 2026-01-13 08:20 - Resend email configured",
     "build": {
         "builder": "NIXPACKS"
     },
