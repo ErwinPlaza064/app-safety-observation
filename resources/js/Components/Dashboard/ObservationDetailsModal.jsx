@@ -78,7 +78,12 @@ export default function ObservationDetailsModal({
 
     const handleFileChange = (e) => {
         const files = Array.from(e.target.files);
-        setData('photos', files);
+        setData('photos', [...data.photos, ...files]);
+    };
+
+    const removePhoto = (index) => {
+        const updatedPhotos = data.photos.filter((_, i) => i !== index);
+        setData('photos', updatedPhotos);
     };
 
     const handleCloseModal = () => {
@@ -287,9 +292,20 @@ export default function ObservationDetailsModal({
                                         className="block w-full text-[10px] text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
                                     />
                                     {data.photos.length > 0 && (
-                                        <div className="flex gap-1.5 flex-wrap">
-                                            {data.photos.map((f, i) => (
-                                                <span key={i} className="px-2 py-1 bg-blue-50 dark:bg-blue-900/30 text-blue-700 text-[8px] font-black rounded-lg uppercase">{f.name}</span>
+                                        <div className="flex gap-2 flex-wrap pt-2">
+                                            {data.photos.map((file, i) => (
+                                                <div key={i} className="flex items-center gap-2 pl-3 pr-2 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[9px] font-bold rounded-xl border border-blue-100 dark:border-blue-800 group shadow-sm">
+                                                    <span className="truncate max-w-[120px]">{file.name}</span>
+                                                    <button 
+                                                        type="button" 
+                                                        onClick={() => removePhoto(i)} 
+                                                        className="p-1 hover:bg-blue-200 dark:hover:bg-blue-700 rounded-full transition-colors text-blue-400 hover:text-blue-600"
+                                                    >
+                                                        <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M6 18L18 6M6 6l12 12" />
+                                                        </svg>
+                                                    </button>
+                                                </div>
                                             ))}
                                         </div>
                                     )}
