@@ -4,29 +4,24 @@ import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
 
 export default function NotificationBell({ user, count = 0, list = [] }) {
-    const isEhsManager = user.is_ehs_manager || user.is_super_admin;
-
-    if (!isEhsManager) return null;
-
     const [badgeCount, setBadgeCount] = useState(0);
     const [viewedNotifications, setViewedNotifications] = useState(new Set());
     const [newNotifications, setNewNotifications] = useState(new Set());
-    const [dismissedIds, setDismissedIds] = useState(() => {
-        const saved = localStorage.getItem(`dismissed_notifs_${user.id}`);
+    const [dismissedKeys, setDismissedKeys] = useState(() => {
+        const saved = localStorage.getItem(`dismissed_keys_${user.id}`);
         return saved ? new Set(JSON.parse(saved)) : new Set();
     });
     
     const prevCountRef = useRef(count);
     const isFirstRender = useRef(true);
 
-    // Filtrar la lista de notificaciones para no mostrar las ya abiertas/descartadas
-    const filteredList = list.filter(n => !dismissedIds.has(n.id));
+    // Clave compuesta: id-status para permitir que la campana suene si el estado cambia (ej. de en_progreso a cerrada)
+    const filteredList = list.filter(n => !dismissedKeys.has(`${n.id}-${n.status}`));
 
     useEffect(() => {
         if (isFirstRender.current) {
             isFirstRender.current = false;
-            // Solo contar aquellas que no han sido descartadas
-            const initialCount = list.filter(n => !dismissedIds.has(n.id)).length;
+            const initialCount = list.filter(n => !dismissedKeys.has(`${n.id}-${n.status}`)).length;
             if (initialCount > 0) {
                 setBadgeCount(initialCount);
             }
@@ -39,10 +34,10 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         if (diff > 0) {
             setBadgeCount((prev) => prev + diff);
 
-            const recentIds = list.slice(0, diff).map((n) => n.id);
+            const recentKeys = list.slice(0, diff).map((n) => `${n.id}-${n.status}`);
             setNewNotifications((prev) => {
                 const updated = new Set(prev);
-                recentIds.forEach((id) => updated.add(id));
+                recentKeys.forEach((key) => updated.add(key));
                 return updated;
             });
 
@@ -53,38 +48,36 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         }
 
         prevCountRef.current = count;
-    }, [count, list, dismissedIds]);
+    }, [count, list, dismissedKeys]);
 
     const handleDropdownOpen = () => {
         const newViewedSet = new Set(viewedNotifications);
-        filteredList.forEach((notif) => newViewedSet.add(notif.id));
+        filteredList.forEach((notif) => newViewedSet.add(`${notif.id}-${notif.status}`));
         setViewedNotifications(newViewedSet);
 
         setNewNotifications(new Set());
         setBadgeCount(0);
     };
 
-    const handleNotificationClick = (id, href) => {
-        // Marcar como descartada
-        const updatedDismissed = new Set(dismissedIds);
-        updatedDismissed.add(id);
-        setDismissedIds(updatedDismissed);
-        localStorage.setItem(`dismissed_notifs_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
+    const handleNotificationClick = (notif, href) => {
+        const key = `${notif.id}-${notif.status}`;
+        const updatedDismissed = new Set(dismissedKeys);
+        updatedDismissed.add(key);
+        setDismissedKeys(updatedDismissed);
+        localStorage.setItem(`dismissed_keys_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
         
-        // Navegar manualmente
         router.get(href);
     };
 
     const clearNotifications = () => {
-        // Descartar todas las actuales
-        const updatedDismissed = new Set(dismissedIds);
-        list.forEach(n => updatedDismissed.add(n.id));
-        setDismissedIds(updatedDismissed);
-        localStorage.setItem(`dismissed_notifs_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
+        const updatedDismissed = new Set(dismissedKeys);
+        list.forEach(n => updatedDismissed.add(`${n.id}-${n.status}`));
+        setDismissedKeys(updatedDismissed);
+        localStorage.setItem(`dismissed_keys_${user.id}`, JSON.stringify(Array.from(updatedDismissed)));
         setBadgeCount(0);
     };
 
-    const timeAgo = (dateString) => {
+    const timeAgo = (dateString, status) => {
         const date = new Date(dateString);
         return date.toLocaleDateString("es-MX", {
             hour: "2-digit",
@@ -92,14 +85,16 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
         });
     };
 
-    const renderEhsNotification = (notif) => {
-        const isNew = newNotifications.has(notif.id);
+    const renderNotificationItem = (notif) => {
+        const key = `${notif.id}-${notif.status}`;
+        const isNew = newNotifications.has(key);
+        const isClosed = notif.status === 'cerrada';
         const href = route("observations.show", notif.id);
 
         return (
             <button
-                key={notif.id}
-                onClick={() => handleNotificationClick(notif.id, href)}
+                key={key}
+                onClick={() => handleNotificationClick(notif, href)}
                 className={`w-full text-left px-4 py-3 relative transition-all border-b border-gray-50 dark:border-gray-700 block ${
                     isNew
                         ? "bg-blue-50 dark:bg-blue-900/30 border-l-4 border-l-blue-500 dark:border-l-blue-400 shadow-sm hover:bg-blue-100 dark:hover:bg-blue-900/40"
@@ -114,25 +109,24 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                             )}
                             <span
                                 className={`font-bold text-[10px] uppercase tracking-wider ${
-                                    notif.observation_type === "acto_inseguro"
+                                    isClosed 
+                                    ? "text-green-600 dark:text-green-400" 
+                                    : notif.observation_type === "acto_inseguro"
                                         ? "text-orange-600 dark:text-orange-400"
-                                        : notif.observation_type ===
-                                          "condicion_insegura"
-                                        ? "text-red-600 dark:text-red-400"
-                                        : "text-green-600 dark:text-green-400"
+                                        : "text-red-600 dark:text-red-400"
                                 }`}
                             >
-                                {notif.observation_type?.replace(/_/g, " ")}
+                                {isClosed ? "Reporte Cerrado" : notif.observation_type?.replace(/_/g, " ")}
                             </span>
                         </div>
                         <div className="flex items-center gap-1">
                             {isNew && (
-                                <span className="px-1.5 py-0.5 text-[9px] font-bold text-white bg-blue-500 rounded-full uppercase">
-                                    Nueva
+                                <span className={`px-1.5 py-0.5 text-[9px] font-bold text-white rounded-full uppercase ${isClosed ? 'bg-green-500' : 'bg-blue-500'}`}>
+                                    {isClosed ? 'Listo' : 'Nueva'}
                                 </span>
                             )}
                             <span className="text-[10px] text-gray-400 dark:text-gray-500">
-                                {timeAgo(notif.created_at)}
+                                {timeAgo(isClosed ? notif.closed_at : notif.created_at)}
                             </span>
                         </div>
                     </div>
@@ -144,7 +138,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                                 : "text-gray-600 dark:text-gray-300"
                         }`}
                     >
-                        {notif.description}
+                        {isClosed ? `Resolución: ${notif.closure_notes}` : notif.description}
                     </span>
 
                     <div className="flex items-center justify-between mt-1">
@@ -184,7 +178,7 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                         {filteredList.length > 0 ? (
                             filteredList
                                 .slice(0, 10)
-                                .map((notif) => renderEhsNotification(notif))
+                                .map((notif) => renderNotificationItem(notif))
                         ) : (
                             <div className="px-6 py-10 text-sm text-center text-gray-500 dark:text-gray-400">
                                 <div className="flex flex-col items-center gap-2">

@@ -117,7 +117,13 @@ class DashboardController extends Controller
                 ->get();
 
             $data['employeeNotifications'] = $openObservations;
-            $data['employeeNotificationCount'] = $openObservations->count();
+            // Contador acumulativo para empleados: total de sus reportes + total de sus reportes cerrados
+            $data['employeeNotificationCount'] = Observation::where('user_id', $user->id)
+                ->where('is_draft', false)
+                ->count() + 
+                Observation::where('user_id', $user->id)
+                ->where('status', 'cerrada')
+                ->count();
         }
 
         // 3. LÓGICA PARA EHS MANAGER (OPTIMIZADO - Sin perder funcionalidad)
@@ -365,7 +371,9 @@ class DashboardController extends Controller
                 'total_employees' => $totalEmployees,
                 'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
                 'top_categories' => $topCategories,
-                'recent' => $recentObservations
+                'recent' => $recentObservations,
+                // Contador acumulativo para EHS: total reportes + total cerrados
+                'event_count' => Observation::submitted()->count() + Observation::where('status', 'cerrada')->count()
             ];
 
             $data['canViewAllPlants'] = $canViewAllPlants;

@@ -50,7 +50,7 @@ export default function Dashboard({
     return (
         <AuthenticatedLayout
             notificationCount={
-                ehsStats ? ehsStats.open : employeeNotificationCount || 0
+                ehsStats ? ehsStats.event_count : employeeNotificationCount || 0
             }
             notifications={
                 ehsStats ? ehsStats.recent : employeeNotifications || []
