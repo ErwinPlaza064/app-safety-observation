@@ -6,6 +6,7 @@ import { Link, usePage, router } from "@inertiajs/react";
 import { useState } from "react";
 import NotificationBell from "@/Components/Dashboard/NotificationBell";
 import ThemeToggle from "@/Components/ThemeToggle";
+import { Transition } from "@headlessui/react";
 
 export default function AuthenticatedLayout({
     header,
@@ -177,11 +178,15 @@ export default function AuthenticatedLayout({
                     </div>
                 </div>
 
-                <div
-                    className={
-                        (showingNavigationDropdown ? "block" : "hidden") +
-                        " sm:hidden"
-                    }
+                <Transition
+                    show={showingNavigationDropdown}
+                    enter="transition ease-out duration-200"
+                    enterFrom="opacity-0 -translate-y-4"
+                    enterTo="opacity-100 translate-y-0"
+                    leave="transition ease-in duration-150"
+                    leaveFrom="opacity-100 translate-y-0"
+                    leaveTo="opacity-0 -translate-y-4"
+                    className="sm:hidden"
                 >
                     <div className="pt-2 pb-3 space-y-1">
                         <ResponsiveNavLink
@@ -193,7 +198,7 @@ export default function AuthenticatedLayout({
                     </div>
 
                     <div className="pt-4 pb-1 border-t border-gray-200 dark:border-gray-700">
-                        <div className="space-y-1 ">
+                        <div className="space-y-1">
                             <div className="px-4 py-2 border-b border-gray-200 dark:border-gray-700">
                                 <div className="flex items-center justify-between">
                                     <span className="text-gray-700 dark:text-gray-300">
@@ -241,7 +246,7 @@ export default function AuthenticatedLayout({
                             </ResponsiveNavLink>
                         </div>
                     </div>
-                </div>
+                </Transition>
             </nav>
 
             {header && (

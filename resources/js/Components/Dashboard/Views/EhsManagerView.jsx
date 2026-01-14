@@ -121,7 +121,14 @@ export default function EhsManagerView({
         setActiveMetric(null);
         setSelectedPayroll(item);
         setParams({ ...params, search: item.payroll_number });
-        // El useEffect se encargará de recargar los datos
+        
+        // Hacer scroll automático a la tabla de resultados
+        setTimeout(() => {
+            searchSectionRef.current?.scrollIntoView({
+                behavior: "smooth",
+                block: "start",
+            });
+        }, 400);
     };
 
     const handleRowClick = (obs) => {
