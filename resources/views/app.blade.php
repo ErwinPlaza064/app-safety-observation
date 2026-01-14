@@ -52,7 +52,7 @@
         // Solo registrar SW en producción o localhost (evita errores con certificados auto-firmados)
         const isLocalhost = ['localhost', '127.0.0.1'].includes(window.location.hostname);
         const isProduction = !isLocalhost; // Cualquier host que no sea localhost se considera producción
-        const shouldRegisterSW = false; // Deshabilitado temporalmente
+        const shouldRegisterSW = true;
 
         if (shouldRegisterSW) {
             window.addEventListener('load', async () => {
