@@ -101,9 +101,9 @@ export default function ObservationDetailsModal({
 
     return (
         <Modal show={show} onClose={handleCloseModal} maxWidth="2xl">
-            <div className="flex flex-col max-h-[90vh]">
+            <div className="flex flex-col h-full max-h-[95vh] sm:max-h-[90vh]">
                 {/* Header Modernizado - Fijo en la parte superior */}
-                <div className="flex-shrink-0 flex items-center justify-between px-6 py-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <div className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <div className="flex items-center gap-3">
                         <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                             <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -132,9 +132,9 @@ export default function ObservationDetailsModal({
                 {/* Cuerpo del Modal - Scrollable */}
                 <div className="flex-1 overflow-y-auto bg-white dark:bg-gray-800 custom-scrollbar">
                     {!showClosureForm ? (
-                        <div className="p-6">
+                        <div className="p-4 sm:p-6">
                             {/* Status bar */}
-                            <div className="flex flex-wrap items-center justify-between gap-4 p-4 mb-8 border shadow-sm bg-gray-50 dark:bg-gray-900/40 border-gray-100 dark:border-gray-700 rounded-2xl">
+                            <div className="flex flex-wrap items-center justify-between gap-4 p-4 mb-6 sm:mb-8 border shadow-sm bg-gray-50 dark:bg-gray-900/40 border-gray-100 dark:border-gray-700 rounded-2xl">
                                 <div className="flex items-center gap-3">
                                     <span className="text-[10px] font-bold tracking-widest text-gray-400 uppercase">Estado</span>
                                     {getStatusBadge(observation.status)}
@@ -356,7 +356,7 @@ export default function ObservationDetailsModal({
                 </div>
 
                 {/* Footer Moderno - Fijo en la parte inferior */}
-                <div className="flex-shrink-0 px-6 py-4 bg-gray-50 dark:bg-gray-900/60 border-t dark:border-gray-700">
+                <div className="flex-shrink-0 px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 dark:bg-gray-900/60 border-t dark:border-gray-700">
                     <div className="flex items-center justify-between gap-4">
                         <div className="hidden sm:block">
                             <p className="text-[9px] font-black text-gray-400 uppercase tracking-[0.2em]">
