@@ -77,7 +77,7 @@ export default function Show({ auth, observation }) {
                                         `Reporte #${observation.id}`}
                                 </h1>
                                 <p className="mt-1 text-sm text-gray-500 dark:text-gray-400">
-                                    Creado el
+                                    Creado el {" "}
                                     {formatDate(observation.created_at)}
                                 </p>
                             </div>
@@ -183,6 +183,23 @@ export default function Show({ auth, observation }) {
                                                     </div>
                                                 )}
                                             </div>
+                                        </div>
+                                    )}
+
+                                    {observation.status === 'cerrada' && observation.closure_notes && (
+                                        <div className="p-6 border-2 border-green-50 dark:border-green-900/20 bg-green-50/20 dark:bg-green-900/10 rounded-2xl shadow-sm">
+                                            <h3 className="flex items-center gap-2 mb-4 text-xs font-black tracking-widest text-green-600 dark:text-green-400 uppercase">
+                                                Acciones de Resolución
+                                            </h3>
+                                            <p className="text-sm leading-relaxed text-green-900 dark:text-green-100 whitespace-pre-wrap">
+                                                {observation.closure_notes}
+                                            </p>
+                                            {observation.closedByUser && (
+                                                <div className="flex items-center justify-end gap-2 mt-6 pt-4 border-t border-green-100 dark:border-green-800/30">
+                                                    <span className="text-[10px] font-bold text-green-600/70 uppercase tracking-tight">Resolución por:</span>
+                                                    <span className="text-[11px] font-black text-green-700 dark:text-green-300 uppercase tabular-nums">{observation.closedByUser.name}</span>
+                                                </div>
+                                            )}
                                         </div>
                                     )}
                                 </div>
