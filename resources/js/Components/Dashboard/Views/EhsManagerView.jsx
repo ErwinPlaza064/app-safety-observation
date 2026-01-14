@@ -64,7 +64,6 @@ export default function EhsManagerView({
     const [params, setParams] = useState({
         search: filters?.search || "",
         area_id: filters?.area_id || "",
-        status: filters?.status || "",
     });
 
     const isFirstRender = useRef(true);
@@ -500,17 +499,6 @@ export default function EhsManagerView({
                                 ))}
                             </select>
                         )}
-
-                        <select
-                            name="status"
-                            value={params.status}
-                            onChange={handleFilterChange}
-                            className="text-sm bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-900 dark:text-gray-100 rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a]"
-                        >
-                            <option value="">Todos los Estados</option>
-                            <option value="en_progreso">Abiertas</option>
-                            <option value="cerrada">Cerradas</option>
-                        </select>
                     </div>
                 </div>
             </div>

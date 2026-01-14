@@ -173,13 +173,9 @@ class DashboardController extends Controller
                 $query->where('area_id', $currentAreaId);
             }
 
-            if (request('status')) {
-                $query->where('status', request('status'));
-            }
-
             $recentObservations = $query
                 ->orderByDesc('created_at')
-                ->take(20)
+                ->take(100)
                 ->get();
 
             $applyFilters = function ($q) use ($currentAreaId, $canViewAllPlants, $defaultAreaId) {
@@ -374,7 +370,7 @@ class DashboardController extends Controller
 
             $data['canViewAllPlants'] = $canViewAllPlants;
 
-            $data['filters'] = request()->only(['search', 'status']);
+            $data['filters'] = request()->only(['search']);
             $data['filters']['area_id'] = $currentAreaId;
 
             $data['managerPlantName'] = $currentAreaId
