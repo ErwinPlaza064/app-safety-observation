@@ -38,6 +38,24 @@ export default function EhsManagerView({
         return () => clearInterval(intervalId);
     }, []);
 
+    // Abrir modal automáticamente si hay un ID en la URL (desde notificaciones)
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const observationId = urlParams.get("id");
+
+        if (observationId && stats.recent) {
+            const obs = stats.recent.find(
+                (o) => o.id === parseInt(observationId)
+            );
+            if (obs) {
+                setSelectedObservation(obs);
+                // Limpiar el parámetro de la URL después de abrir para no re-abrir en refresh
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({ path: newUrl }, "", newUrl);
+            }
+        }
+    }, [stats.recent]);
+
     const handleGenericClick = (title, list) => {
         setCustomDrillDown({ title, data: list });
         setActiveMetric("custom");
@@ -97,7 +115,7 @@ export default function EhsManagerView({
             const response = await axios.get(route("dashboard"), {
                 params: { search: payrollNumber },
             });
-            // La respuesta de Inertia viene en props si usamos axios directamente a veces es complicado, 
+            // La respuesta de Inertia viene en props si usamos axios directamente a veces es complicado,
             // pero podemos usar router.get con "only" para traer solo lo necesario sin recargar todo.
             router.get(
                 route("dashboard"),
@@ -121,7 +139,7 @@ export default function EhsManagerView({
         setActiveMetric(null);
         setSelectedPayroll(item);
         setParams({ ...params, search: item.payroll_number });
-        
+
         // Hacer scroll automático a la tabla de resultados
         setTimeout(() => {
             searchSectionRef.current?.scrollIntoView({
@@ -518,10 +536,14 @@ export default function EhsManagerView({
                             </div>
                             <div>
                                 <h3 className="text-lg font-bold text-blue-900 dark:text-blue-100">
-                                    Historial: {selectedPayroll?.observed_person || params.search}
+                                    Historial:{" "}
+                                    {selectedPayroll?.observed_person ||
+                                        params.search}
                                 </h3>
                                 <p className="text-sm text-blue-700 dark:text-blue-300">
-                                    {selectedPayroll ? `Nómina: ${selectedPayroll.payroll_number}` : 'Búsqueda personalizada'}
+                                    {selectedPayroll
+                                        ? `Nómina: ${selectedPayroll.payroll_number}`
+                                        : "Búsqueda personalizada"}
                                 </p>
                             </div>
                         </div>
@@ -544,7 +566,9 @@ export default function EhsManagerView({
                                     <tr>
                                         <th className="px-6 py-3">Folio</th>
                                         <th className="px-6 py-3">Fecha</th>
-                                        <th className="px-6 py-3">Descripción</th>
+                                        <th className="px-6 py-3">
+                                            Descripción
+                                        </th>
                                         <th className="px-6 py-3">Ubicación</th>
                                         <th className="px-6 py-3">Estado</th>
                                     </tr>
@@ -565,7 +589,10 @@ export default function EhsManagerView({
                                                 ).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 max-w-md">
-                                                <p className="truncate" title={obs.description}>
+                                                <p
+                                                    className="truncate"
+                                                    title={obs.description}
+                                                >
                                                     {obs.description}
                                                 </p>
                                             </td>
@@ -575,12 +602,16 @@ export default function EhsManagerView({
                                             <td className="px-6 py-4">
                                                 <span
                                                     className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                        obs.status === "en_progreso"
+                                                        obs.status ===
+                                                        "en_progreso"
                                                             ? "bg-blue-100 text-blue-800"
                                                             : "bg-green-100 text-green-800"
                                                     }`}
                                                 >
-                                                    {obs.status === "en_progreso" ? "Abierta" : "Cerrada"}
+                                                    {obs.status ===
+                                                    "en_progreso"
+                                                        ? "Abierta"
+                                                        : "Cerrada"}
                                                 </span>
                                             </td>
                                         </tr>
@@ -606,8 +637,12 @@ export default function EhsManagerView({
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th className="px-6 py-3">Observada</th>
-                                        <th className="px-6 py-3">Descripción</th>
-                                        <th className="px-6 py-3">Observador</th>
+                                        <th className="px-6 py-3">
+                                            Descripción
+                                        </th>
+                                        <th className="px-6 py-3">
+                                            Observador
+                                        </th>
                                         <th className="px-6 py-3">Ubicación</th>
                                         <th className="px-6 py-3">Estado</th>
                                         <th className="px-6 py-3">Fecha</th>
@@ -618,11 +653,15 @@ export default function EhsManagerView({
                                         stats.recent.map((obs) => (
                                             <tr
                                                 key={obs.id}
-                                                onClick={() => handleRowClick(obs)}
+                                                onClick={() =>
+                                                    handleRowClick(obs)
+                                                }
                                                 onMouseEnter={(e) =>
                                                     handleRowMouseEnter(obs, e)
                                                 }
-                                                onMouseLeave={handleRowMouseLeave}
+                                                onMouseLeave={
+                                                    handleRowMouseLeave
+                                                }
                                                 className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             >
                                                 <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
@@ -640,7 +679,8 @@ export default function EhsManagerView({
                                                 <td className="px-6 py-4">
                                                     <span
                                                         className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                                                            obs.status === "en_progreso"
+                                                            obs.status ===
+                                                            "en_progreso"
                                                                 ? "bg-blue-100 text-blue-800"
                                                                 : obs.status ===
                                                                   "cerrada"
@@ -648,7 +688,8 @@ export default function EhsManagerView({
                                                                 : "bg-gray-100 text-gray-800"
                                                         }`}
                                                     >
-                                                        {obs.status === "en_progreso"
+                                                        {obs.status ===
+                                                        "en_progreso"
                                                             ? "Abierta"
                                                             : obs.status}
                                                     </span>
@@ -666,8 +707,8 @@ export default function EhsManagerView({
                                                 colSpan="6"
                                                 className="px-6 py-10 text-center text-gray-500 dark:text-gray-400"
                                             >
-                                                No se encontraron observaciones con esos
-                                                filtros.
+                                                No se encontraron observaciones
+                                                con esos filtros.
                                             </td>
                                         </tr>
                                     )}

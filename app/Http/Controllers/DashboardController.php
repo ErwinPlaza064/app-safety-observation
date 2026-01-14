@@ -81,18 +81,26 @@ class DashboardController extends Controller
                 'total'       => Observation::where('user_id', $user->id)->where('is_draft', false)->count(),
             ];
 
+            // Notas de cierre para notificaciones locales (badge "Listo")
+            $data['employeeNotifications'] = Observation::where('user_id', $user->id)
+                ->where('status', 'cerrada')
+                ->where('is_draft', false)
+                ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
+                ->latest('closed_at')
+                ->get();
+
             if (request('filter_status')) {
                 $data['filteredReports'] = Observation::where('user_id', $user->id)
                     ->where('is_draft', false)
                     ->where('status', request('filter_status'))
-                    ->with(['area', 'user'])
+                    ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
                     ->latest()
                     ->get();
             }
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                 ->where('is_draft', false)
-                ->with(['area', 'user', 'images', 'categories'])
+                ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
                 ->latest('observation_date')
                 ->take(10)
                 ->get();
@@ -142,10 +150,12 @@ class DashboardController extends Controller
             $baseRelations = [
                 'user:id,name,email,area',
                 'area:id,name',
-                'closedByUser:id,name'
+                'closedByUser:id,name',
+                'categories:id,name',
+                'images:id,observation_id,path'
             ];
 
-            $query = Observation::with(array_merge($baseRelations, ['categories:id,name', 'images:id,observation_id,path']))
+            $query = Observation::with($baseRelations)
                 ->submitted();
 
             if (request('search')) {
@@ -358,8 +368,8 @@ class DashboardController extends Controller
                 'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations,
-                // Contador acumulativo para EHS: total reportes + total cerrados
-                'event_count' => Observation::submitted()->count() + Observation::where('status', 'cerrada')->count()
+                // Contador acumulativo para EHS: total reportes (filtrados) + total cerrados (filtrados)
+                'event_count' => $totalAll + $closed
             ];
 
             $data['canViewAllPlants'] = $canViewAllPlants;

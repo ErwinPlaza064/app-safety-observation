@@ -29,6 +29,22 @@ export default function EmployeeView({
         if (savedDraft) setShowForm(true);
     }, [savedDraft]);
 
+    // Abrir modal automáticamente si hay un ID en la URL
+    useEffect(() => {
+        const urlParams = new URLSearchParams(window.location.search);
+        const observationId = urlParams.get("id");
+        
+        if (observationId && myObservations) {
+            const obs = myObservations.find(o => o.id === parseInt(observationId));
+            if (obs) {
+                setSelectedObservation(obs);
+                // Limpiar el parámetro de la URL
+                const newUrl = window.location.pathname + window.location.hash;
+                window.history.replaceState({ path: newUrl }, "", newUrl);
+            }
+        }
+    }, [myObservations]);
+
     useEffect(() => {
         if (filteredReports && currentStatusFilter) {
             setShowStatusModal(true);
