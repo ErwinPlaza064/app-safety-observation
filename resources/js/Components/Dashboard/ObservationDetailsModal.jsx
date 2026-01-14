@@ -291,13 +291,46 @@ export default function ObservationDetailsModal({
                                 />
                                 <InputError message={errors.closure_notes} />
 
-                                <div className="space-y-3">
-                                    <p className="text-[10px] font-black text-gray-400 uppercase">Subir Fotos de Resolución</p>
-                                    <input
-                                        type="file" multiple accept="image/*"
-                                        onChange={handleFileChange}
-                                        className="block w-full text-[10px] text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-[10px] file:font-black file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 cursor-pointer"
-                                    />
+                                <div className="space-y-4">
+                                    <p className="text-[10px] font-black text-gray-400 uppercase tracking-widest">Evidencia Fotográfica</p>
+                                    
+                                    <div className="grid grid-cols-2 gap-3">
+                                        {/* Botón para Cámara (Móvil) */}
+                                        <label className="flex flex-col items-center justify-center gap-2 p-4 bg-blue-50/50 dark:bg-blue-900/20 border-2 border-dashed border-blue-200 dark:border-blue-800 rounded-3xl cursor-pointer hover:bg-blue-100 dark:hover:bg-blue-900/40 transition-all group">
+                                            <div className="p-2 bg-blue-100 dark:bg-blue-800 rounded-full group-hover:scale-110 transition-transform">
+                                                <svg className="w-5 h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M3 9a2 2 0 012-2h.93a2 2 0 001.664-.89l.812-1.22A2 2 0 0110.07 4h3.86a2 2 0 011.664.89l.812 1.22A2 2 0 0018.07 7H19a2 2 0 012 2v9a2 2 0 01-2 2H5a2 2 0 01-2-2V9z" />
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 13a3 3 0 11-6 0 3 3 0 016 0z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-black text-blue-700 dark:text-blue-300 uppercase">Tomar Foto</span>
+                                            <input
+                                                type="file"
+                                                accept="image/*"
+                                                capture="environment"
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                            />
+                                        </label>
+
+                                        {/* Botón para Galería */}
+                                        <label className="flex flex-col items-center justify-center gap-2 p-4 bg-gray-50/50 dark:bg-gray-800/50 border-2 border-dashed border-gray-200 dark:border-gray-700 rounded-3xl cursor-pointer hover:bg-gray-100 dark:hover:bg-gray-800 transition-all group">
+                                            <div className="p-2 bg-gray-100 dark:bg-gray-700 rounded-full group-hover:scale-110 transition-transform">
+                                                <svg className="w-5 h-5 text-gray-600 dark:text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                                                </svg>
+                                            </div>
+                                            <span className="text-[10px] font-black text-gray-600 dark:text-gray-400 uppercase">Subir Archivo</span>
+                                            <input
+                                                type="file"
+                                                multiple
+                                                accept="image/*"
+                                                onChange={handleFileChange}
+                                                className="hidden"
+                                            />
+                                        </label>
+                                    </div>
+
                                     {data.photos.length > 0 && (
                                         <div className="flex gap-2 flex-wrap pt-2">
                                             {data.photos.map((file, i) => (
