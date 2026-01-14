@@ -258,57 +258,62 @@ class DashboardController extends Controller
                 ->where('is_super_admin', false)
                 ->count();
 
-            $employeesWhoReportedCount = User::where('is_ehs_manager', false)
-                ->where('is_super_admin', false)
-                ->whereHas('observations', function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
-                    $q->submitted();
-                    // Aplicar el mismo filtro de área que en las demás estadísticas
-                    if (!$canViewAllPlants && $defaultAreaId) {
-                        $q->where('area_id', $defaultAreaId);
-                    } elseif (request('area_id')) {
-                        $q->where('area_id', request('area_id'));
-                    }
-                })
-                ->count();
+            // Función auxiliar para obtener reporteros por periodo
+            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $defaultAreaId, $baseRelations) {
+                return User::where('is_ehs_manager', false)
+                    ->where('is_super_admin', false)
+                    ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
+                        $q->submitted();
+                        if ($days) {
+                            $q->where('created_at', '>=', now()->subDays($days));
+                        }
+                        if (!$canViewAllPlants && $defaultAreaId) {
+                            $q->where('area_id', $defaultAreaId);
+                        } elseif (request('area_id')) {
+                            $q->where('area_id', request('area_id'));
+                        }
+                    })
+                    ->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
+                        $q->submitted();
+                        if ($days) {
+                            $q->where('created_at', '>=', now()->subDays($days));
+                        }
+                        if (!$canViewAllPlants && $defaultAreaId) {
+                            $q->where('area_id', $defaultAreaId);
+                        } elseif (request('area_id')) {
+                            $q->where('area_id', request('area_id'));
+                        }
+                    }])
+                    ->with(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId, $baseRelations) {
+                        $q->submitted()->with($baseRelations);
+                        if ($days) {
+                            $q->where('created_at', '>=', now()->subDays($days));
+                        }
+                        if (!$canViewAllPlants && $defaultAreaId) {
+                            $q->where('area_id', $defaultAreaId);
+                        } elseif (request('area_id')) {
+                            $q->where('area_id', request('area_id'));
+                        }
+                    }])
+                    ->get()
+                    ->map(function ($employee) {
+                        return [
+                            'name' => $employee->name,
+                            'email' => $employee->email,
+                            'area' => $employee->area?->name || 'N/A',
+                            'count' => $employee->observations_count,
+                            'list' => $employee->observations
+                        ];
+                    });
+            };
 
-            // Obtener listado de empleados que han reportado con sus observaciones
-            $employeesReportingList = User::where('is_ehs_manager', false)
-                ->where('is_super_admin', false)
-                ->whereHas('observations', function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
-                    $q->submitted();
-                    if (!$canViewAllPlants && $defaultAreaId) {
-                        $q->where('area_id', $defaultAreaId);
-                    } elseif (request('area_id')) {
-                        $q->where('area_id', request('area_id'));
-                    }
-                })
-                ->with(['observations' => function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId, $baseRelations) {
-                    $q->submitted()->with($baseRelations);
-                    if (!$canViewAllPlants && $defaultAreaId) {
-                        $q->where('area_id', $defaultAreaId);
-                    } elseif (request('area_id')) {
-                        $q->where('area_id', request('area_id'));
-                    }
-                }])
-                ->withCount(['observations' => function ($q) use ($applyFilters, $canViewAllPlants, $defaultAreaId) {
-                    $q->submitted();
-                    if (!$canViewAllPlants && $defaultAreaId) {
-                        $q->where('area_id', $defaultAreaId);
-                    } elseif (request('area_id')) {
-                        $q->where('area_id', request('area_id'));
-                    }
-                }])
-                ->orderByDesc('observations_count')
-                ->get()
-                ->map(function ($employee) {
-                    return [
-                        'name' => $employee->name,
-                        'email' => $employee->email,
-                        'area' => $employee->area,
-                        'count' => $employee->observations_count,
-                        'list' => $employee->observations
-                    ];
-                });
+            $dailyReporters = $getReportersByPeriod(1);
+            $weeklyReporters = $getReportersByPeriod(7);
+            $monthlyReporters = $getReportersByPeriod(30);
+
+            $employeesWhoReportedCount = $monthlyReporters->count();
+
+            $employeesReportingList = $monthlyReporters;
 
             $participationRate = $totalEmployees > 0 ? round(($employeesWhoReportedCount / $totalEmployees) * 100) : 0;
 
@@ -365,6 +370,21 @@ class DashboardController extends Controller
                 'employees_reporting' => $employeesWhoReportedCount,
                 'employees_reporting_list' => $employeesReportingList,
                 'total_employees' => $totalEmployees,
+                'participation_daily' => [
+                    'count' => $dailyReporters->count(),
+                    'rate' => $totalEmployees > 0 ? round(($dailyReporters->count() / $totalEmployees) * 100) : 0,
+                    'list' => $dailyReporters
+                ],
+                'participation_weekly' => [
+                    'count' => $weeklyReporters->count(),
+                    'rate' => $totalEmployees > 0 ? round(($weeklyReporters->count() / $totalEmployees) * 100) : 0,
+                    'list' => $weeklyReporters
+                ],
+                'participation_monthly' => [
+                    'count' => $monthlyReporters->count(),
+                    'rate' => $participationRate,
+                    'list' => $monthlyReporters
+                ],
                 'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations,

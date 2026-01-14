@@ -39,7 +39,7 @@ export default function DrillDownModal({
                 <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                     {data && data.length > 0 ? (
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            {type === "participation" && (
+                            {type.startsWith("participation") && (
                                 <>
                                     <thead className="sticky top-0 text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                                         <tr>
