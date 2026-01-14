@@ -28,7 +28,7 @@ class ObservationController extends Controller
             'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string|min:20',
             'photos' => 'nullable|array|max:5',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_draft' => 'boolean',
         ], [
             'payroll_number.required' => 'El número de nómina es obligatorio',
@@ -200,7 +200,7 @@ class ObservationController extends Controller
             $validated = $request->validate([
                 'closure_notes' => 'required|string|min:10',
                 'photos' => 'nullable|array|max:5',
-                'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:10240',
+                'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             ], [
                 'closure_notes.required' => 'El comentario de cierre es obligatorio',
                 'closure_notes.min' => 'El comentario debe tener al menos 10 caracteres',

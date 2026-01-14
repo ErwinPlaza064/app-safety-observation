@@ -1,4 +1,5 @@
 import { useState } from "react";
+import { compressImage } from "@/Utils/imageHelper";
 import Modal from "@/Components/Modal";
 import SecondaryButton from "@/Components/SecondaryButton";
 import PrimaryButton from "@/Components/PrimaryButton";
@@ -76,9 +77,15 @@ export default function ObservationDetailsModal({
         });
     };
 
-    const handleFileChange = (e) => {
+    const handleFileChange = async (e) => {
         const files = Array.from(e.target.files);
-        setData('photos', [...data.photos, ...files]);
+        
+        // Comprimir cada archivo antes de agregarlo
+        const compressedFiles = await Promise.all(
+            files.map(file => compressImage(file))
+        );
+
+        setData('photos', [...data.photos, ...compressedFiles]);
     };
 
     const removePhoto = (index) => {

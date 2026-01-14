@@ -1,4 +1,5 @@
 import { router } from "@inertiajs/react";
+import { compressImage } from "@/Utils/imageHelper";
 import { useState, useEffect, useRef } from "react";
 import AutoSaveIndicator from "@/Components/Observations/AutoSaveIndicator";
 import ObserverInfoStep from "./Steps/ObserverInfoStep";
@@ -125,15 +126,21 @@ export default function SafetyObservationForm({
         }));
     };
 
-    const handlePhotoChange = (e) => {
+    const handlePhotoChange = async (e) => {
         const files = Array.from(e.target.files);
         if (formData.photos.length + files.length > 5) {
             showToast("Máximo 5 imágenes permitidas", "error");
             return;
         }
+
+        // Comprimir cada archivo antes de agregarlo
+        const compressedFiles = await Promise.all(
+            files.map(file => compressImage(file))
+        );
+
         setFormData((prev) => ({
             ...prev,
-            photos: [...prev.photos, ...files],
+            photos: [...prev.photos, ...compressedFiles],
         }));
     };
 
