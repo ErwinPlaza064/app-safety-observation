@@ -300,7 +300,7 @@ class DashboardController extends Controller
                         return [
                             'name' => $employee->name,
                             'email' => $employee->email,
-                            'area' => $employee->area?->name || 'N/A',
+                            'area' => $employee->area ?? 'N/A',
                             'count' => $employee->observations_count,
                             'list' => $employee->observations
                         ];
