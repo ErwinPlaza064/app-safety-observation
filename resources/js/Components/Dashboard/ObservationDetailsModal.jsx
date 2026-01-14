@@ -151,17 +151,35 @@ export default function ObservationDetailsModal({
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                 {/* Columna Izquierda */}
                                 <div className="space-y-8">
+                                    {/* Persona Observada */}
+                                    <section>
+                                        <h3 className="flex items-center gap-2 mb-3 text-[10px] font-black tracking-widest text-gray-400 uppercase">
+                                            Persona Observada
+                                        </h3>
+                                        <div className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 bg-blue-50/20 dark:bg-blue-900/10 rounded-2xl shadow-sm">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-700 dark:text-purple-300 font-black text-sm">
+                                                {getInitials(observation.observed_person) || "PO"}
+                                            </div>
+                                            <div className="min-w-0">
+                                                <p className="text-sm font-bold text-gray-900 truncate dark:text-white">
+                                                    {observation.observed_person || "No especificado"}
+                                                </p>
+                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Sujeto de la observación</p>
+                                            </div>
+                                        </div>
+                                    </section>
+
                                     {/* Reportado por */}
                                     <section>
                                         <h3 className="flex items-center gap-2 mb-3 text-[10px] font-black tracking-widest text-gray-400 uppercase">
                                             Info de Reportante
                                         </h3>
                                         <div className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
-                                            <div className="flex-shrink-0 w-12 h-12 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center text-white font-black text-lg shadow-md transform -rotate-1">
+                                            <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-black text-sm">
                                                 {getInitials(observation.user?.name)}
                                             </div>
                                             <div className="min-w-0">
-                                                <p className="text-sm font-bold text-gray-900 truncate dark:text-white">
+                                                <p className="text-sm font-medium text-gray-900 truncate dark:text-white">
                                                     {observation.user?.name || "Usuario"}
                                                 </p>
                                                 <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">{observation.user?.email}</p>

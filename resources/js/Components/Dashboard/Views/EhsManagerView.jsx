@@ -301,73 +301,42 @@ export default function EhsManagerView({
                         }
                     />
                 </div>
-                <div className="bg-white dark:bg-gray-800 rounded-xl shadow-sm border-l-4 border-purple-500 overflow-hidden">
-                    <div className="p-5">
-                        <div className="flex items-center justify-between mb-4">
-                            <h3 className="text-sm font-bold text-gray-400 uppercase tracking-widest">Participación</h3>
-                            <div className="p-2 bg-purple-50 dark:bg-purple-900/30 rounded-lg">
-                                <svg className="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
-                                </svg>
+                <div
+                    onClick={() => setActiveMetric("participation_monthly")}
+                    className="cursor-pointer transition-transform hover:scale-[1.02]"
+                >
+                    <EhsMetricCard
+                        title="Participación"
+                        value={`${stats.participation_monthly.rate}%`}
+                        subtitle={
+                            <div className="flex flex-col gap-1 mt-1 border-t border-purple-100 dark:border-purple-800/30 pt-1">
+                                <div className="flex items-center justify-between text-[10px] font-bold">
+                                    <span className="text-gray-400 uppercase">Hoy: {stats.participation_daily.rate}%</span>
+                                    <span className="text-purple-500">{stats.participation_daily.count} emp.</span>
+                                </div>
+                                <div className="flex items-center justify-between text-[10px] font-bold">
+                                    <span className="text-gray-400 uppercase">Sem: {stats.participation_weekly.rate}%</span>
+                                    <span className="text-purple-500">{stats.participation_weekly.count} emp.</span>
+                                </div>
                             </div>
-                        </div>
-                        
-                        <div className="space-y-3">
-                            {/* Hoy */}
-                            <div 
-                                onClick={() => setActiveMetric("participation_daily")}
-                                className="flex items-center justify-between p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-colors group"
+                        }
+                        color="purple"
+                        icon={
+                            <svg
+                                className="w-6 h-6 text-purple-600"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
                             >
-                                <div className="flex flex-col">
-                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Hoy</span>
-                                    <span className="text-lg font-black text-gray-800 dark:text-gray-100">{stats.participation_daily.rate}%</span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{stats.participation_daily.count} empleados</span>
-                                    <div className="w-20 h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
-                                        <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${stats.participation_daily.rate}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Semana */}
-                            <div 
-                                onClick={() => setActiveMetric("participation_weekly")}
-                                className="flex items-center justify-between p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-colors group"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Semana</span>
-                                    <span className="text-lg font-black text-gray-800 dark:text-gray-100">{stats.participation_weekly.rate}%</span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{stats.participation_weekly.count} empleados</span>
-                                    <div className="w-20 h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
-                                        <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${stats.participation_weekly.rate}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            {/* Mes */}
-                            <div 
-                                onClick={() => setActiveMetric("participation_monthly")}
-                                className="flex items-center justify-between p-2 rounded-lg hover:bg-purple-50 dark:hover:bg-purple-900/20 cursor-pointer transition-colors group"
-                            >
-                                <div className="flex flex-col">
-                                    <span className="text-xs font-medium text-gray-500 dark:text-gray-400 uppercase">Mes</span>
-                                    <span className="text-lg font-black text-gray-800 dark:text-gray-100">{stats.participation_monthly.rate}%</span>
-                                </div>
-                                <div className="text-right">
-                                    <span className="text-xs font-bold text-purple-600 dark:text-purple-400">{stats.participation_monthly.count} empleados</span>
-                                    <div className="w-20 h-1 bg-gray-100 dark:bg-gray-700 rounded-full mt-1 overflow-hidden">
-                                        <div className="h-full bg-purple-500 transition-all duration-500" style={{ width: `${stats.participation_monthly.rate}%` }}></div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div className="px-5 py-2 bg-purple-50/50 dark:bg-purple-900/10 border-t border-purple-100 dark:border-purple-800/30">
-                        <span className="text-[10px] font-bold text-purple-500 dark:text-purple-400 uppercase tracking-tighter">De {stats.total_employees} empleados registrados</span>
-                    </div>
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"
+                                />
+                            </svg>
+                        }
+                    />
                 </div>
             </div>
             <div
