@@ -7,6 +7,12 @@ import { useState } from "react";
 import NotificationBell from "@/Components/Dashboard/NotificationBell";
 import ThemeToggle from "@/Components/ThemeToggle";
 import { Transition } from "@headlessui/react";
+import { 
+    HiOutlineUserGroup, 
+    HiOutlineShieldCheck, 
+    HiOutlineShieldExclamation,
+    HiOutlineCollection
+} from "react-icons/hi2";
 
 export default function AuthenticatedLayout({
     header,
@@ -55,7 +61,24 @@ export default function AuthenticatedLayout({
                                 href={route("dashboard")}
                                 active={route().current("dashboard")}
                             >
-                                Dashboard
+                                <div className="flex items-center gap-2">
+                                    {user.is_super_admin ? (
+                                        <>
+                                            <HiOutlineShieldExclamation className="w-5 h-5 text-red-500" />
+                                            <span>Dashboard Super Admin</span>
+                                        </>
+                                    ) : user.is_ehs_manager ? (
+                                        <>
+                                            <HiOutlineShieldCheck className="w-5 h-5 text-blue-500" />
+                                            <span>Dashboard EHS</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HiOutlineUserGroup className="w-5 h-5 text-green-500" />
+                                            <span>Dashboard Empleado</span>
+                                        </>
+                                    )}
+                                </div>
                             </NavLink>
                         </div>
 
@@ -140,23 +163,27 @@ export default function AuthenticatedLayout({
                                 </Dropdown.Content>
                             </Dropdown>
                         </div>
-                        <div>
-                            <NotificationBell
-                                user={user}
-                                count={notificationCount}
-                                list={notifications}
-                            />
-                        </div>
+                        {(user.is_ehs_manager || user.is_super_admin) && (
+                            <div>
+                                <NotificationBell
+                                    user={user}
+                                    count={notificationCount}
+                                    list={notifications}
+                                />
+                            </div>
+                        )}
                     </div>
 
                     <div className="flex items-center -me-2 sm:hidden">
-                        <div>
-                            <NotificationBell
-                                user={user}
-                                count={notificationCount}
-                                list={notifications}
-                            />
-                        </div>
+                        {(user.is_ehs_manager || user.is_super_admin) && (
+                            <div>
+                                <NotificationBell
+                                    user={user}
+                                    count={notificationCount}
+                                    list={notifications}
+                                />
+                            </div>
+                        )}
 
                         <button
                             onClick={() =>
@@ -190,7 +217,24 @@ export default function AuthenticatedLayout({
                                 href={route("dashboard")}
                                 active={route().current("dashboard")}
                             >
-                                Dashboard
+                                <div className="flex items-center gap-2">
+                                    {user.is_super_admin ? (
+                                        <>
+                                            <HiOutlineShieldExclamation className="w-5 h-5 text-red-500" />
+                                            <span>Dashboard Admin</span>
+                                        </>
+                                    ) : user.is_ehs_manager ? (
+                                        <>
+                                            <HiOutlineShieldCheck className="w-5 h-5 text-blue-500" />
+                                            <span>Dashboard EHS</span>
+                                        </>
+                                    ) : (
+                                        <>
+                                            <HiOutlineUserGroup className="w-5 h-5 text-green-500" />
+                                            <span>Dashboard Empleado</span>
+                                        </>
+                                    )}
+                                </div>
                             </ResponsiveNavLink>
                         </div>
 
