@@ -101,9 +101,9 @@ export default function ObservationDetailsModal({
 
     return (
         <Modal show={show} onClose={handleCloseModal} maxWidth="2xl">
-            <div className="flex flex-col h-full max-h-[95vh] sm:max-h-[90vh]">
+            <div className="flex flex-col h-full max-h-[90vh]">
                 {/* Header Modernizado - Fijo en la parte superior */}
-                <div className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-2.5 sm:py-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
+                <div className="flex-shrink-0 flex items-center justify-between px-4 sm:px-6 py-3 sm:py-4 bg-white border-b dark:bg-gray-800 dark:border-gray-700">
                     <div className="flex items-center gap-2 sm:gap-3">
                         <div className="p-1.5 sm:p-2 bg-blue-50 dark:bg-blue-900/30 rounded-lg">
                             <svg className="w-4 h-4 sm:w-5 sm:h-5 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -111,10 +111,10 @@ export default function ObservationDetailsModal({
                             </svg>
                         </div>
                         <div>
-                            <h2 className="text-sm sm:text-lg font-black text-gray-900 dark:text-white leading-tight">
+                            <h2 className="text-base sm:text-lg font-black text-gray-900 dark:text-white leading-tight">
                                 {showClosureForm ? "Finalizar" : "Detalles"}
                             </h2>
-                            <p className="text-[8px] sm:text-[10px] font-mono text-gray-400 dark:text-gray-500 uppercase tracking-wider">
+                            <p className="text-[10px] sm:text-[11px] font-mono text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                                 {observation.folio || `ID-${observation.id}`}
                             </p>
                         </div>

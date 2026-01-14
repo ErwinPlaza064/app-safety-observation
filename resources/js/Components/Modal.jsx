@@ -54,7 +54,7 @@ export default function Modal({
                     leaveTo="opacity-0 scale-95"
                 >
                     <DialogPanel
-                        className={`w-full transform overflow-hidden rounded-2xl bg-white dark:bg-gray-900 shadow-2xl transition-all sm:mx-auto ${maxWidthClass}`}
+                        className={`w-full transform overflow-hidden rounded-xl bg-white dark:bg-gray-900 shadow-2xl transition-all sm:mx-auto ${maxWidthClass}`}
                     >
                         {children}
                     </DialogPanel>
