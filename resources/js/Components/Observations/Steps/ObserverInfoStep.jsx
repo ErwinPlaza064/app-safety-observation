@@ -74,47 +74,53 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
             </div>
 
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
-                <div>
+                {formData.observation_type !== "condicion_insegura" && (
+                    <div>
+                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                            N. Nómina <span className="text-red-500">*</span>
+                        </label>
+                        <input
+                            type="text"
+                            placeholder="00000"
+                            value={formData.payroll_number}
+                            onChange={(e) => {
+                                const value = e.target.value.replace(/\D/g, ""); // Solo números
+                                if (value.length <= 5) {
+                                    onChange("payroll_number", value);
+                                }
+                            }}
+                            maxLength={5}
+                            required
+                            className={`w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 ${
+                                errors?.payroll_number
+                                    ? "border-red-500 dark:border-red-500"
+                                    : ""
+                            }`}
+                        />
+                        {errors?.payroll_number && (
+                            <p className="mt-1 text-xs text-red-500">
+                                {errors.payroll_number}
+                            </p>
+                        )}
+                        {!errors?.payroll_number && (
+                            <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
+                                Exactamente 5 dígitos numéricos
+                            </p>
+                        )}
+                    </div>
+                )}
+                <div className={formData.observation_type === "condicion_insegura" ? "md:col-span-2" : ""}>
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        N. Nómina <span className="text-red-500">*</span>
-                    </label>
-                    <input
-                        type="text"
-                        placeholder="00000"
-                        value={formData.payroll_number}
-                        onChange={(e) => {
-                            const value = e.target.value.replace(/\D/g, ""); // Solo números
-                            if (value.length <= 5) {
-                                onChange("payroll_number", value);
-                            }
-                        }}
-                        maxLength={5}
-                        required
-                        className={`w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 ${
-                            errors?.payroll_number
-                                ? "border-red-500 dark:border-red-500"
-                                : ""
-                        }`}
-                    />
-                    {errors?.payroll_number && (
-                        <p className="mt-1 text-xs text-red-500">
-                            {errors.payroll_number}
-                        </p>
-                    )}
-                    {!errors?.payroll_number && (
-                        <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
-                            Exactamente 5 dígitos numéricos
-                        </p>
-                    )}
-                </div>
-                <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Persona Observada o Título de la Situación{" "}
+                        {formData.observation_type === "condicion_insegura" 
+                            ? "Título de la Condición o Ubicación específica" 
+                            : "Persona Observada o Título de la Situación"}{" "}
                         <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        placeholder="Nombre de la persona observada o Título de la situación"
+                        placeholder={formData.observation_type === "condicion_insegura" 
+                            ? "Ej: Cable expuesto en pasillo C / Fuga de aceite en máquina 5" 
+                            : "Nombre de la persona observada o Título de la situación"}
                         value={formData.observed_person}
                         onChange={(e) =>
                             onChange("observed_person", e.target.value)

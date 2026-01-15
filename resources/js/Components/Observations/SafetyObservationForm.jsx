@@ -176,8 +176,8 @@ export default function SafetyObservationForm({
         // PASO 2: Información del observador
         if (step === 2) {
             if (
-                !formData.payroll_number ||
-                formData.payroll_number.length !== 5
+                formData.observation_type !== "condicion_insegura" &&
+                (!formData.payroll_number || formData.payroll_number.length !== 5)
             ) {
                 newErrors.payroll_number =
                     "El número de nómina debe tener exactamente 5 dígitos";

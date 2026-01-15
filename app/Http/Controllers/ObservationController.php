@@ -18,13 +18,15 @@ class ObservationController extends Controller
 
     public function store(Request $request)
     {
+        $isCondition = $request->input('observation_type') === 'condicion_insegura';
+
         $validated = $request->validate([
             'observation_date' => 'required|date',
-            'payroll_number' => 'required|digits:5',
+            'payroll_number' => $isCondition ? 'nullable|string|max:20' : 'required|digits:5',
             'observed_person' => 'required|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
-            'category_ids' => 'required|array|min:1',
+            'category_ids' => $isCondition ? 'nullable|array' : 'required|array|min:1',
             'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string|min:20',
             'photos' => 'nullable|array|max:5',
@@ -34,6 +36,7 @@ class ObservationController extends Controller
             'payroll_number.required' => 'El número de nómina es obligatorio',
             'payroll_number.digits' => 'El número de nómina debe tener exactamente 5 dígitos',
             'observed_person.required' => 'La persona observada o título es obligatorio',
+            'category_ids.required' => 'Debe seleccionar al menos una categoría',
         ]);
 
         $user = Auth::user();
@@ -44,7 +47,7 @@ class ObservationController extends Controller
         if ($observation) {
             $observation->update([
                 'observation_date' => $validated['observation_date'],
-                'payroll_number' => $validated['payroll_number'],
+                'payroll_number' => $validated['payroll_number'] ?? null,
                 'observed_person' => $validated['observed_person'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
@@ -58,7 +61,7 @@ class ObservationController extends Controller
             $observation = Observation::create([
                 'user_id' => $user->id,
                 'observation_date' => $validated['observation_date'],
-                'payroll_number' => $validated['payroll_number'],
+                'payroll_number' => $validated['payroll_number'] ?? null,
                 'observed_person' => $validated['observed_person'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
