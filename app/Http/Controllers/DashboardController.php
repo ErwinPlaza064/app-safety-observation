@@ -344,6 +344,28 @@ class DashboardController extends Controller
                 });
 
 
+            // LÓGICA DE NOTIFICACIONES PARA LA CAMPANA (Bell)
+            // Para el coordinador, forzar que siempre sean de Planta 1 según solicitud
+            $bellObservations = $recentObservations;
+            $bellCount = $totalAll + $closed;
+
+            if ($user->email === 'ehsmanager@wasion.com') {
+                $planta1 = Area::where('name', 'Planta 1')->first();
+                if ($planta1) {
+                    $planta1Observations = Observation::submitted()
+                        ->where('area_id', $planta1->id)
+                        ->latest()
+                        ->take(20)
+                        ->get();
+
+                    $planta1Total = Observation::submitted()->where('area_id', $planta1->id)->count();
+                    $planta1Closed = Observation::submitted()->where('area_id', $planta1->id)->where('status', 'cerrada')->count();
+
+                    $bellObservations = $planta1Observations;
+                    $bellCount = $planta1Total + $planta1Closed;
+                }
+            }
+
             $data['ehsStats'] = [
                 'total_month' => $totalMonth,
                 'total_month_list' => $totalMonthList,
@@ -377,8 +399,8 @@ class DashboardController extends Controller
                 'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations,
-                // Contador acumulativo para EHS: total reportes (filtrados) + total cerrados (filtrados)
-                'event_count' => $totalAll + $closed
+                'bell_notifications' => $bellObservations,
+                'event_count' => $bellCount
             ];
 
             $data['canViewAllPlants'] = $canViewAllPlants;

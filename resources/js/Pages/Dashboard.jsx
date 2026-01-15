@@ -53,7 +53,9 @@ export default function Dashboard({
                 ehsStats ? ehsStats.event_count : employeeNotificationCount || 0
             }
             notifications={
-                ehsStats ? ehsStats.recent : employeeNotifications || []
+                ehsStats 
+                    ? (ehsStats.bell_notifications || ehsStats.recent) 
+                    : employeeNotifications || []
             }
         >
             <Head title="Dashboard" />

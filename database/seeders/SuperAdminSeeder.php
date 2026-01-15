@@ -44,7 +44,7 @@ class SuperAdminSeeder extends Seeder
                 'name' => 'Coordinador EHS',
                 'email' => 'ehsmanager@wasion.com',
                 'password' => Hash::make('Wasion2025*'),
-                'area' => 'EHS',
+                'area' => 'Planta 1',
                 'position' => 'Coordinador',
                 'is_ehs_manager' => true,
                 'is_ehs_coordinator' => true,
