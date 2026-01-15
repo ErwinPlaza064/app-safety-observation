@@ -259,43 +259,34 @@ class DashboardController extends Controller
                 ->where('is_super_admin', false)
                 ->count();
 
-            // Función auxiliar para obtener reporteros por periodo
-            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $defaultAreaId, $baseRelations) {
-                return User::where('is_ehs_manager', false)
+            // Función auxiliar para obtener reporteros por periodo - OPTIMIZADA: No cargar lista completa por defecto
+            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $defaultAreaId) {
+                $query = User::where('is_ehs_manager', false)
                     ->where('is_super_admin', false)
                     ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
                         $q->submitted();
                         if ($days) {
-                            $q->where('created_at', '>=', now()->subDays($days));
+                            $q->where('observations.created_at', '>=', now()->subDays($days));
                         }
                         if (!$canViewAllPlants && $defaultAreaId) {
-                            $q->where('area_id', $defaultAreaId);
+                            $q->where('observations.area_id', $defaultAreaId);
                         } elseif (request('area_id')) {
-                            $q->where('area_id', request('area_id'));
+                            $q->where('observations.area_id', request('area_id'));
                         }
-                    })
-                    ->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
-                        $q->submitted();
-                        if ($days) {
-                            $q->where('created_at', '>=', now()->subDays($days));
-                        }
-                        if (!$canViewAllPlants && $defaultAreaId) {
-                            $q->where('area_id', $defaultAreaId);
-                        } elseif (request('area_id')) {
-                            $q->where('area_id', request('area_id'));
-                        }
-                    }])
-                    ->with(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId, $baseRelations) {
-                        $q->submitted()->with($baseRelations);
-                        if ($days) {
-                            $q->where('created_at', '>=', now()->subDays($days));
-                        }
-                        if (!$canViewAllPlants && $defaultAreaId) {
-                            $q->where('area_id', $defaultAreaId);
-                        } elseif (request('area_id')) {
-                            $q->where('area_id', request('area_id'));
-                        }
-                    }])
+                    });
+
+                return $query->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
+                    $q->submitted();
+                    if ($days) {
+                        $q->where('observations.created_at', '>=', now()->subDays($days));
+                    }
+                    if (!$canViewAllPlants && $defaultAreaId) {
+                        $q->where('observations.area_id', $defaultAreaId);
+                    } elseif (request('area_id')) {
+                        $q->where('observations.area_id', request('area_id'));
+                    }
+                }])
+                    // Solo cargar los últimos 3 para el preview si es necesario, o nada para ahorrar datos
                     ->get()
                     ->map(function ($employee) {
                         return [
@@ -303,7 +294,7 @@ class DashboardController extends Controller
                             'email' => $employee->email,
                             'area' => $employee->area ?? 'N/A',
                             'count' => $employee->observations_count,
-                            'list' => $employee->observations
+                            'list' => [] // La lista completa se puede cargar bajo demanda o desde la tabla de búsqueda
                         ];
                     });
             };
@@ -318,11 +309,8 @@ class DashboardController extends Controller
 
             $participationRate = $totalEmployees > 0 ? round(($employeesWhoReportedCount / $totalEmployees) * 100) : 0;
 
-            // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas
+            // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas (Sin cargar lista completa)
             $observationsByPlant = Area::where('is_active', true)
-                ->with(['observations' => function ($q) use ($baseRelations) {
-                    $q->submitted()->latest()->with($baseRelations);
-                }])
                 ->withCount(['observations' => function ($q) {
                     $q->submitted();
                 }])
@@ -331,14 +319,14 @@ class DashboardController extends Controller
                     return [
                         'name' => $area->name,
                         'count' => $area->observations_count,
-                        'list' => $area->observations
+                        'list' => [] // No cargar lista de miles de registros aquí
                     ];
                 });
 
-            // OPTIMIZACIÓN: Top categorías con relaciones selectivas
+            // OPTIMIZACIÓN: Top categorías con relaciones selectivas (Solo cargar las últimas 10 observaciones por categoría)
             $topCategories = Category::where('is_active', true)
                 ->with(['observations' => function ($q) use ($applyFilters, $baseRelations) {
-                    $applyFilters($q)->with($baseRelations)->latest();
+                    $applyFilters($q)->with($baseRelations)->latest()->take(10);
                 }])
                 ->withCount(['observations' => function ($q) use ($applyFilters) {
                     $applyFilters($q);
