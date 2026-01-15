@@ -39,7 +39,59 @@ export default function DrillDownModal({
                 <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                     {data && data.length > 0 ? (
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
-                            {type.startsWith("participation") && (
+                            {type === "participation_summary" && (
+                                <div className="space-y-4">
+                                    <div className="overflow-hidden border border-gray-100 rounded-xl dark:border-gray-700">
+                                        <table className="w-full text-sm text-left">
+                                            <thead className="text-xs text-gray-700 uppercase bg-gray-50 dark:bg-gray-700 dark:text-gray-300">
+                                                <tr>
+                                                    <th className="px-6 py-4">Periodo</th>
+                                                    <th className="px-6 py-4 text-center">Tasa</th>
+                                                    <th className="px-6 py-4 text-center">Participantes</th>
+                                                    <th className="px-6 py-4 text-right">Acción</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
+                                                {[
+                                                    { key: 'participation_daily', label: 'Hoy', data: data?.participation_daily },
+                                                    { key: 'participation_weekly', label: 'Esta Semana', data: data?.participation_weekly },
+                                                    { key: 'participation_monthly', label: 'Este Mes', data: data?.participation_monthly },
+                                                ].map((row) => (
+                                                    <tr key={row.key} className="bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 transition-colors">
+                                                        <td className="px-6 py-4 font-bold text-gray-900 dark:text-gray-100">
+                                                            {row.label}
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center">
+                                                            <span className="px-2.5 py-1 rounded-full text-xs font-bold bg-purple-100 dark:bg-purple-900/40 text-purple-700 dark:text-purple-300">
+                                                                {row.data?.rate}%
+                                                            </span>
+                                                        </td>
+                                                        <td className="px-6 py-4 text-center font-medium text-gray-600 dark:text-gray-400">
+                                                            {row.data?.count} empleados
+                                                        </td>
+                                                        <td className="px-6 py-4 text-right">
+                                                            <button
+                                                                onClick={() => onItemClick && onItemClick(row.key)}
+                                                                className="text-xs font-bold text-blue-600 dark:text-blue-400 hover:text-blue-800 dark:hover:text-blue-300 flex items-center gap-1 justify-end ml-auto"
+                                                            >
+                                                                Ver lista
+                                                                <svg className="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M9 5l7 7-7 7" />
+                                                                </svg>
+                                                            </button>
+                                                        </td>
+                                                    </tr>
+                                                ))}
+                                            </tbody>
+                                        </table>
+                                    </div>
+                                    <p className="text-[11px] text-gray-500 dark:text-gray-400 italic text-center">
+                                        * La tasa se calcula sobre el total de empleados registrados en el sistema.
+                                    </p>
+                                </div>
+                            )}
+
+                            {type.startsWith("participation_") && type !== "participation_summary" && (
                                 <>
                                     <thead className="sticky top-0 text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                                         <tr>

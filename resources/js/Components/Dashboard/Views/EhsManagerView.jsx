@@ -302,22 +302,21 @@ export default function EhsManagerView({
                     />
                 </div>
                 <div
-                    onClick={() => setActiveMetric("participation_monthly")}
+                    onClick={() => setActiveMetric("participation_summary")}
                     className="cursor-pointer transition-transform hover:scale-[1.02]"
                 >
                     <EhsMetricCard
                         title="Participación"
                         value={`${stats.participation_monthly.rate}%`}
                         subtitle={
-                            <div className="flex flex-col gap-1 mt-1 border-t border-purple-100 dark:border-purple-800/30 pt-1">
-                                <div className="flex items-center justify-between text-[10px] font-bold">
-                                    <span className="text-gray-400 uppercase">Hoy: {stats.participation_daily.rate}%</span>
-                                    <span className="text-purple-500">{stats.participation_daily.count} emp.</span>
-                                </div>
-                                <div className="flex items-center justify-between text-[10px] font-bold">
-                                    <span className="text-gray-400 uppercase">Sem: {stats.participation_weekly.rate}%</span>
-                                    <span className="text-purple-500">{stats.participation_weekly.count} emp.</span>
-                                </div>
+                            <div className="flex items-center justify-between text-[11px] font-bold mt-1 border-t border-purple-100 dark:border-purple-800/30 pt-1">
+                                <span className="text-gray-400 uppercase">
+                                    Este Mes:
+                                </span>
+                                <span className="text-purple-500">
+                                    {stats.participation_monthly.count}{" "}
+                                    empleados
+                                </span>
                             </div>
                         }
                         color="purple"
@@ -745,6 +744,8 @@ export default function EhsManagerView({
                         ? "Reportes Cerrados"
                         : activeMetric === "total"
                         ? "Total del Mes"
+                        : activeMetric === "participation_summary"
+                        ? "Resumen de Participación"
                         : activeMetric === "participation_daily"
                         ? "Participación de Hoy"
                         : activeMetric === "participation_weekly"
@@ -766,6 +767,8 @@ export default function EhsManagerView({
                         ? stats.closed_list
                         : activeMetric === "total"
                         ? stats.total_month_list
+                        : activeMetric === "participation_summary"
+                        ? stats
                         : activeMetric === "participation_daily"
                         ? stats.participation_daily.list
                         : activeMetric === "participation_weekly"
@@ -776,7 +779,9 @@ export default function EhsManagerView({
                 }
                 type={activeMetric === "custom" ? "open" : activeMetric}
                 onItemClick={(item) => {
-                    if (activeMetric === "recidivism") {
+                    if (activeMetric === "participation_summary") {
+                        setActiveMetric(item); // item will be 'participation_daily', etc.
+                    } else if (activeMetric === "recidivism") {
                         handleRecidivismClick(item);
                     } else if (activeMetric.startsWith("participation")) {
                         setActiveMetric(null);

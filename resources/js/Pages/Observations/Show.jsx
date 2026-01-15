@@ -91,7 +91,7 @@ export default function Show({ auth, observation }) {
                                 <div className="space-y-6 md:col-span-2">
                                     <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                         <h3 className="mb-4 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-                                            Reportado Por
+                                            Observador / Reportante
                                         </h3>
                                         <div className="flex items-center gap-4">
                                             <div className="h-12 w-12 rounded-full bg-[#1e3a8a] dark:bg-blue-600 flex items-center justify-center text-white font-bold text-lg shadow-md">
@@ -124,8 +124,7 @@ export default function Show({ auth, observation }) {
                                         observation.observed_person) && (
                                         <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                             <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-                                                Información de la Persona
-                                                Observada
+                                                Persona Observada
                                             </h3>
                                             <div className="space-y-3">
                                                 {observation.payroll_number && (
