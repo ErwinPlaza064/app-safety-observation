@@ -1,8 +1,16 @@
 import AuthenticatedLayout from "@/Layouts/AuthenticatedLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
-import { useMemo } from "react";
+import { useState, useMemo } from "react";
+import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
+import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
+import axios from "axios";
 
 export default function History({ auth, history, areas, filters }) {
+    const [selectedEmployee, setSelectedEmployee] = useState(null);
+    const [employeeObservations, setEmployeeObservations] = useState([]);
+    const [isLoadingDetails, setIsLoadingDetails] = useState(false);
+    const [selectedObservation, setSelectedObservation] = useState(null);
+
     const { data, setData, get, processing } = useForm({
         start_date: filters.start_date || "",
         end_date: filters.end_date || "",
@@ -26,6 +34,25 @@ export default function History({ auth, history, areas, filters }) {
             search: "",
         });
         get(route("participation.history"));
+    };
+
+    const fetchDetails = async (employee) => {
+        setSelectedEmployee(employee);
+        setIsLoadingDetails(true);
+        try {
+            const response = await axios.get(
+                route("participation.observations", {
+                    user: employee.id,
+                    start_date: data.start_date,
+                    end_date: data.end_date,
+                })
+            );
+            setEmployeeObservations(response.data);
+        } catch (error) {
+            console.error("Error fetching details:", error);
+        } finally {
+            setIsLoadingDetails(false);
+        }
     };
 
     return (
@@ -179,10 +206,19 @@ export default function History({ auth, history, areas, filters }) {
                                                     </span>
                                                 </td>
                                                 <td className="px-6 py-4 text-right">
-                                                    {/* Espacio para futuras acciones individuales */}
-                                                    <span className="text-gray-400 text-xs italic">
-                                                        Detalles
-                                                    </span>
+                                                    <button
+                                                        disabled={row.count === 0}
+                                                        onClick={() => fetchDetails(row)}
+                                                        className={`text-xs font-bold transition-colors ${
+                                                            row.count > 0
+                                                                ? "text-blue-600 dark:text-blue-400 hover:text-blue-800"
+                                                                : "text-gray-300 dark:text-gray-600 cursor-not-allowed"
+                                                        }`}
+                                                    >
+                                                        {isLoadingDetails && selectedEmployee?.id === row.id 
+                                                            ? "Cargando..." 
+                                                            : "Ver Detalles"}
+                                                    </button>
                                                 </td>
                                             </tr>
                                         ))
@@ -223,6 +259,23 @@ export default function History({ auth, history, areas, filters }) {
                     </div>
                 </div>
             </div>
+
+            {/* Modal de Lista de Observaciones */}
+            <DrillDownModal
+                show={!!selectedEmployee}
+                onClose={() => setSelectedEmployee(null)}
+                title={`Reportes de ${selectedEmployee?.name}`}
+                data={employeeObservations}
+                type="total" // Usamos total para mostrar la lista estándar de observaciones
+                onItemClick={(obs) => setSelectedObservation(obs)}
+            />
+
+            {/* Modal de Detalle de Observación Individual */}
+            <ObservationDetailsModal
+                isOpen={!!selectedObservation}
+                onClose={() => setSelectedObservation(null)}
+                observation={selectedObservation}
+            />
         </AuthenticatedLayout>
     );
 }

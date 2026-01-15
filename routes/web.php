@@ -231,10 +231,13 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])->name('reopen');
     });
 
-    // --- PARTICIPACIÓN HISTÓRICA ---
     Route::get('/participation/history', [ParticipationController::class, 'history'])
         ->middleware(['verified'])
         ->name('participation.history');
+
+    Route::get('/participation/observations/{user}', [ParticipationController::class, 'observations'])
+        ->middleware(['verified'])
+        ->name('participation.observations');
 });
 
 require __DIR__ . '/auth.php';
