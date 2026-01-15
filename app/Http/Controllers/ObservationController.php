@@ -18,25 +18,23 @@ class ObservationController extends Controller
 
     public function store(Request $request)
     {
-        $isCondition = $request->input('observation_type') === 'condicion_insegura';
-
         $validated = $request->validate([
             'observation_date' => 'required|date',
-            'payroll_number' => $isCondition ? 'nullable|string|max:20' : 'required|digits:5',
+            'payroll_number' => 'required_unless:observation_type,condicion_insegura',
             'observed_person' => 'required|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
-            'category_ids' => $isCondition ? 'sometimes|nullable|array' : 'required|array|min:1',
+            'category_ids' => 'required_unless:observation_type,condicion_insegura|array',
             'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string|min:20',
             'photos' => 'nullable|array|max:5',
             'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
             'is_draft' => 'sometimes|nullable',
         ], [
-            'payroll_number.required' => 'El número de nómina es obligatorio',
+            'payroll_number.required_unless' => 'El número de nómina es obligatorio para actos.',
             'payroll_number.digits' => 'El número de nómina debe tener exactamente 5 dígitos',
             'observed_person.required' => 'La persona observada o título es obligatorio',
-            'category_ids.required' => 'Debe seleccionar al menos una categoría',
+            'category_ids.required_unless' => 'Debe seleccionar al menos una categoría.',
         ]);
 
         $user = Auth::user();
@@ -72,7 +70,11 @@ class ObservationController extends Controller
             ]);
         }
 
-        $observation->categories()->sync($validated['category_ids']);
+        if (isset($validated['category_ids'])) {
+            $observation->categories()->sync($validated['category_ids']);
+        } else {
+            $observation->categories()->detach();
+        }
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $photo) {
@@ -103,20 +105,25 @@ class ObservationController extends Controller
 
         $validated = $request->validate([
             'observation_date' => 'required|date',
-            'payroll_number' => 'nullable|string|max:20',
-            'observed_person' => 'nullable|string|max:255',
+            'payroll_number' => 'required_unless:observation_type,condicion_insegura',
+            'observed_person' => 'required|string|max:255',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
-            'category_ids' => 'required|array|min:1',
+            'category_ids' => 'required_unless:observation_type,condicion_insegura|array',
             'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string|min:20',
-            'is_draft' => 'boolean',
+            'is_draft' => 'sometimes|nullable',
             'photos' => 'nullable|array|max:5',
+        ], [
+            'payroll_number.required_unless' => 'El número de nómina es obligatorio para actos.',
+            'category_ids.required_unless' => 'Debe seleccionar al menos una categoría.',
+            'observed_person.required' => 'El título o persona es obligatorio.',
+            'description.min' => 'La descripción debe tener al menos 20 caracteres.',
         ]);
 
         $observation->update([
             'observation_date' => $validated['observation_date'],
-            'payroll_number' => $validated['payroll_number'],
+            'payroll_number' => $validated['payroll_number'] ?? null,
             'observed_person' => $validated['observed_person'],
             'area_id' => $validated['area_id'],
             'observation_type' => $validated['observation_type'],
@@ -125,7 +132,11 @@ class ObservationController extends Controller
             'is_draft' => $request->boolean('is_draft'),
         ]);
 
-        $observation->categories()->sync($validated['category_ids']);
+        if (isset($validated['category_ids'])) {
+            $observation->categories()->sync($validated['category_ids']);
+        } else {
+            $observation->categories()->detach();
+        }
 
         if ($request->hasFile('photos')) {
             foreach ($request->file('photos') as $index => $photo) {
