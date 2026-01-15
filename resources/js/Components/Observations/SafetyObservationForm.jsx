@@ -313,8 +313,8 @@ export default function SafetyObservationForm({
             }
         });
 
-        // Marcar como NO borrador
-        submitData.append("is_draft", "false");
+        // Marcar como NO borrador (usar 1/0 para compatibilidad con validador boolean de Laravel en FormData)
+        submitData.append("is_draft", "0");
 
         // Determinar la ruta y método
         const routeToUse = formData.id 
