@@ -84,11 +84,13 @@ class DashboardController extends Controller
 
             // Notas de cierre para notificaciones locales (badge "Listo")
             $data['employeeNotifications'] = Observation::where('user_id', $user->id)
-                ->where('status', 'cerrada')
+                ->where('status', 'en_progreso')
                 ->where('is_draft', false)
                 ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
-                ->latest('closed_at')
+                ->latest()
                 ->get();
+
+            $data['employeeNotificationCount'] = $data['employeeNotifications']->count();
 
             if (request('filter_status')) {
                 $data['filteredReports'] = Observation::where('user_id', $user->id)
@@ -116,9 +118,6 @@ class DashboardController extends Controller
             }
 
             $data['savedDraft'] = $draft;
-
-            $data['employeeNotifications'] = [];
-            $data['employeeNotificationCount'] = 0;
         }
 
         // 3. LÓGICA PARA EHS MANAGER (OPTIMIZADO - Sin perder funcionalidad)
