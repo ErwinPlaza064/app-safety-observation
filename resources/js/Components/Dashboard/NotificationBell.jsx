@@ -132,13 +132,29 @@ export default function NotificationBell({ user, count = 0, list = [] }) {
                     </div>
 
                     <span
-                        className={`text-sm truncate ${
+                        className={`text-[11px] leading-tight ${
                             isNew
                                 ? "text-gray-900 dark:text-white font-semibold"
                                 : "text-gray-600 dark:text-gray-300"
                         }`}
                     >
-                        {isClosed ? `Resolución: ${notif.closure_notes}` : notif.description}
+                        {isClosed ? (
+                            <span>
+                                <span className="font-bold text-blue-500 dark:text-blue-400">Resolución:</span> {notif.closure_notes}
+                            </span>
+                        ) : (
+                            <div className="flex flex-col gap-0.5 mt-0.5">
+                                <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-gray-400 dark:text-gray-500 uppercase text-[9px]">Observador:</span>
+                                    <span className="truncate">{notif.user?.name || "N/A"}</span>
+                                </div>
+                                <div className="flex items-center gap-1.5">
+                                    <span className="font-bold text-gray-400 dark:text-gray-500 uppercase text-[9px]">Sujeto:</span>
+                                    <span className="truncate">{notif.observed_person || "N/A"}</span>
+                                </div>
+                                <p className="mt-1 text-sm line-clamp-1 italic text-gray-500 dark:text-gray-400">"{notif.description}"</p>
+                            </div>
+                        )}
                     </span>
 
                     <div className="flex items-center justify-between mt-1">

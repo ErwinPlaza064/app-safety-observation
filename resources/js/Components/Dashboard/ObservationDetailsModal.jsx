@@ -172,7 +172,7 @@ export default function ObservationDetailsModal({
                                     {/* Reportado por */}
                                     <section>
                                         <h3 className="flex items-center gap-2 mb-3 text-[10px] font-black tracking-widest text-gray-400 uppercase">
-                                            Info de Reportante
+                                            Observador / Reportante
                                         </h3>
                                         <div className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 bg-white dark:bg-gray-800 rounded-2xl shadow-sm">
                                             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-gray-100 dark:bg-gray-700 flex items-center justify-center text-gray-700 dark:text-gray-300 font-black text-sm">

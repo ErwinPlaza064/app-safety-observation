@@ -10,7 +10,7 @@ export default function DrillDownModal({
     onItemClick,
 }) {
     return (
-        <Modal show={show} onClose={onClose} maxWidth="lg">
+        <Modal show={show} onClose={onClose} maxWidth="4xl">
             <div className="p-6">
                 <div className="flex items-center justify-between pb-4 mb-5 border-b border-gray-100 dark:border-gray-700">
                     <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
@@ -141,6 +141,15 @@ export default function DrillDownModal({
                                     <thead className="sticky top-0 text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                                         <tr>
                                             <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                Folio
+                                            </th>
+                                            <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                Persona Observada
+                                            </th>
+                                            <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                Observador
+                                            </th>
+                                            <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
                                                 Fecha
                                             </th>
                                             <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
@@ -171,17 +180,26 @@ export default function DrillDownModal({
                                 : "hover:bg-blue-50 dark:hover:bg-blue-900/20 hover:border-blue-500 dark:hover:border-blue-400"
                         }`}
                                             >
+                                                <td className="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">
+                                                    #{obs.id}
+                                                </td>
+                                                <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                                    {obs.observed_person || "N/A"}
+                                                </td>
+                                                <td className="px-4 py-3 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                    {obs.user?.name || "N/A"}
+                                                </td>
                                                 <td className="px-4 py-3 whitespace-nowrap dark:text-gray-300">
                                                     {new Date(
                                                         obs.observation_date
                                                     ).toLocaleDateString()}
                                                 </td>
-                                                <td className="px-4 py-3 font-medium text-gray-900 dark:text-gray-100">
+                                                <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
                                                     {obs.area?.name || "N/A"}
                                                 </td>
                                                 <td className="px-4 py-3 dark:text-gray-300">
                                                     <p
-                                                        className="truncate max-w-[200px]"
+                                                        className="truncate max-w-[150px]"
                                                         title={obs.description}
                                                     >
                                                         {obs.description}
