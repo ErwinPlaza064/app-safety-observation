@@ -113,6 +113,10 @@ export default function UsersTable({ users, onUserClick }) {
                                                 <span className="px-2 py-1 text-xs font-medium text-red-800 dark:text-red-200 bg-red-100 dark:bg-red-900/30 rounded-full">
                                                     Super Admin
                                                 </span>
+                                            ) : userData.is_ehs_coordinator ? (
+                                                <span className="px-2 py-1 text-xs font-medium text-purple-800 dark:text-purple-200 bg-purple-100 dark:bg-purple-900/30 rounded-full">
+                                                    Coordinador EHS
+                                                </span>
                                             ) : userData.is_ehs_manager ? (
                                                 <span className="px-2 py-1 text-xs font-medium text-blue-800 dark:text-blue-200 bg-blue-100 dark:bg-blue-900/30 rounded-full">
                                                     Gerente EHS

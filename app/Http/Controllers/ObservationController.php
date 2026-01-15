@@ -275,7 +275,7 @@ class ObservationController extends Controller
         $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])->submitted();
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
-            $canViewAllPlants = $user->email === 'ehsplanta1@wasion.com';
+            $canViewAllPlants = $user->is_ehs_coordinator || $user->is_super_admin;
 
             if (!$canViewAllPlants) {
                 $managerArea = Area::where('name', $user->area)->first();

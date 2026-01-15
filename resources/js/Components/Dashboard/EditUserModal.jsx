@@ -25,6 +25,7 @@ export default function EditUserModal({
         area: "",
         position: "",
         is_ehs_manager: false,
+        is_ehs_coordinator: false,
     });
 
     const [suspensionReason, setSuspensionReason] = useState("");
@@ -39,6 +40,7 @@ export default function EditUserModal({
                 area: user.area || "",
                 position: user.position || "",
                 is_ehs_manager: !!user.is_ehs_manager,
+                is_ehs_coordinator: !!user.is_ehs_coordinator,
             });
             setSuspensionReason("");
             setShowSuspendConfirm(false);
@@ -192,11 +194,15 @@ export default function EditUserModal({
                             >
                                 <option value="">Seleccionar área...</option>
                                 {/* Si el usuario tiene un área asignada que no está en la lista, mostrarla primero */}
-                                {data.area && areas && !areas.some(area => area.name === data.area) && (
-                                    <option value={data.area}>
-                                        {data.area} (área actual)
-                                    </option>
-                                )}
+                                {data.area &&
+                                    areas &&
+                                    !areas.some(
+                                        (area) => area.name === data.area
+                                    ) && (
+                                        <option value={data.area}>
+                                            {data.area} (área actual)
+                                        </option>
+                                    )}
                                 {areas &&
                                     areas.map((area) => (
                                         <option key={area.id} value={area.name}>
@@ -247,6 +253,25 @@ export default function EditUserModal({
                                 />
                                 <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
                                     Asignar como <strong>Gerente de EHS</strong>
+                                </span>
+                            </label>
+                        </div>
+                        <div className="block mt-4">
+                            <label className="flex items-center">
+                                <Checkbox
+                                    name="is_ehs_coordinator"
+                                    checked={data.is_ehs_coordinator}
+                                    onChange={(e) =>
+                                        setData(
+                                            "is_ehs_coordinator",
+                                            e.target.checked
+                                        )
+                                    }
+                                />
+                                <span className="ml-2 text-sm text-gray-600 dark:text-gray-400">
+                                    Asignar como{" "}
+                                    <strong>Coordinador EHS</strong> (Vista
+                                    Global)
                                 </span>
                             </label>
                         </div>

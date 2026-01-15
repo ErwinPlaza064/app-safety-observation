@@ -198,6 +198,7 @@ export default function SuperAdminView({
                                 >
                                     <option value="">Todos los Roles</option>
                                     <option value="admin">Super Admin</option>
+                                    <option value="coordinator">Coordinador EHS</option>
                                     <option value="manager">EHS Manager</option>
                                     <option value="employee">Empleado</option>
                                 </select>

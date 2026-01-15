@@ -21,6 +21,7 @@ class UserManagementController extends Controller
             'position' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8'],
             'is_ehs_manager' => ['boolean'],
+            'is_ehs_coordinator' => ['boolean'],
         ]);
 
         User::create([
@@ -31,6 +32,7 @@ class UserManagementController extends Controller
             'position' => $validated['position'],
             'password' => Hash::make($validated['password']),
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+            'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
             'email_verified_at' => now(),
         ]);
 
@@ -46,6 +48,7 @@ class UserManagementController extends Controller
             'area' => ['required', 'string', 'max:255'],
             'position' => ['required', 'string', 'max:255'],
             'is_ehs_manager' => ['boolean'],
+            'is_ehs_coordinator' => ['boolean'],
         ]);
 
         $user->update([
@@ -55,6 +58,7 @@ class UserManagementController extends Controller
             'area' => $validated['area'],
             'position' => $validated['position'],
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+            'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
         ]);
 
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');

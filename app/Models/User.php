@@ -25,6 +25,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'area',
         'position',
         'is_ehs_manager',
+        'is_ehs_coordinator',
         'is_suspended',
         'suspended_at',
         'suspension_reason',
@@ -52,6 +53,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'email_verified_at' => 'datetime',
             'password' => 'hashed',
             'is_ehs_manager' => 'boolean',
+            'is_ehs_coordinator' => 'boolean',
             'is_super_admin' => 'boolean',
             'is_suspended' => 'boolean',
             'suspended_at' => 'datetime',
@@ -72,6 +74,14 @@ class User extends Authenticatable implements MustVerifyEmail
     public function isEhsManager(): bool
     {
         return $this->is_ehs_manager === true;
+    }
+
+    /**
+     * Check if user is EHS Coordinator
+     */
+    public function isEhsCoordinator(): bool
+    {
+        return $this->is_ehs_coordinator === true;
     }
 
 

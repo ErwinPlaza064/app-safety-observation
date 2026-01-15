@@ -49,8 +49,9 @@ class DashboardController extends Controller
                 })
                 ->when(request('role'), function ($query, $role) {
                     if ($role === 'admin') $query->where('is_super_admin', true);
-                    elseif ($role === 'manager') $query->where('is_ehs_manager', true);
-                    elseif ($role === 'employee') $query->where('is_super_admin', false)->where('is_ehs_manager', false);
+                    elseif ($role === 'coordinator') $query->where('is_ehs_coordinator', true);
+                    elseif ($role === 'manager') $query->where('is_ehs_manager', true)->where('is_ehs_coordinator', false);
+                    elseif ($role === 'employee') $query->where('is_super_admin', false)->where('is_ehs_manager', false)->where('is_ehs_coordinator', false);
                 })
                 ->when(request('status'), function ($query, $status) {
                     if ($status === 'verified') $query->whereNotNull('email_verified_at')->where('is_suspended', false);
@@ -124,8 +125,8 @@ class DashboardController extends Controller
         // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
 
-            // Verificar si el usuario puede ver todas las plantas
-            $canViewAllPlants = $user->email === 'ehsplanta1@wasion.com';
+            // Verificar si el usuario puede ver todas las plantas (Coordinador o Admin)
+            $canViewAllPlants = $user->is_ehs_coordinator || $user->is_super_admin;
 
             // Si puede ver todas las plantas, mostrar todas; si no, solo su planta
             if ($canViewAllPlants) {

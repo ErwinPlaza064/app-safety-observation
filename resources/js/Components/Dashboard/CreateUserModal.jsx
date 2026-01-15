@@ -16,6 +16,7 @@ export default function CreateUserModal({ show, onClose }) {
         position: "",
         password: "",
         is_ehs_manager: false,
+        is_ehs_coordinator: false,
     });
 
     const submit = (e) => {
@@ -187,6 +188,21 @@ export default function CreateUserModal({ show, onClose }) {
                             />
                             <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
                                 Asignar como <strong>Gerente de EHS</strong>
+                            </span>
+                        </label>
+                        <label className="flex items-center mt-3">
+                            <Checkbox
+                                name="is_ehs_coordinator"
+                                checked={data.is_ehs_coordinator}
+                                onChange={(e) =>
+                                    setData(
+                                        "is_ehs_coordinator",
+                                        e.target.checked
+                                    )
+                                }
+                            />
+                            <span className="ml-2 text-sm text-gray-600 dark:text-gray-300">
+                                Asignar como <strong>Coordinador EHS</strong> (Vista Global)
                             </span>
                         </label>
                     </div>
