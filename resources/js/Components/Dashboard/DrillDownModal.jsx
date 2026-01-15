@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useState, useMemo } from "react";
+import { Link } from "@inertiajs/react";
 import Modal from "@/Components/Modal";
 
 export default function DrillDownModal({
@@ -9,35 +10,81 @@ export default function DrillDownModal({
     type,
     onItemClick,
 }) {
+    const [searchTerm, setSearchTerm] = useState("");
+
+    const filteredData = useMemo(() => {
+        if (!data || !Array.isArray(data) || !searchTerm) return data;
+
+        const term = searchTerm.toLowerCase();
+        return data.filter((item) => {
+            const name = (item.name || item.observed_person || "").toLowerCase();
+            const payroll = (item.payroll_number || item.email || "").toLowerCase();
+            return name.includes(term) || payroll.includes(term);
+        });
+    }, [data, searchTerm]);
+
+    const displayData = type === "participation_summary" ? data : filteredData;
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
             <div className="p-6">
-                <div className="flex items-center justify-between pb-4 mb-5 border-b border-gray-100 dark:border-gray-700">
-                    <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
-                        {title}
-                    </h3>
-                    <button
-                        onClick={onClose}
-                        className="text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
-                    >
-                        <svg
-                            className="w-6 h-6"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 mb-5 border-b border-gray-100 dark:border-gray-700">
+                    <div className="flex items-center gap-3">
+                        <h3 className="text-lg font-bold text-gray-800 dark:text-gray-200">
+                            {title}
+                        </h3>
+                        {type === "participation_summary" && (
+                            <Link
+                                href={route('participation.history')}
+                                className="inline-flex items-center px-3 py-1 text-xs font-semibold text-blue-600 bg-blue-50 rounded-full hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 transition-colors"
+                            >
+                                <svg className="w-3.5 h-3.5 mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
+                                </svg>
+                                Ver Historial Completo
+                            </Link>
+                        )}
+                    </div>
+
+                    <div className="flex items-center gap-4">
+                        {type !== "participation_summary" && (
+                            <div className="relative group">
+                                <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+                                    <svg className="w-4 h-4 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                                    </svg>
+                                </div>
+                                <input
+                                    type="text"
+                                    className="block w-full pl-10 pr-3 py-2 text-sm text-gray-900 bg-gray-50 rounded-lg border border-gray-200 focus:ring-blue-500 focus:border-blue-500 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500 transition-all group-hover:border-gray-300 dark:group-hover:border-gray-500"
+                                    placeholder="Buscar por nombre o nómina..."
+                                    value={searchTerm}
+                                    onChange={(e) => setSearchTerm(e.target.value)}
+                                />
+                            </div>
+                        )}
+                        <button
+                            onClick={onClose}
+                            className="p-1 text-gray-400 dark:text-gray-500 transition-colors hover:text-gray-600 dark:hover:text-gray-300"
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth="2"
-                                d="M6 18L18 6M6 6l12 12"
-                            />
-                        </svg>
-                    </button>
+                            <svg
+                                className="w-6 h-6"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth="2"
+                                    d="M6 18L18 6M6 6l12 12"
+                                />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
-                    {data && (type === "participation_summary" || data.length > 0) ? (
+                    {displayData && (type === "participation_summary" || displayData.length > 0) ? (
                         <>
                             {type === "participation_summary" && (
                                 <div className="space-y-4">

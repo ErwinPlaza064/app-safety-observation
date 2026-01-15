@@ -3,6 +3,7 @@
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObservationController;
+use App\Http\Controllers\ParticipationController;
 use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\Admin\AreaController;
 use App\Services\MicrosoftGraphMailer;
@@ -229,6 +230,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         Route::put('/{observation}/close', [ObservationController::class, 'close'])->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])->name('reopen');
     });
+
+    // --- PARTICIPACIÓN HISTÓRICA ---
+    Route::get('/participation/history', [ParticipationController::class, 'history'])
+        ->middleware(['verified'])
+        ->name('participation.history');
 });
 
 require __DIR__ . '/auth.php';
