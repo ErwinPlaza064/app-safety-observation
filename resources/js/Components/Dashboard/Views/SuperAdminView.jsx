@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import { IoMdClose } from "react-icons/io";
-import { HiUsers, HiOfficeBuilding } from "react-icons/hi";
+import { HiUsers, HiOfficeBuilding, HiUpload } from "react-icons/hi";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
