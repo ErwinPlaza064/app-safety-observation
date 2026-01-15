@@ -163,29 +163,29 @@ export default function AuthenticatedLayout({
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
-                            {(user.is_ehs_manager ||
-                                user.is_ehs_coordinator) && (
-                                <div>
-                                    <NotificationBell
-                                        user={user}
-                                        count={notificationCount}
-                                        list={notifications}
-                                    />
-                                </div>
-                            )}
-                        </div>
+                        {((user.is_ehs_manager || user.is_ehs_coordinator) &&
+                            !user.is_super_admin) && (
+                            <div>
+                                <NotificationBell
+                                    user={user}
+                                    count={notificationCount}
+                                    list={notifications}
+                                />
+                            </div>
+                        )}
+                    </div>
 
-                        <div className="flex items-center -me-2 sm:hidden">
-                            {(user.is_ehs_manager ||
-                                user.is_ehs_coordinator) && (
-                                <div>
-                                    <NotificationBell
-                                        user={user}
-                                        count={notificationCount}
-                                        list={notifications}
-                                    />
-                                </div>
-                            )}
+                    <div className="flex items-center -me-2 sm:hidden">
+                        {((user.is_ehs_manager || user.is_ehs_coordinator) &&
+                            !user.is_super_admin) && (
+                            <div>
+                                <NotificationBell
+                                    user={user}
+                                    count={notificationCount}
+                                    list={notifications}
+                                />
+                            </div>
+                        )}
 
                             <button
                                 onClick={() =>
