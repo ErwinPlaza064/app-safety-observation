@@ -574,10 +574,10 @@ export default function EhsManagerView({
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th className="px-6 py-3">Folio</th>
+                                        <th className="px-6 py-3">Persona Observada</th>
+                                        <th className="px-6 py-3">Observador</th>
                                         <th className="px-6 py-3">Fecha</th>
-                                        <th className="px-6 py-3">
-                                            Descripción
-                                        </th>
+                                        <th className="px-6 py-3">Descripción</th>
                                         <th className="px-6 py-3">Ubicación</th>
                                         <th className="px-6 py-3">Estado</th>
                                     </tr>
@@ -592,12 +592,18 @@ export default function EhsManagerView({
                                             <td className="px-6 py-4 font-bold text-blue-600 dark:text-blue-400">
                                                 #{obs.id}
                                             </td>
+                                            <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">
+                                                {obs.observed_person || "N/A"}
+                                            </td>
+                                            <td className="px-6 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">
+                                                {obs.user?.name || "N/A"}
+                                            </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 {new Date(
                                                     obs.observation_date
                                                 ).toLocaleDateString()}
                                             </td>
-                                            <td className="px-6 py-4 max-w-md">
+                                            <td className="px-6 py-4 max-w-xs">
                                                 <p
                                                     className="truncate"
                                                     title={obs.description}
@@ -606,7 +612,7 @@ export default function EhsManagerView({
                                                 </p>
                                             </td>
                                             <td className="px-6 py-4">
-                                                {obs.area?.name}
+                                                {obs.area?.name || "N/A"}
                                             </td>
                                             <td className="px-6 py-4">
                                                 <span
