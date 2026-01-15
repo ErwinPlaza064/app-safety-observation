@@ -49,9 +49,10 @@ class UserManagementController extends Controller
             'position' => ['required', 'string', 'max:255'],
             'is_ehs_manager' => ['boolean'],
             'is_ehs_coordinator' => ['boolean'],
+            'password' => ['nullable', 'string', 'min:8'],
         ]);
 
-        $user->update([
+        $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'employee_number' => $validated['employee_number'],
@@ -59,7 +60,13 @@ class UserManagementController extends Controller
             'position' => $validated['position'],
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
             'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
-        ]);
+        ];
+
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($updateData);
 
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }
