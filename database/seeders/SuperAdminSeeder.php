@@ -34,5 +34,31 @@ class SuperAdminSeeder extends Seeder
         } else {
             $this->command->warn('El usuario Super Admin ya existe, saltando creación...');
         }
+
+        // --- COORDINADOR EHS (VISTA GLOBAL) ---
+        $coordinatorExists = User::where('email', 'ehsmanager@wasion.com')->exists();
+
+        if (!$coordinatorExists) {
+            User::create([
+                'employee_number' => 'EHS-COORD',
+                'name' => 'Coordinador EHS',
+                'email' => 'ehsmanager@wasion.com',
+                'password' => Hash::make('Wasion2025*'),
+                'area' => 'EHS',
+                'position' => 'Coordinador',
+                'is_ehs_manager' => true,
+                'is_ehs_coordinator' => true,
+                'email_verified_at' => now(),
+            ]);
+
+            $this->command->info('Usuario Coordinador EHS creado exitosamente');
+        } else {
+            // Asegurar que si existe tenga los permisos correctos
+            User::where('email', 'ehsmanager@wasion.com')->update([
+                'is_ehs_manager' => true,
+                'is_ehs_coordinator' => true
+            ]);
+            $this->command->warn('El usuario Coordinador ya existe, permisos actualizados...');
+        }
     }
 }
