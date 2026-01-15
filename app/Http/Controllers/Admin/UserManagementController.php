@@ -8,6 +8,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Maatwebsite\Excel\Facades\Excel;
+use App\Imports\UsersImport;
+use Symfony\Component\HttpFoundation\StreamedResponse;
 
 class UserManagementController extends Controller
 {
@@ -49,9 +52,10 @@ class UserManagementController extends Controller
             'position' => ['required', 'string', 'max:255'],
             'is_ehs_manager' => ['boolean'],
             'is_ehs_coordinator' => ['boolean'],
+            'password' => ['nullable', 'string', 'min:8'],
         ]);
 
-        $user->update([
+        $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'employee_number' => $validated['employee_number'],
@@ -59,7 +63,13 @@ class UserManagementController extends Controller
             'position' => $validated['position'],
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
             'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
-        ]);
+        ];
+
+        if (!empty($validated['password'])) {
+            $updateData['password'] = Hash::make($validated['password']);
+        }
+
+        $user->update($updateData);
 
         return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }
@@ -138,5 +148,68 @@ class UserManagementController extends Controller
         $user->delete();
 
         return Redirect::route('dashboard')->with('success', 'Usuario eliminado exitosamente');
+    }
+
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+        ]);
+
+        try {
+            Excel::import(new UsersImport, $request->file('file'));
+            return back()->with('success', 'Usuarios importados exitosamente.');
+        } catch (\Maatwebsite\Excel\Validators\ValidationException $e) {
+            $failures = $e->failures();
+            $errors = [];
+            foreach ($failures as $failure) {
+                $errors[] = "Fila {$failure->row()}: " . implode(', ', $failure->errors());
+            }
+            return back()->with('error', 'Error de validación en el archivo: ' . implode(' | ', array_slice($errors, 0, 3)));
+        } catch (\Exception $e) {
+            return back()->with('error', 'Error al importar archivo: ' . $e->getMessage());
+        }
+    }
+
+    public function downloadTemplate()
+    {
+        $headers = [
+            'Content-Type' => 'text/csv',
+            'Content-Disposition' => 'attachment; filename="formato_importacion_usuarios.csv"',
+        ];
+
+        $callback = function () {
+            $file = fopen('php://output', 'w');
+            // Añadir BOM para que Excel detecte UTF-8 correctamente
+            fputs($file, $bom = (chr(0xEF) . chr(0xBB) . chr(0xBF)));
+
+            // Encabezados
+            fputcsv($file, [
+                'nombre',
+                'email',
+                'no_empleado',
+                'area',
+                'puesto',
+                'password',
+                'es_gerente_ehs',
+                'es_coordinador_ehs'
+            ]);
+
+            // Ejemplo
+            fputcsv($file, [
+                'Juan Perez',
+                'juan.perez@wasion.com',
+                '12345',
+                'Planta 1',
+                'Operador',
+                'Wasion2025*',
+                'No',
+                'No'
+            ]);
+
+            fclose($file);
+        };
+
+        return response()->stream($callback, 200, $headers);
     }
 }

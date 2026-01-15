@@ -7,12 +7,11 @@ import { useState } from "react";
 import NotificationBell from "@/Components/Dashboard/NotificationBell";
 import ThemeToggle from "@/Components/ThemeToggle";
 import { Transition } from "@headlessui/react";
-import { 
-    HiOutlineUserGroup, 
-    HiOutlineShieldCheck, 
+import {
+    HiOutlineUserGroup,
+    HiOutlineShieldCheck,
     HiOutlineShieldExclamation,
-    HiOutlineCollection
-} from "react-icons/hi2";
+} from "react-icons/hi";
 
 export default function AuthenticatedLayout({
     header,
@@ -159,11 +158,12 @@ export default function AuthenticatedLayout({
                                             ) : (
                                                 "Cerrar Sesión"
                                             )}
-                                    </Dropdown.Link>
-                                </Dropdown.Content>
-                            </Dropdown>
-                        </div>
-                        {(user.is_ehs_manager || user.is_super_admin) && (
+                                        </Dropdown.Link>
+                                    </Dropdown.Content>
+                                </Dropdown>
+                            </div>
+                        {((user.is_ehs_manager || user.is_ehs_coordinator) &&
+                            !user.is_super_admin) && (
                             <div>
                                 <NotificationBell
                                     user={user}
@@ -175,7 +175,8 @@ export default function AuthenticatedLayout({
                     </div>
 
                     <div className="flex items-center -me-2 sm:hidden">
-                        {(user.is_ehs_manager || user.is_super_admin) && (
+                        {((user.is_ehs_manager || user.is_ehs_coordinator) &&
+                            !user.is_super_admin) && (
                             <div>
                                 <NotificationBell
                                     user={user}
@@ -185,12 +186,12 @@ export default function AuthenticatedLayout({
                             </div>
                         )}
 
-                        <button
-                            onClick={() =>
-                                setShowingNavigationDropdown(
-                                    (previousState) => !previousState
-                                )
-                            }
+                            <button
+                                onClick={() =>
+                                    setShowingNavigationDropdown(
+                                        (previousState) => !previousState
+                                    )
+                                }
                                 className="inline-flex items-center justify-center p-2 text-gray-400 transition duration-150 ease-in-out rounded-md dark:text-gray-500 hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-500 dark:hover:text-gray-400 focus:bg-gray-100 dark:focus:bg-gray-700 focus:text-gray-500 focus:outline-none"
                             >
                                 <div className="h-10 w-10 rounded-full bg-[#1e3a8a] flex items-center justify-center text-white font-bold text-lg shadow-md">

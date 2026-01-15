@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import { IoMdClose } from "react-icons/io";
-import { HiUsers, HiOfficeBuilding } from "react-icons/hi";
+import { HiUsers, HiOfficeBuilding, HiUpload } from "react-icons/hi";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
@@ -13,6 +13,7 @@ export default function SuperAdminView({
     users,
     areas = [],
     onUserClick,
+    onImportClick,
     filters,
     filterAreas,
 }) {
@@ -114,25 +115,35 @@ export default function SuperAdminView({
                             Administración de Usuarios
                         </h3>
 
-                        <PrimaryButton
-                            onClick={() => setShowCreateModal(true)}
-                            className="justify-center"
-                        >
-                            <svg
-                                className="w-5 h-5 mr-2"
-                                fill="none"
-                                stroke="currentColor"
-                                viewBox="0 0 24 24"
+                        <div className="flex flex-wrap gap-2">
+                            <PrimaryButton
+                                onClick={() => setShowCreateModal(true)}
+                                className="justify-center"
                             >
-                                <path
-                                    strokeLinecap="round"
-                                    strokeLinejoin="round"
-                                    strokeWidth="2"
-                                    d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
-                                />
-                            </svg>
-                            Crear Cuenta
-                        </PrimaryButton>
+                                <svg
+                                    className="w-5 h-5 mr-2"
+                                    fill="none"
+                                    stroke="currentColor"
+                                    viewBox="0 0 24 24"
+                                >
+                                    <path
+                                        strokeLinecap="round"
+                                        strokeLinejoin="round"
+                                        strokeWidth="2"
+                                        d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z"
+                                    />
+                                </svg>
+                                Crear Cuenta
+                            </PrimaryButton>
+
+                            <button
+                                onClick={onImportClick}
+                                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all active:scale-95"
+                            >
+                                <HiUpload className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
+                                Importar Excel/CSV
+                            </button>
+                        </div>
                     </div>
 
                     <div className="p-4 bg-white shadow-sm dark:bg-gray-800 sm:rounded-lg">

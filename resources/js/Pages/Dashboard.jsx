@@ -7,6 +7,7 @@ import EmptyState from "@/Components/Dashboard/EmptyState";
 import SuperAdminView from "@/Components/Dashboard/Views/SuperAdminView";
 import EmployeeView from "@/Components/Dashboard/Views/EmployeeView";
 import EhsManagerView from "@/Components/Dashboard/Views/EhsManagerView";
+import ImportUsersModal from "@/Components/Dashboard/ImportUsersModal";
 
 export default function Dashboard({
     userStats,
@@ -29,6 +30,7 @@ export default function Dashboard({
 
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
+    const [showImportModal, setShowImportModal] = useState(false);
 
     const openEditModal = (userData) => setEditingUser(userData);
     const closeEditModal = () => setEditingUser(null);
@@ -53,7 +55,9 @@ export default function Dashboard({
                 ehsStats ? ehsStats.event_count : employeeNotificationCount || 0
             }
             notifications={
-                ehsStats ? ehsStats.recent : employeeNotifications || []
+                ehsStats 
+                    ? (ehsStats.bell_notifications || ehsStats.recent) 
+                    : employeeNotifications || []
             }
         >
             <Head title="Dashboard" />
@@ -66,6 +70,7 @@ export default function Dashboard({
                             users={users}
                             areas={areas}
                             onUserClick={openEditModal}
+                            onImportClick={() => setShowImportModal(true)}
                             filters={filters}
                             filterAreas={filterAreas}
                         />
@@ -110,6 +115,11 @@ export default function Dashboard({
                 user={deletingUser}
                 onClose={() => setDeletingUser(null)}
                 onConfirm={handleDelete}
+            />
+
+            <ImportUsersModal
+                show={showImportModal}
+                onClose={() => setShowImportModal(false)}
             />
         </AuthenticatedLayout>
     );

@@ -202,6 +202,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             ->name('users.manual-verify');
         Route::post('/users/{user}/toggle-suspension', [UserManagementController::class, 'toggleSuspension'])
             ->name('users.toggle-suspension');
+        Route::post('/users/import', [UserManagementController::class, 'import'])->name('users.import');
+        Route::get('/users/template', [UserManagementController::class, 'downloadTemplate'])->name('users.template');
     });
 
     // --- ADMINISTRACIÓN DE ÁREAS (Super Admin) ---
