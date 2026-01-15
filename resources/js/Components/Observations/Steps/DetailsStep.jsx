@@ -6,6 +6,7 @@ export default function DetailsStep({
     onToggleCategory,
     categories,
     errors,
+    isUnsafeAct = false, // Nueva prop
 }) {
     const [inconsistencyWarning, setInconsistencyWarning] = useState(null);
 
@@ -158,46 +159,78 @@ export default function DetailsStep({
 
     return (
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
-            <div className="mb-6">
-                <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Categorías Aplicables
-                </label>
-                {errors.category_ids && (
-                    <p className="mb-2 text-sm text-red-600">
-                        {errors.category_ids}
-                    </p>
-                )}
-                <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
-                    {categories.map((category) => (
-                        <label
-                            key={category.id}
-                            className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
-                                formData.category_ids.includes(category.id)
-                                    ? "border-[#1e3a8a] dark:border-blue-500 bg-blue-50 dark:bg-blue-900/30"
-                                    : "border-gray-300 dark:border-gray-600 hover:border-[#1e3a8a] dark:hover:border-blue-500"
-                            }`}
-                        >
-                            <input
-                                type="checkbox"
-                                checked={formData.category_ids.includes(
-                                    category.id
-                                )}
-                                onChange={() => onToggleCategory(category.id)}
-                                className="mr-3 accent-[#1e3a8a]"
-                            />
-                            <span
-                                className={`text-sm ${
+            {/* Solo mostrar categorías si NO es condición insegura */}
+            {!isUnsafeAct && (
+                <div className="mb-6">
+                    <label className="block mb-3 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Categorías Aplicables
+                    </label>
+                    {errors.category_ids && (
+                        <p className="mb-2 text-sm text-red-600">
+                            {errors.category_ids}
+                        </p>
+                    )}
+                    <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
+                        {categories.map((category) => (
+                            <label
+                                key={category.id}
+                                className={`flex items-center p-3 border-2 rounded-lg cursor-pointer transition ${
                                     formData.category_ids.includes(category.id)
-                                        ? "text-[#1e3a8a] dark:text-blue-400 font-medium"
-                                        : "text-gray-700 dark:text-gray-200"
+                                        ? "border-[#1e3a8a] dark:border-blue-500 bg-blue-50 dark:bg-blue-900/30"
+                                        : "border-gray-300 dark:border-gray-600 hover:border-[#1e3a8a] dark:hover:border-blue-500"
                                 }`}
                             >
-                                {category.name}
-                            </span>
-                        </label>
-                    ))}
+                                <input
+                                    type="checkbox"
+                                    checked={formData.category_ids.includes(
+                                        category.id
+                                    )}
+                                    onChange={() => onToggleCategory(category.id)}
+                                    className="mr-3 accent-[#1e3a8a]"
+                                />
+                                <span
+                                    className={`text-sm ${
+                                        formData.category_ids.includes(category.id)
+                                            ? "text-[#1e3a8a] dark:text-blue-400 font-medium"
+                                            : "text-gray-700 dark:text-gray-200"
+                                    }`}
+                                >
+                                    {category.name}
+                                </span>
+                            </label>
+                        ))}
+                    </div>
                 </div>
-            </div>
+            )}
+
+            {/* Mensaje informativo cuando es condición insegura */}
+            {isUnsafeAct && (
+                <div className="p-4 mb-6 border-l-4 border-blue-500 rounded-lg bg-blue-50 dark:bg-blue-900/20">
+                    <div className="flex items-start gap-3">
+                        <svg
+                            className="w-5 h-5 mt-0.5 text-blue-600 dark:text-blue-400 flex-shrink-0"
+                            fill="none"
+                            stroke="currentColor"
+                            viewBox="0 0 24 24"
+                        >
+                            <path
+                                strokeLinecap="round"
+                                strokeLinejoin="round"
+                                strokeWidth={2}
+                                d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                            />
+                        </svg>
+                        <div>
+                            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">
+                                Las categorías no están disponibles para Condiciones Inseguras
+                            </p>
+                            <p className="mt-1 text-xs text-blue-700 dark:text-blue-400">
+                                Solo necesitas proporcionar una descripción detallada de la condición observada.
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            )}
 
             <div className="mb-6">
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">

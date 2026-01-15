@@ -64,7 +64,7 @@ export default function SafetyObservationForm({
 
         const isValidDraft =
             formData.description.length > 5 &&
-            formData.category_ids.length > 0 &&
+            (formData.observation_type === "condicion_insegura" || formData.category_ids.length > 0) &&
             formData.observation_type !== "";
 
         if (!isValidDraft) return;
@@ -96,6 +96,13 @@ export default function SafetyObservationForm({
             return () => clearTimeout(timer);
         }
     }, [toast.show]);
+
+    // Limpiar categorías cuando se selecciona "condicion_insegura"
+    useEffect(() => {
+        if (formData.observation_type === "condicion_insegura") {
+            setFormData((prev) => ({ ...prev, category_ids: [] }));
+        }
+    }, [formData.observation_type]);
 
     const handleKeyDown = (e) => {
         if (e.key === "Enter") {
@@ -133,15 +140,19 @@ export default function SafetyObservationForm({
             return;
         }
 
-        // Comprimir cada archivo antes de agregarlo
-        const compressedFiles = await Promise.all(
-            files.map(file => compressImage(file))
-        );
+        try {
+            const compressedFiles = await Promise.all(
+                files.map(file => compressImage(file))
+            );
 
-        setFormData((prev) => ({
-            ...prev,
-            photos: [...prev.photos, ...compressedFiles],
-        }));
+            setFormData((prev) => ({
+                ...prev,
+                photos: [...prev.photos, ...compressedFiles],
+            }));
+        } catch (error) {
+            console.error("Error al comprimir imágenes:", error);
+            showToast("Error al procesar las imágenes", "error");
+        }
     };
 
     const removePhoto = (index) => {
@@ -154,7 +165,16 @@ export default function SafetyObservationForm({
     const validateStep = (step) => {
         const newErrors = {};
 
+        // PASO 1: Tipo de observación + Planta
         if (step === 1) {
+            if (!formData.observation_type)
+                newErrors.observation_type = "Debe seleccionar un tipo de observación";
+            if (!formData.area_id)
+                newErrors.area_id = "Debe seleccionar una planta";
+        }
+
+        // PASO 2: Información del observador
+        if (step === 2) {
             if (
                 !formData.payroll_number ||
                 formData.payroll_number.length !== 5
@@ -171,17 +191,20 @@ export default function SafetyObservationForm({
             }
         }
 
-        if (step === 2 && !formData.observation_type)
-            newErrors.observation_type =
-                "Debe seleccionar un tipo de observación";
+        // PASO 3: Categorías + Descripción
         if (step === 3) {
-            if (formData.category_ids.length === 0)
-                newErrors.category_ids =
-                    "Debe seleccionar al menos una categoría";
-            if (formData.description.length < 20)
+            // Solo validar categorías si NO es condición insegura
+            if (formData.observation_type !== "condicion_insegura") {
+                if (formData.category_ids.length === 0)
+                    newErrors.category_ids =
+                        "Debe seleccionar al menos una categoría";
+            }
+            
+            if (!formData.description || formData.description.trim().length < 20)
                 newErrors.description =
                     "La descripción debe tener al menos 20 caracteres";
         }
+
         setErrors(newErrors);
         return Object.keys(newErrors).length === 0;
     };
@@ -198,10 +221,18 @@ export default function SafetyObservationForm({
     const handleAutoSave = () => {
         setIsSaving(true);
 
+        // Preparar datos para autoguardar
+        const dataToSave = { ...formData, is_draft: true };
+        
+        // Si es condición insegura, asegurar que category_ids esté vacío
+        if (dataToSave.observation_type === "condicion_insegura") {
+            dataToSave.category_ids = [];
+        }
+
         if (formData.id) {
             router.put(
                 route("observations.update", formData.id),
-                { ...formData, is_draft: true },
+                dataToSave,
                 {
                     preserveState: true,
                     preserveScroll: true,
@@ -209,13 +240,16 @@ export default function SafetyObservationForm({
                         setLastSaved(new Date());
                         setIsSaving(false);
                     },
-                    onError: () => setIsSaving(false),
+                    onError: (errors) => {
+                        console.error("Error autoguardado:", errors);
+                        setIsSaving(false);
+                    },
                 }
             );
         } else {
             router.post(
                 route("observations.store"),
-                { ...formData, is_draft: true },
+                dataToSave,
                 {
                     preserveState: true,
                     preserveScroll: true,
@@ -255,19 +289,45 @@ export default function SafetyObservationForm({
         setIsSubmitting(true);
 
         const submitData = new FormData();
-        Object.keys(formData).forEach((key) => {
-            if (key === "category_ids")
-                formData[key].forEach((id) =>
+        
+        // Preparar datos para enviar
+        const dataToSubmit = { ...formData };
+        
+        // Si es condición insegura, limpiar las categorías
+        if (dataToSubmit.observation_type === "condicion_insegura") {
+            dataToSubmit.category_ids = [];
+        }
+        
+        // Agregar todos los campos al FormData
+        Object.keys(dataToSubmit).forEach((key) => {
+            if (key === "category_ids") {
+                dataToSubmit[key].forEach((id) =>
                     submitData.append("category_ids[]", id)
                 );
-            else if (key === "photos")
-                formData[key].forEach((file) =>
+            } else if (key === "photos") {
+                dataToSubmit[key].forEach((file) =>
                     submitData.append("photos[]", file)
                 );
-            else submitData.append(key, formData[key]);
+            } else if (key !== "id") {
+                submitData.append(key, dataToSubmit[key]);
+            }
         });
 
-        router.post(route("observations.store"), submitData, {
+        // Marcar como NO borrador
+        submitData.append("is_draft", "false");
+
+        // Determinar la ruta y método
+        const routeToUse = formData.id 
+            ? route("observations.update", formData.id)
+            : route("observations.store");
+
+        // Si es una actualización, usar método PUT
+        if (formData.id) {
+            submitData.append("_method", "PUT");
+        }
+
+        router.post(routeToUse, submitData, {
+            forceFormData: true,
             onSuccess: () => {
                 showToast("Observación enviada exitosamente", "success");
                 setCurrentStep(1);
@@ -277,6 +337,7 @@ export default function SafetyObservationForm({
                 }, 1500);
             },
             onError: (err) => {
+                console.error("Error al enviar:", err);
                 setErrors(err);
                 showToast("Error al enviar. Verifica los datos.", "error");
                 setIsSubmitting(false);
@@ -305,7 +366,7 @@ export default function SafetyObservationForm({
                             }
                             className="ml-4 focus:outline-none"
                         >
-                            x
+                            ✕
                         </button>
                     </div>
                 </div>
@@ -341,15 +402,8 @@ export default function SafetyObservationForm({
                     </button>
                 </div>
 
+                {/* PASO 1: Tipo de Observación + Planta */}
                 {currentStep === 1 && (
-                    <ObserverInfoStep
-                        formData={formData}
-                        onChange={handleInputChange}
-                        errors={errors}
-                    />
-                )}
-
-                {currentStep === 2 && (
                     <AreaTypeStep
                         formData={formData}
                         onChange={handleInputChange}
@@ -359,6 +413,16 @@ export default function SafetyObservationForm({
                     />
                 )}
 
+                {/* PASO 2: Información del Observador */}
+                {currentStep === 2 && (
+                    <ObserverInfoStep
+                        formData={formData}
+                        onChange={handleInputChange}
+                        errors={errors}
+                    />
+                )}
+
+                {/* PASO 3: Categorías + Descripción */}
                 {currentStep === 3 && (
                     <DetailsStep
                         formData={formData}
@@ -366,9 +430,11 @@ export default function SafetyObservationForm({
                         onToggleCategory={handleCategoryToggle}
                         categories={categories}
                         errors={errors}
+                        isUnsafeAct={formData.observation_type === "condicion_insegura"}
                     />
                 )}
 
+                {/* PASO 4: Fotos */}
                 {currentStep === 4 && (
                     <PhotosStep
                         formData={formData}
