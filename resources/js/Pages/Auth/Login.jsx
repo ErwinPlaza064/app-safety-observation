@@ -9,7 +9,7 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { useState } from "react";
 
 export default function Login({ status, canResetPassword }) {
-    const { data, setData, post, processing, errors, reset } = useForm({
+    const { data, setData, post, processing, errors, reset, transform } = useForm({
         login: "",
         password: "",
         remember: false,
@@ -22,6 +22,11 @@ export default function Login({ status, canResetPassword }) {
         e.preventDefault();
 
         setIsLoading(true);
+
+        transform((data) => ({
+            ...data,
+            login: data.login.toLowerCase(),
+        }));
 
         setTimeout(() => {
             post(route("login"), {
