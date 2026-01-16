@@ -23,10 +23,9 @@ class AppServiceProvider extends ServiceProvider
     {
         Vite::prefetch(concurrency: 3);
 
-        // Forzar HTTPS en producción
+        // Forzar HTTPS en producción o cuando se detecta una conexión segura
         if (config('app.env') === 'production' || request()->secure()) {
             URL::forceScheme('https');
-            URL::forceRootUrl(config('app.url'));
         }
 
         // Nota: El listener de verificación de email ya está registrado
