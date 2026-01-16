@@ -119,33 +119,33 @@ export default function AreaTypeStep({
                     )}
                 </div>
 
-                <div className="animate-fade-in">
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Área
-                        {!isUnsafeCondition && <span className="text-red-500">*</span>}
-                    </label>
-                    <select
-                        value={formData.area_id}
-                        onChange={(e) =>
-                            onChange("area_id", e.target.value === "" ? "" : parseInt(e.target.value))
-                        }
-                        className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
-                    >
-                        <option value="">
-                            {isUnsafeCondition ? "Selecciona un área (Opcional)" : "Selecciona un área"}
-                        </option>
-                        {areas.map((a) => (
-                            <option key={a.id} value={a.id}>
-                                {a.name}
-                            </option>
-                        ))}
-                    </select>
-                    {errors.area_id && (
-                        <p className="mt-1 text-sm text-red-600">
-                            {errors.area_id}
-                        </p>
-                    )}
-                </div>
+                {!isUnsafeCondition && (
+                    <div className="animate-fade-in">
+                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                            Área
+                            <span className="text-red-500">*</span>
+                        </label>
+                        <select
+                            value={formData.area_id}
+                            onChange={(e) =>
+                                onChange("area_id", e.target.value === "" ? "" : parseInt(e.target.value))
+                            }
+                            className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
+                        >
+                            <option value="">Selecciona un área</option>
+                            {areas.map((a) => (
+                                <option key={a.id} value={a.id}>
+                                    {a.name}
+                                </option>
+                            ))}
+                        </select>
+                        {errors.area_id && (
+                            <p className="mt-1 text-sm text-red-600">
+                                {errors.area_id}
+                            </p>
+                        )}
+                    </div>
+                )}
             </div>
         </div>
     );

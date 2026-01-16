@@ -151,20 +151,26 @@ export default function ObservationDetailsModal({
                             <div className="grid grid-cols-1 gap-8 md:grid-cols-2">
                                 {/* Columna Izquierda */}
                                 <div className="space-y-8">
-                                    {/* Persona Observada */}
+                                    {/* Persona Observada / Título de Condición */}
                                     <section>
                                         <h3 className="flex items-center gap-2 mb-3 text-[10px] font-black tracking-widest text-gray-400 uppercase">
-                                            Persona Observada
+                                            {observation.observation_type === "condicion_insegura" 
+                                                ? "Detalle de la Condición" 
+                                                : "Persona Observada"}
                                         </h3>
                                         <div className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 bg-blue-50/20 dark:bg-blue-900/10 rounded-2xl shadow-sm">
                                             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-700 dark:text-purple-300 font-black text-sm">
-                                                {getInitials(observation.observed_person) || "PO"}
+                                                {getInitials(observation.observed_person) || (observation.observation_type === "condicion_insegura" ? "DC" : "PO")}
                                             </div>
                                             <div className="min-w-0">
                                                 <p className="text-sm font-bold text-gray-900 truncate dark:text-white">
                                                     {observation.observed_person || "No especificado"}
                                                 </p>
-                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">Sujeto de la observación</p>
+                                                <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
+                                                    {observation.observation_type === "condicion_insegura" 
+                                                        ? "Título / Resumen" 
+                                                        : "Sujeto de la observación"}
+                                                </p>
                                             </div>
                                         </div>
                                     </section>
@@ -216,19 +222,21 @@ export default function ObservationDetailsModal({
                                             </div>
                                         </div>
 
-                                        <div className="p-3 bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-700 rounded-xl flex items-center gap-3">
-                                            <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
-                                                <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
-                                                </svg>
+                                        {observation.observation_type !== "condicion_insegura" && (
+                                            <div className="p-3 bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-700 rounded-xl flex items-center gap-3">
+                                                <div className="p-1.5 bg-blue-100 dark:bg-blue-900/30 rounded-lg">
+                                                    <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                    </svg>
+                                                </div>
+                                                <div>
+                                                    <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Área</p>
+                                                    <p className="text-xs font-bold text-gray-900 dark:text-white uppercase">
+                                                        {observation.area?.name || "N/A"}
+                                                    </p>
+                                                </div>
                                             </div>
-                                            <div>
-                                                <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Área</p>
-                                                <p className="text-xs font-bold text-gray-900 dark:text-white uppercase">
-                                                    {observation.area?.name || "N/A"}
-                                                </p>
-                                            </div>
-                                        </div>
+                                        )}
 
                                         <div className="p-3 bg-gray-50 dark:bg-gray-900/40 border border-gray-100 dark:border-gray-700 rounded-xl flex items-center gap-3">
                                             <div className="p-1.5 bg-amber-100 dark:bg-amber-900/30 rounded-lg">

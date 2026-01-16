@@ -325,7 +325,7 @@ export default function EmployeeView({
                 <MyReportsTable
                     observations={filteredObservations}
                     onRowClick={(obs) => setSelectedObservation(obs)}
-                    showObservedPerson={activeTab === "actos"}
+                    observedPersonLabel={activeTab === "actos" ? "Observada" : "Condición"}
                 />
             </div>
 

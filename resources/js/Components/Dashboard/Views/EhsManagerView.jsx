@@ -689,7 +689,9 @@ export default function EhsManagerView({
                             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        {activeTab === "actos" && <th className="px-6 py-3">Observada</th>}
+                                        <th className="px-6 py-3">
+                                            {activeTab === "actos" ? "Observada" : "Condición"}
+                                        </th>
                                         <th className="px-6 py-3">
                                             Descripción
                                         </th>
@@ -697,7 +699,9 @@ export default function EhsManagerView({
                                             Observador
                                         </th>
                                         <th className="px-6 py-3">Planta</th>
-                                        <th className="px-6 py-3">Área</th>
+                                        {activeTab !== "condiciones" && (
+                                            <th className="px-6 py-3">Área</th>
+                                        )}
                                         <th className="px-6 py-3">Estado</th>
                                         <th className="px-6 py-3">Fecha</th>
                                     </tr>
@@ -718,11 +722,9 @@ export default function EhsManagerView({
                                                 }
                                                 className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             >
-                                                {activeTab === "actos" && (
-                                                    <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                                                        {obs.observed_person}
-                                                    </td>
-                                                )}
+                                                <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                                    {obs.observed_person}
+                                                </td>
                                                 <td className="max-w-xs px-6 py-4 text-gray-900 truncate dark:text-gray-200">
                                                     {obs.description}
                                                 </td>
@@ -732,9 +734,11 @@ export default function EhsManagerView({
                                                 <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                                     {obs.plant?.name || "N/A"}
                                                 </td>
-                                                <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                                    {obs.area?.name || "N/A"}
-                                                </td>
+                                                {activeTab !== "condiciones" && (
+                                                    <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                                                        {obs.area?.name || "N/A"}
+                                                    </td>
+                                                )}
                                                 <td className="px-6 py-4">
                                                     <span
                                                         className={`px-2 py-1 rounded-full text-xs font-semibold ${
