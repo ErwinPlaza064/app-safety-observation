@@ -70,7 +70,7 @@ class DashboardController extends Controller
             $data['filters'] = request()->only(['search', 'plant_id', 'area_id', 'role', 'status']);
 
             // Datos para filtros y gestión
-            $data['plants'] = Plant::all()->sortBy('name');
+            $data['plants'] = Plant::all()->sortBy('name')->values();
             $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
         }
