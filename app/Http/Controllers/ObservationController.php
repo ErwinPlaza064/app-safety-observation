@@ -295,25 +295,26 @@ class ObservationController extends Controller
         $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])->submitted();
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
-            $canViewAllPlants = $user->is_ehs_coordinator || $user->is_super_admin;
+            $canViewAllPlants = $user->is_ehs_coordinator;
 
             if (!$canViewAllPlants) {
-                $managerArea = Area::where('name', $user->area)->first();
-                $managerAreaId = $managerArea ? $managerArea->id : null;
-
-                if ($managerAreaId) {
-                    $query->where('area_id', $managerAreaId);
-                }
+                $query->where('plant_id', $user->plant_id);
             }
 
-            $query->when(request('area_id'), function ($q, $areaId) {
-                $q->where('area_id', $areaId);
+            $query->when(request('plant_id'), function ($q, $plantId) use ($canViewAllPlants, $user) {
+                if ($canViewAllPlants) {
+                    $q->where('plant_id', $plantId);
+                }
             });
         } else {
-            $query->when(request('area_id'), function ($q, $areaId) {
-                $q->where('area_id', $areaId);
+            $query->when(request('plant_id'), function ($q, $plantId) {
+                $q->where('plant_id', $plantId);
             });
         }
+
+        $query->when(request('area_id'), function ($q, $areaId) {
+            $q->where('area_id', $areaId);
+        });
 
         $query->when(request('search'), function ($q, $search) {
             $q->where(function ($subQ) use ($search) {

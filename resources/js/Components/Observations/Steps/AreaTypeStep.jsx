@@ -46,18 +46,14 @@ export default function AreaTypeStep({
                     onChange={(e) =>
                         onChange("area_id", parseInt(e.target.value))
                     }
-                    disabled={!formData.plant_id}
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
                 >
                     <option value="">Selecciona un área</option>
-                    {formData.plant_id && 
-                        plants.find(p => p.id === formData.plant_id)
-                        ?.areas.map((a) => (
-                            <option key={a.id} value={a.id}>
-                                {a.name}
-                            </option>
-                        ))
-                    }
+                    {areas.map((a) => (
+                        <option key={a.id} value={a.id}>
+                            {a.name}
+                        </option>
+                    ))}
                 </select>
                 {errors.area_id && (
                     <p className="mt-1 text-sm text-red-600">

@@ -7,7 +7,7 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
-export default function CreateUserModal({ show, onClose, plants = [] }) {
+export default function CreateUserModal({ show, onClose, plants = [], areas = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
@@ -160,17 +160,13 @@ export default function CreateUserModal({ show, onClose, plants = [] }) {
                                     setData("area_id", e.target.value)
                                 }
                                 required
-                                disabled={!data.plant_id}
                             >
                                 <option value="">Selecciona un área</option>
-                                {data.plant_id &&
-                                    plants
-                                        .find(p => p.id === parseInt(data.plant_id))
-                                        ?.areas.map((area) => (
-                                            <option key={area.id} value={area.id}>
-                                                {area.name}
-                                            </option>
-                                        ))}
+                                {areas.map((area) => (
+                                    <option key={area.id} value={area.id}>
+                                        {area.name}
+                                    </option>
+                                ))}
                             </select>
                             <InputError
                                 message={errors.area_id}

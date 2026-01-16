@@ -18,10 +18,7 @@ class Plant extends Model
         'is_active' => 'boolean',
     ];
 
-    public function areas()
-    {
-        return $this->hasMany(Area::class);
-    }
+    // Relationship with Areas removed
 
     public function users()
     {

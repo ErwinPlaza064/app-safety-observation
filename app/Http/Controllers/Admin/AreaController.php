@@ -16,29 +16,19 @@ class AreaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'plant_id' => ['required', 'exists:plants,id'],
             'name' => [
                 'required',
                 'string',
-                'max:100',
-                Rule::unique('areas')->where(fn($query) => $query->where('plant_id', $request->plant_id))
+                'max:255',
+                Rule::unique('areas'),
             ],
-            'code' => ['nullable', 'string', 'max:20'],
-            'description' => ['nullable', 'string', 'max:500'],
-        ], [
-            'name.required' => 'El nombre del área es obligatorio.',
-            'name.unique' => 'Ya existe un área con ese nombre en esta planta.',
+            'code' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
         ]);
 
-        Area::create([
-            'plant_id' => $validated['plant_id'],
-            'name' => $validated['name'],
-            'code' => $validated['code'] ?? null,
-            'description' => $validated['description'] ?? null,
-            'is_active' => true,
-        ]);
+        Area::create($validated);
 
-        return Redirect::route('dashboard')->with('success', 'Área creada exitosamente.');
+        return redirect()->back()->with('success', 'Área creada exitosamente');
     }
 
     /**
@@ -47,30 +37,25 @@ class AreaController extends Controller
     public function update(Request $request, Area $area)
     {
         $validated = $request->validate([
-            'plant_id' => ['required', 'exists:plants,id'],
             'name' => [
                 'required',
                 'string',
-                'max:100',
-                Rule::unique('areas')->ignore($area->id)->where(fn($query) => $query->where('plant_id', $request->plant_id))
+                'max:255',
+                Rule::unique('areas')->ignore($area->id),
             ],
-            'code' => ['nullable', 'string', 'max:20'],
-            'description' => ['nullable', 'string', 'max:500'],
-            'is_active' => ['boolean'],
-        ], [
-            'name.required' => 'El nombre del área es obligatorio.',
-            'name.unique' => 'Ya existe un área con ese nombre en esta planta.',
+            'code' => 'nullable|string|max:50',
+            'description' => 'nullable|string',
+            'is_active' => 'boolean',
         ]);
 
         $area->update([
-            'plant_id' => $validated['plant_id'],
             'name' => $validated['name'],
             'code' => $validated['code'] ?? null,
             'description' => $validated['description'] ?? null,
             'is_active' => $request->boolean('is_active', true),
         ]);
 
-        return Redirect::route('dashboard')->with('success', 'Área actualizada exitosamente.');
+        return redirect()->back()->with('success', 'Área actualizada exitosamente');
     }
 
     /**

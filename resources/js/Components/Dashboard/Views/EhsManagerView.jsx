@@ -13,6 +13,7 @@ export default function EhsManagerView({
     user,
     stats,
     areas,
+    plants,
     filters,
     canViewAllPlants,
 }) {
@@ -81,7 +82,7 @@ export default function EhsManagerView({
 
     const [params, setParams] = useState({
         search: filters?.search || "",
-        area_id: filters?.area_id || "",
+        plant_id: filters?.plant_id || "",
     });
 
     const isFirstRender = useRef(true);
@@ -196,19 +197,19 @@ export default function EhsManagerView({
                         <p className="text-gray-500 dark:text-gray-400">
                             Estadísticas y Métricas de Seguridad
                         </p>
-                        {canViewAllPlants && areas && areas.length > 0 && (
+                        {canViewAllPlants && plants && plants.length > 0 && (
                             <div className="flex items-center gap-2 px-2 py-1 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg animate-fade-in">
                                 <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Planta:</span>
                                 <select
-                                    name="area_id"
-                                    value={params.area_id}
+                                    name="plant_id"
+                                    value={params.plant_id}
                                     onChange={handleFilterChange}
                                     className="bg-transparent border-none text-sm font-bold text-blue-700 dark:text-blue-400 focus:ring-0 py-0 pl-1 pr-8 cursor-pointer hover:text-blue-800 transition-colors"
                                 >
                                     <option value="" className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">Todas las Plantas</option>
-                                    {areas.map((area) => (
-                                        <option key={area.id} value={area.id} className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
-                                            {area.name}
+                                    {plants.map((plant) => (
+                                        <option key={plant.id} value={plant.id} className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                            {plant.name}
                                         </option>
                                     ))}
                                 </select>

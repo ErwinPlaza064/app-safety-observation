@@ -16,14 +16,13 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 
-export default function AreasManagement({ areas = [], plants = [] }) {
+export default function AreasManagement({ areas = [] }) {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingArea, setEditingArea] = useState(null);
     const [deletingArea, setDeletingArea] = useState(null);
 
     const { data, setData, post, put, processing, errors, reset } = useForm({
-        plant_id: "",
         name: "",
         code: "",
         description: "",
@@ -38,7 +37,6 @@ export default function AreasManagement({ areas = [], plants = [] }) {
     const openEditModal = (area) => {
         setEditingArea(area);
         setData({
-            plant_id: area.plant_id || "",
             name: area.name,
             code: area.code || "",
             description: area.description || "",
@@ -94,7 +92,7 @@ export default function AreasManagement({ areas = [], plants = [] }) {
         <div className="space-y-6">
             <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                 <h3 className="text-xl font-bold text-gray-800 dark:text-gray-100">
-                    Gestión de Áreas / Plantas
+                    Gestión de Áreas
                 </h3>
 
                 <PrimaryButton
@@ -114,7 +112,7 @@ export default function AreasManagement({ areas = [], plants = [] }) {
                             <thead className="bg-gray-50 dark:bg-gray-700">
                                 <tr>
                                     <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
-                                        Planta / Área
+                                        Área
                                     </th>
                                     <th className="px-6 py-3 text-xs font-medium tracking-wider text-left text-gray-500 uppercase dark:text-gray-300">
                                         Código
@@ -152,9 +150,6 @@ export default function AreasManagement({ areas = [], plants = [] }) {
                                                     <div className="ml-4">
                                                         <div className="text-sm font-medium text-gray-900 dark:text-gray-100">
                                                             {area.name}
-                                                        </div>
-                                                        <div className="text-xs text-gray-500 dark:text-gray-400">
-                                                            {area.plant?.name || "Sin Planta"}
                                                         </div>
                                                     </div>
                                                 </div>
@@ -275,29 +270,6 @@ export default function AreasManagement({ areas = [], plants = [] }) {
                     </h2>
 
                     <div className="mt-6 space-y-4">
-                        <div>
-                            <InputLabel
-                                htmlFor="plant_id"
-                                value="Planta *"
-                            />
-                            <select
-                                id="plant_id"
-                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-blue-500 focus:ring-blue-500"
-                                value={data.plant_id}
-                                onChange={(e) => setData("plant_id", e.target.value)}
-                                required
-                            >
-                                <option value="">Selecciona una planta</option>
-                                {plants.map(plant => (
-                                    <option key={plant.id} value={plant.id}>{plant.name}</option>
-                                ))}
-                            </select>
-                            <InputError
-                                message={errors.plant_id}
-                                className="mt-2"
-                            />
-                        </div>
-
                         <div>
                             <InputLabel
                                 htmlFor="name"

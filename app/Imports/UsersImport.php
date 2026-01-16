@@ -26,14 +26,19 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             return null;
         }
 
+        $plant = \App\Models\Plant::where('name', $row['planta'])->first();
+        $area = \App\Models\Area::where('name', $row['area'])->first();
+
         return new User([
             'name'              => $row['nombre'],
             'email'             => $row['email'],
             'employee_number'   => $row['no_empleado'],
-            'area'              => $row['area'],
+            'plant_id'          => $plant ? $plant->id : null,
+            'area_id'           => $area ? $area->id : null,
+            'area'              => $row['area'], // Legacy
             'position'          => $row['puesto'],
             'password'          => Hash::make($row['password'] ?? 'Wasion2025*'),
-            'email_verified_at' => now(), // Verificados por defecto ya que no hay correos activos
+            'email_verified_at' => now(),
             'is_ehs_manager'    => strtolower($row['es_gerente_ehs'] ?? '') === 'si',
             'is_ehs_coordinator' => strtolower($row['es_coordinador_ehs'] ?? '') === 'si',
         ]);
@@ -45,6 +50,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'nombre' => 'required|string|max:255',
             'email' => 'required|email|max:255',
             'no_empleado' => 'required|max:50',
+            'planta' => 'required|string|max:255',
             'area' => 'required|string|max:255',
             'puesto' => 'required|string|max:255',
         ];

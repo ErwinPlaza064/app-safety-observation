@@ -24,6 +24,7 @@ export default function Dashboard({
     employeeNotifications,
     employeeNotificationCount,
     canViewAllPlants,
+    plants,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -68,6 +69,7 @@ export default function Dashboard({
                         <SuperAdminView
                             stats={stats}
                             users={users}
+                            plants={plants}
                             areas={areas}
                             onUserClick={openEditModal}
                             onImportClick={() => setShowImportModal(true)}
@@ -80,6 +82,7 @@ export default function Dashboard({
                                 user={user}
                                 stats={ehsStats}
                                 areas={areas}
+                                plants={plants}
                                 filters={filters}
                                 canViewAllPlants={canViewAllPlants}
                             />
@@ -91,6 +94,7 @@ export default function Dashboard({
                             user={user}
                             userStats={userStats}
                             areas={areas}
+                            plants={plants}
                             categories={categories}
                             savedDraft={savedDraft}
                             myObservations={myObservations}
@@ -105,6 +109,7 @@ export default function Dashboard({
                 show={editingUser !== null}
                 user={editingUser}
                 currentUser={user}
+                plants={plants}
                 areas={areas}
                 onClose={closeEditModal}
                 onDelete={handleDeleteFromEdit}

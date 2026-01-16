@@ -11,18 +11,17 @@ import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
 export default function EditUserModal({
-    show,
-    user,
-    currentUser,
-    areas = [],
     onClose,
     onDelete,
+    plants = [],
+    areas = [],
 }) {
     const { data, setData, patch, processing, errors, reset } = useForm({
         name: "",
         email: "",
         employee_number: "",
-        area: "",
+        area_id: "",
+        plant_id: "",
         position: "",
         is_ehs_manager: false,
         is_ehs_coordinator: false,
@@ -38,7 +37,8 @@ export default function EditUserModal({
                 name: user.name || "",
                 email: user.email || "",
                 employee_number: user.employee_number || "",
-                area: user.area || "",
+                area_id: user.area_id || "",
+                plant_id: user.plant_id || "",
                 position: user.position || "",
                 is_ehs_manager: !!user.is_ehs_manager,
                 is_ehs_coordinator: !!user.is_ehs_coordinator,
@@ -183,37 +183,54 @@ export default function EditUserModal({
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
                         <div>
                             <InputLabel
-                                htmlFor="area"
+                                htmlFor="plant_id"
+                                value="Planta"
+                            />
+                            <select
+                                id="plant_id"
+                                className="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
+                                value={data.plant_id}
+                                onChange={(e) =>
+                                    setData("plant_id", e.target.value)
+                                }
+                                required
+                            >
+                                <option value="">Selecciona planta...</option>
+                                {plants.map((plant) => (
+                                    <option key={plant.id} value={plant.id}>
+                                        {plant.name}
+                                    </option>
+                                ))}
+                            </select>
+                            <InputError
+                                message={errors.plant_id}
+                                className="mt-2"
+                            />
+                        </div>
+                        <div>
+                            <InputLabel
+                                htmlFor="area_id"
                                 value="Área / Departamento"
                             />
                             <select
-                                id="area"
+                                id="area_id"
                                 className="block w-full mt-1 border-gray-300 rounded-md shadow-sm dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 focus:ring-indigo-500"
-                                value={data.area}
+                                value={data.area_id}
                                 onChange={(e) =>
-                                    setData("area", e.target.value)
+                                    setData("area_id", e.target.value)
                                 }
+                                required
                             >
                                 <option value="">Seleccionar área...</option>
-                                {/* Si el usuario tiene un área asignada que no está en la lista, mostrarla primero */}
-                                {data.area &&
-                                    areas &&
-                                    !areas.some(
-                                        (area) => area.name === data.area
-                                    ) && (
-                                        <option value={data.area}>
-                                            {data.area} (área actual)
-                                        </option>
-                                    )}
                                 {areas &&
                                     areas.map((area) => (
-                                        <option key={area.id} value={area.name}>
+                                        <option key={area.id} value={area.id}>
                                             {area.name}
                                         </option>
                                     ))}
                             </select>
                             <InputError
-                                message={errors.area}
+                                message={errors.area_id}
                                 className="mt-2"
                             />
                         </div>

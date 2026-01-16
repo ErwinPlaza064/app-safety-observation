@@ -70,8 +70,8 @@ class DashboardController extends Controller
             $data['filters'] = request()->only(['search', 'plant_id', 'area_id', 'role', 'status']);
 
             // Datos para filtros y gestión
-            $data['plants'] = Plant::with('areas')->orderBy('name')->get();
-            $data['areas'] = Area::with('plant')->withCount('observations')->orderBy('name')->get();
+            $data['plants'] = Plant::all()->sortBy('name');
+            $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
         }
 
@@ -129,28 +129,22 @@ class DashboardController extends Controller
         // 3. LÓGICA PARA EHS MANAGER (OPTIMIZADO - Sin perder funcionalidad)
         // ==========================================
         if ($user->is_ehs_manager && !$user->is_super_admin) {
+            $canViewAllPlants = $user->is_ehs_coordinator;
 
-            // Verificar si el usuario puede ver todas las plantas (Coordinador o Admin)
-            $canViewAllPlants = $user->is_ehs_coordinator || $user->is_super_admin;
-
-            // Si puede ver todas las plantas, mostrar todas; si no, solo su planta
+            // Enviar plantas según permisos
             if ($canViewAllPlants) {
-                $data['areas'] = Area::where('is_active', true)->get();
+                $data['plants'] = Plant::all();
             } else {
-                // Solo mostrar su propia planta
-                $userPlant = Area::where('name', $user->area)->first();
-                $data['areas'] = $userPlant ? collect([$userPlant]) : collect([]);
+                $data['plants'] = Plant::where('id', $user->plant_id)->get();
             }
 
-            $userPlant = Area::where('name', $user->area)->first();
-            $defaultAreaId = $userPlant ? $userPlant->id : null;
+            // Forzar plant_id si no tiene permisos globales
+            $currentPlantId = $canViewAllPlants
+                ? request('plant_id', $user->plant_id)
+                : $user->plant_id;
 
-            // Si el usuario NO puede ver todas las plantas, forzar su área por defecto
-            if (!$canViewAllPlants) {
-                $currentAreaId = $defaultAreaId;
-            } else {
-                $currentAreaId = request()->has('area_id') ? request('area_id') : $defaultAreaId;
-            }
+            // Mantener areas globales para otros usos si es necesario
+            $data['areas'] = Area::where('is_active', true)->get();
 
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [
@@ -177,8 +171,8 @@ class DashboardController extends Controller
                 });
             }
 
-            if ($currentAreaId) {
-                $query->where('area_id', $currentAreaId);
+            if ($currentPlantId) {
+                $query->where('plant_id', $currentPlantId);
             }
 
             $recentObservations = $query
@@ -186,16 +180,11 @@ class DashboardController extends Controller
                 ->take(100)
                 ->get();
 
-            $applyFilters = function ($q) use ($currentAreaId, $canViewAllPlants, $defaultAreaId) {
+            $applyFilters = function ($q) use ($currentPlantId) {
                 $q->submitted();
-
-                // Si no puede ver todas las plantas, siempre filtrar por su área
-                if (!$canViewAllPlants && $defaultAreaId) {
-                    $q->where('area_id', $defaultAreaId);
-                } elseif ($currentAreaId) {
-                    $q->where('area_id', $currentAreaId);
+                if ($currentPlantId) {
+                    $q->where('plant_id', $currentPlantId);
                 }
-
                 return $q;
             };
 
@@ -265,30 +254,30 @@ class DashboardController extends Controller
                 ->count();
 
             // Función auxiliar para obtener reporteros por periodo - OPTIMIZADA: No cargar lista completa por defecto
-            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $defaultAreaId) {
+            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $currentPlantId) {
                 $query = User::where('is_ehs_manager', false)
                     ->where('is_super_admin', false)
-                    ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
+                    ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $currentPlantId) {
                         $q->submitted();
                         if ($days) {
                             $q->where('observations.created_at', '>=', now()->subDays($days));
                         }
-                        if (!$canViewAllPlants && $defaultAreaId) {
-                            $q->where('observations.area_id', $defaultAreaId);
-                        } elseif (request('area_id')) {
-                            $q->where('observations.area_id', request('area_id'));
+                        if (!$canViewAllPlants && $currentPlantId) {
+                            $q->where('observations.plant_id', $currentPlantId);
+                        } elseif (request('plant_id')) {
+                            $q->where('observations.plant_id', request('plant_id'));
                         }
                     });
 
-                return $query->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $defaultAreaId) {
+                return $query->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $currentPlantId) {
                     $q->submitted();
                     if ($days) {
                         $q->where('observations.created_at', '>=', now()->subDays($days));
                     }
-                    if (!$canViewAllPlants && $defaultAreaId) {
-                        $q->where('observations.area_id', $defaultAreaId);
-                    } elseif (request('area_id')) {
-                        $q->where('observations.area_id', request('area_id'));
+                    if (!$canViewAllPlants && $currentPlantId) {
+                        $q->where('observations.plant_id', $currentPlantId);
+                    } elseif (request('plant_id')) {
+                        $q->where('observations.plant_id', request('plant_id'));
                     }
                 }])
                     // Solo cargar los últimos 3 para el preview si es necesario, o nada para ahorrar datos
@@ -411,10 +400,10 @@ class DashboardController extends Controller
             $data['canViewAllPlants'] = $canViewAllPlants;
 
             $data['filters'] = request()->only(['search']);
-            $data['filters']['area_id'] = $currentAreaId;
+            $data['filters']['plant_id'] = $currentPlantId;
 
-            $data['managerPlantName'] = $currentAreaId
-                ? Area::find($currentAreaId)->name
+            $data['managerPlantName'] = $currentPlantId
+                ? Plant::find($currentPlantId)->name
                 : 'General';
         }
         return Inertia::render('Dashboard', $data);

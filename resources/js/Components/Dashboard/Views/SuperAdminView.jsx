@@ -97,7 +97,7 @@ export default function SuperAdminView({
                                 onClick={() => setActiveTab(tab.id)}
                                 className={`py-4 px-1 border-b-2 font-medium text-sm transition-colors flex items-center gap-2 ${
                                     activeTab === tab.id
-                                        ? "border-blue-500 text-blue-600 dark:text-blue-400"
+                                        ? "border-[#1e3a8a] text-[#1e3a8a] dark:border-blue-400 dark:text-blue-400"
                                         : "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300"
                                 }`}
                             >
@@ -207,17 +207,13 @@ export default function SuperAdminView({
                                     value={params.area_id}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
-                                    disabled={!params.plant_id}
                                 >
                                     <option value="">Todas las Áreas</option>
-                                    {params.plant_id &&
-                                        plants
-                                            .find(p => p.id === parseInt(params.plant_id))
-                                            ?.areas.map((area) => (
-                                                <option key={area.id} value={area.id}>
-                                                    {area.name}
-                                                </option>
-                                            ))}
+                                    {areas.map((area) => (
+                                        <option key={area.id} value={area.id}>
+                                            {area.name}
+                                        </option>
+                                    ))}
                                 </select>
 
                                 <select
@@ -260,7 +256,7 @@ export default function SuperAdminView({
                 <div className="space-y-10">
                     <PlantsManagement plants={plants} />
                     <hr className="border-gray-200 dark:border-gray-700" />
-                    <AreasManagement areas={areas} plants={plants} />
+                    <AreasManagement areas={areas} />
                 </div>
             )}
 
@@ -268,6 +264,7 @@ export default function SuperAdminView({
                 show={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
                 plants={plants}
+                areas={areas}
             />
         </div>
     );
