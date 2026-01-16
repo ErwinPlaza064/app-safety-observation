@@ -350,7 +350,7 @@ export default function DrillDownModal({
                                                         Tipo
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
-                                                        Persona Observada
+                                                        Persona / Condición
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
                                                         Observador
@@ -373,7 +373,7 @@ export default function DrillDownModal({
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                                {data.map((obs) => {
+                                                {displayData.map((obs) => {
                                                     const isCondition = obs.observation_type === "condicion_insegura";
                                                     const getTypeInfo = (obsType) => {
                                                         switch (obsType) {
