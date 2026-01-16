@@ -32,6 +32,8 @@ export default function EditUserModal({
     });
 
     const [legacyWarning, setLegacyWarning] = useState(false);
+    const [suspensionReason, setSuspensionReason] = useState("");
+    const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
 
     useEffect(() => {
         if (user) {
