@@ -390,17 +390,17 @@ class DashboardController extends Controller
             $bellCount = $totalAll + $closed;
 
             if ($user->email === 'ehsmanager@wasion.com') {
-                $planta1 = Area::where('name', 'Planta 1')->first();
+                $planta1 = Plant::where('name', 'Planta 1')->first();
                 if ($planta1) {
                     $planta1Observations = Observation::submitted()
-                        ->where('area_id', $planta1->id)
+                        ->where('plant_id', $planta1->id)
                         ->with($baseRelations)
                         ->latest()
                         ->take(20)
                         ->get();
 
-                    $planta1Total = Observation::submitted()->where('area_id', $planta1->id)->count();
-                    $planta1Closed = Observation::submitted()->where('area_id', $planta1->id)->where('status', 'cerrada')->count();
+                    $planta1Total = Observation::submitted()->where('plant_id', $planta1->id)->count();
+                    $planta1Closed = Observation::submitted()->where('plant_id', $planta1->id)->where('status', 'cerrada')->count();
 
                     $bellObservations = $planta1Observations;
                     $bellCount = $planta1Total + $planta1Closed;
