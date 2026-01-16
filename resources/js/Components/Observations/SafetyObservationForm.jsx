@@ -171,7 +171,9 @@ export default function SafetyObservationForm({
                 newErrors.observation_type = "Debe seleccionar un tipo de observación";
             if (!formData.plant_id)
                 newErrors.plant_id = "Debe seleccionar una planta";
-            if (!formData.area_id)
+            
+            // Área es obligatoria EXCEPTO para condición insegura
+            if (formData.observation_type !== "condicion_insegura" && !formData.area_id)
                 newErrors.area_id = "Debe seleccionar un área";
         }
 
