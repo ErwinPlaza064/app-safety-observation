@@ -124,7 +124,9 @@ export default function Show({ auth, observation }) {
                                         observation.observed_person) && (
                                         <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                             <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-                                                Persona Observada
+                                                {observation.observation_type === "condicion_insegura"
+                                                    ? "Detalle de la Condición"
+                                                    : "Persona Observada"}
                                             </h3>
                                             <div className="space-y-3">
                                                 {observation.payroll_number && (
@@ -171,7 +173,9 @@ export default function Show({ auth, observation }) {
                                                         </svg>
                                                         <div>
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                                Nombre/Título:
+                                                                {observation.observation_type === "condicion_insegura"
+                                                                    ? "Título:"
+                                                                    : "Nombre/Título:"}
                                                             </span>
                                                             <span className="ml-2 font-medium">
                                                                 {
@@ -233,28 +237,32 @@ export default function Show({ auth, observation }) {
                                                     {observation.plant?.name || "N/A"}
                                                 </p>
                                             </div>
-                                            <hr className="border-gray-100 dark:border-gray-700" />
-                                            <div>
-                                                <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-                                                    Área
-                                                </h3>
-                                                <p className="flex items-center gap-1 font-semibold text-gray-900 dark:text-gray-100 uppercase">
-                                                    <svg
-                                                        className="w-4 h-4 text-blue-500 dark:text-blue-400"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        stroke="currentColor"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            strokeWidth="2"
-                                                            d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
-                                                        />
-                                                    </svg>
-                                                    {observation.area?.name || "N/A"}
-                                                </p>
-                                            </div>
+                                            {observation.observation_type !== "condicion_insegura" && (
+                                                <>
+                                                    <hr className="border-gray-100 dark:border-gray-700" />
+                                                    <div>
+                                                        <h3 className="mb-1 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
+                                                            Área
+                                                        </h3>
+                                                        <p className="flex items-center gap-1 font-semibold text-gray-900 dark:text-gray-100 uppercase">
+                                                            <svg
+                                                                className="w-4 h-4 text-blue-500 dark:text-blue-400"
+                                                                fill="none"
+                                                                viewBox="0 0 24 24"
+                                                                stroke="currentColor"
+                                                            >
+                                                                <path
+                                                                    strokeLinecap="round"
+                                                                    strokeLinejoin="round"
+                                                                    strokeWidth="2"
+                                                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                                                />
+                                                            </svg>
+                                                            {observation.area?.name || "N/A"}
+                                                        </p>
+                                                    </div>
+                                                </>
+                                            )}
                                         </div>
                                         <hr className="border-gray-100 dark:border-gray-700" />
                                         <div>

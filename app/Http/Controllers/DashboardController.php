@@ -89,11 +89,20 @@ class DashboardController extends Controller
                 'total'       => Observation::where('user_id', $user->id)->where('is_draft', false)->count(),
             ];
 
+            $baseRelations = [
+                'user:id,name,email,area',
+                'plant:id,name',
+                'area:id,name',
+                'closedByUser:id,name',
+                'categories:id,name',
+                'images:id,observation_id,path'
+            ];
+
             // Notas de cierre para notificaciones locales (badge "Listo")
             $data['employeeNotifications'] = Observation::where('user_id', $user->id)
                 ->where('status', 'en_progreso')
                 ->where('is_draft', false)
-                ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
+                ->with($baseRelations)
                 ->latest()
                 ->get();
 
@@ -103,14 +112,14 @@ class DashboardController extends Controller
                 $data['filteredReports'] = Observation::where('user_id', $user->id)
                     ->where('is_draft', false)
                     ->where('status', request('filter_status'))
-                    ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
+                    ->with($baseRelations)
                     ->latest()
                     ->get();
             }
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                 ->where('is_draft', false)
-                ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
+                ->with($baseRelations)
                 ->latest('observation_date')
                 ->take(10)
                 ->get();
@@ -350,6 +359,7 @@ class DashboardController extends Controller
                 if ($planta1) {
                     $planta1Observations = Observation::submitted()
                         ->where('area_id', $planta1->id)
+                        ->with($baseRelations)
                         ->latest()
                         ->take(20)
                         ->get();

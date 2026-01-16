@@ -1,4 +1,22 @@
-export default function MyReportsTable({ observations, onRowClick, observedPersonLabel = "Observada" }) {
+export default function MyReportsTable({ observations, onRowClick, observedPersonLabel = "Observada", showTypeColumn = false }) {
+    const getTypeLabel = (type) => {
+        switch (type) {
+            case "acto_inseguro":
+                return { label: "Acto Inseguro", color: "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300" };
+            case "condicion_insegura":
+                return { label: "Condición", color: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300" };
+            case "acto_seguro":
+                return { label: "Acto Seguro", color: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300" };
+            default:
+                return { label: "—", color: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400" };
+        }
+    };
+
+    // Check if any observation is a condition to determine if we should show the Ubicación column
+    const hasConditions = observations?.some(obs => obs.observation_type === "condicion_insegura");
+    const hasMixedTypes = observations?.some(obs => obs.observation_type === "condicion_insegura") && 
+                          observations?.some(obs => obs.observation_type !== "condicion_insegura");
+
     if (!observations || observations.length === 0) {
         return (
             <div className="flex items-center justify-center h-24 text-gray-400 dark:text-gray-500 border-2 border-dashed dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
@@ -9,11 +27,15 @@ export default function MyReportsTable({ observations, onRowClick, observedPerso
         );
     }
 
+    // Determine if we should show type column (auto-detect if mixed types)
+    const shouldShowType = showTypeColumn || hasMixedTypes;
+
     return (
         <div className="overflow-x-auto border border-gray-100 dark:border-gray-700 rounded-lg">
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                     <tr>
+                        {shouldShowType && <th className="px-4 py-3">Tipo</th>}
                         <th className="px-4 py-3">{observedPersonLabel}</th>
                         <th className="px-4 py-3">Observador</th>
                         <th className="px-4 py-3">Descripcción</th>
@@ -25,6 +47,9 @@ export default function MyReportsTable({ observations, onRowClick, observedPerso
                 <tbody>
                     {observations.map((obs) => {
                         const isReadyToClose = obs.status === "en_progreso";
+                        const isCondition = obs.observation_type === "condicion_insegura";
+                        const typeInfo = getTypeLabel(obs.observation_type);
+                        
                         return (
                             <tr
                                 key={obs.id}
@@ -35,6 +60,13 @@ export default function MyReportsTable({ observations, onRowClick, observedPerso
                                         : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                 }`}
                             >
+                                {shouldShowType && (
+                                    <td className="px-4 py-3">
+                                        <span className={`px-2 py-1 rounded-full text-xs font-semibold whitespace-nowrap ${typeInfo.color}`}>
+                                            {typeInfo.label}
+                                        </span>
+                                    </td>
+                                )}
                                 <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">
                                     {obs.observed_person || "N/A"}
                                 </td>
@@ -70,7 +102,7 @@ export default function MyReportsTable({ observations, onRowClick, observedPerso
                                 </td>
                                 {observedPersonLabel !== "Condición" && (
                                     <td className="px-4 py-3 dark:text-gray-300">
-                                        {obs.area?.name || "N/A"}
+                                        {isCondition ? "—" : (obs.area?.name || "N/A")}
                                     </td>
                                 )}
                                 <td className="px-4 py-3 dark:text-gray-300">

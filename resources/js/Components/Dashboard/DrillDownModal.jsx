@@ -279,6 +279,9 @@ export default function DrillDownModal({
                                                         Folio
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                        Tipo
+                                                    </th>
+                                                    <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
                                                         Persona Observada
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
@@ -302,7 +305,23 @@ export default function DrillDownModal({
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                                {data.map((obs) => (
+                                                {data.map((obs) => {
+                                                    const isCondition = obs.observation_type === "condicion_insegura";
+                                                    const getTypeInfo = (obsType) => {
+                                                        switch (obsType) {
+                                                            case "acto_inseguro":
+                                                                return { label: "Acto Inseguro", color: "bg-orange-100 dark:bg-orange-900/40 text-orange-800 dark:text-orange-300" };
+                                                            case "condicion_insegura":
+                                                                return { label: "Condición", color: "bg-red-100 dark:bg-red-900/40 text-red-800 dark:text-red-300" };
+                                                            case "acto_seguro":
+                                                                return { label: "Acto Seguro", color: "bg-green-100 dark:bg-green-900/40 text-green-800 dark:text-green-300" };
+                                                            default:
+                                                                return { label: "—", color: "bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-400" };
+                                                        }
+                                                    };
+                                                    const typeInfo = getTypeInfo(obs.observation_type);
+                                                    
+                                                    return (
                                                     <tr
                                                         key={obs.id}
                                                         onClick={() =>
@@ -322,6 +341,11 @@ export default function DrillDownModal({
                                                         <td className="px-4 py-3 font-bold text-blue-600 dark:text-blue-400">
                                                             #{obs.id}
                                                         </td>
+                                                        <td className="px-4 py-3">
+                                                            <span className={`inline-flex px-2 py-0.5 text-xs font-semibold leading-5 rounded-full whitespace-nowrap ${typeInfo.color}`}>
+                                                                {typeInfo.label}
+                                                            </span>
+                                                        </td>
                                                         <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100 whitespace-nowrap">
                                                             {obs.observed_person ||
                                                                 "N/A"}
@@ -339,7 +363,7 @@ export default function DrillDownModal({
                                                             {obs.plant?.name || "N/A"}
                                                         </td>
                                                         <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                                            {obs.area?.name || "N/A"}
+                                                            {isCondition ? "—" : (obs.area?.name || "N/A")}
                                                         </td>
                                                         <td className="px-4 py-3 dark:text-gray-300">
                                                             <p
@@ -371,7 +395,8 @@ export default function DrillDownModal({
                                                             )}
                                                         </td>
                                                     </tr>
-                                                ))}
+                                                    );
+                                                })}
                                             </tbody>
                                         </>
                                     )}
