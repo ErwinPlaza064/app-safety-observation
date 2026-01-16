@@ -162,7 +162,7 @@ export default function AuthenticatedLayout({
                                     </Dropdown.Content>
                                 </Dropdown>
                             </div>
-                        {!user.is_super_admin && (
+                        {user.is_ehs_manager && (
                             <div>
                                 <NotificationBell
                                     user={user}
@@ -174,7 +174,7 @@ export default function AuthenticatedLayout({
                     </div>
 
                     <div className="flex items-center -me-2 sm:hidden">
-                        {!user.is_super_admin && (
+                        {user.is_ehs_manager && (
                             <div>
                                 <NotificationBell
                                     user={user}
