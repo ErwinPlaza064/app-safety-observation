@@ -39,7 +39,7 @@ export default function AreaTypeStep({
 
             <div className="mb-6">
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Área / Departamento
+                    Área
                     <span className="text-red-500">*</span>
                 </label>
                 <select
