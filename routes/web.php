@@ -1,11 +1,12 @@
 <?php
 
+use App\Http\Controllers\Admin\AreaController;
+use App\Http\Controllers\Admin\PlantController;
+use App\Http\Controllers\Admin\UserManagementController;
 use App\Http\Controllers\DashboardController;
-use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ParticipationController;
-use App\Http\Controllers\Admin\UserManagementController;
-use App\Http\Controllers\Admin\AreaController;
+use App\Http\Controllers\ProfileController;
 use App\Services\MicrosoftGraphMailer;
 use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Mail;
@@ -193,7 +194,7 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
     // --- ADMINISTRACIÓN DE USUARIOS (Super Admin) ---
     Route::middleware(['verified'])->prefix('admin')->name('admin.')->group(function () {
-        Route::post('/users', [App\Http\Controllers\Admin\UserManagementController::class, 'store'])->name('users.store');
+        Route::post('/users', [UserManagementController::class, 'store'])->name('users.store');
         Route::patch('/users/{user}', [UserManagementController::class, 'update'])->name('users.update');
         Route::delete('/users/{user}', [UserManagementController::class, 'destroy'])->name('users.destroy');
         Route::post('/users/{user}/resend-verification', [UserManagementController::class, 'resendVerification'])
@@ -204,6 +205,14 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             ->name('users.toggle-suspension');
         Route::post('/users/import', [UserManagementController::class, 'import'])->name('users.import');
         Route::get('/users/template', [UserManagementController::class, 'downloadTemplate'])->name('users.template');
+    });
+
+    // --- ADMINISTRACIÓN DE PLANTAS (Super Admin) ---
+    Route::middleware(['verified'])->prefix('admin/plants')->name('admin.plants.')->group(function () {
+        Route::post('/', [PlantController::class, 'store'])->name('store');
+        Route::put('/{plant}', [PlantController::class, 'update'])->name('update');
+        Route::post('/{plant}/toggle-status', [PlantController::class, 'toggleStatus'])->name('toggle-status');
+        Route::delete('/{plant}', [PlantController::class, 'destroy'])->name('destroy');
     });
 
     // --- ADMINISTRACIÓN DE ÁREAS (Super Admin) ---

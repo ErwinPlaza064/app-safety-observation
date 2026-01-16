@@ -11,6 +11,7 @@ class Observation extends Model
 
     protected $fillable = [
         'user_id',
+        'plant_id',
         'area_id',
         'observation_date',
         'payroll_number',
@@ -35,6 +36,11 @@ class Observation extends Model
     public function user()
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
     }
 
     public function area()

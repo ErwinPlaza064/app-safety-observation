@@ -11,21 +11,59 @@ export default function AreaTypeStep({
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="mb-6">
                 <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                    Área / Planta
+                    Planta
+                    <span className="text-red-500">*</span>
+                </label>
+                <select
+                    value={formData.plant_id}
+                    onChange={(e) => {
+                        onChange("plant_id", parseInt(e.target.value));
+                        onChange("area_id", ""); // Reset area when plant changes
+                    }}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
+                >
+                    <option value="">Selecciona una planta</option>
+                    {plants.map((p) => (
+                        <option key={p.id} value={p.id}>
+                            {p.name}
+                        </option>
+                    ))}
+                </select>
+                {errors.plant_id && (
+                    <p className="mt-1 text-sm text-red-600">
+                        {errors.plant_id}
+                    </p>
+                )}
+            </div>
+
+            <div className="mb-6">
+                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    Área / Departamento
+                    <span className="text-red-500">*</span>
                 </label>
                 <select
                     value={formData.area_id}
                     onChange={(e) =>
                         onChange("area_id", parseInt(e.target.value))
                     }
-                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200"
+                    disabled={!formData.plant_id}
+                    className="w-full p-2 border border-gray-300 dark:border-gray-600 rounded-lg focus:ring-2 focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none transition-colors dark:bg-gray-700 dark:text-gray-200 disabled:opacity-50 disabled:cursor-not-allowed"
                 >
-                    {areas.map((a) => (
-                        <option key={a.id} value={a.id}>
-                            {a.name}
-                        </option>
-                    ))}
+                    <option value="">Selecciona un área</option>
+                    {formData.plant_id && 
+                        plants.find(p => p.id === formData.plant_id)
+                        ?.areas.map((a) => (
+                            <option key={a.id} value={a.id}>
+                                {a.name}
+                            </option>
+                        ))
+                    }
                 </select>
+                {errors.area_id && (
+                    <p className="mt-1 text-sm text-red-600">
+                        {errors.area_id}
+                    </p>
+                )}
             </div>
 
             <div className="mb-6">

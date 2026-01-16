@@ -6,23 +6,25 @@ import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
 import AreasManagement from "@/Components/Dashboard/AreasManagement";
+import PlantsManagement from "@/Components/Dashboard/PlantsManagement";
 import PrimaryButton from "@/Components/PrimaryButton";
 
 export default function SuperAdminView({
     stats,
     users,
+    plants = [],
     areas = [],
     onUserClick,
     onImportClick,
     filters,
-    filterAreas,
 }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [activeTab, setActiveTab] = useState("users");
 
     const [params, setParams] = useState({
         search: filters?.search || "",
-        area: filters?.area || "",
+        plant_id: filters?.plant_id || "",
+        area_id: filters?.area_id || "",
         role: filters?.role || "",
         status: filters?.status || "",
     });
@@ -58,7 +60,7 @@ export default function SuperAdminView({
 
         switch (type) {
             case "all":
-                newParams = { search: "", area: "", role: "", status: "" };
+                newParams = { search: "", plant_id: "", area_id: "", role: "", status: "" };
                 break;
             case "verified":
                 newParams = { ...params, status: "verified", role: "" };
@@ -187,18 +189,35 @@ export default function SuperAdminView({
 
                             <div className="flex flex-col w-full gap-2 sm:flex-row md:w-auto">
                                 <select
-                                    name="area"
-                                    value={params.area}
+                                    name="plant_id"
+                                    value={params.plant_id}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
                                 >
+                                    <option value="">Todas las Plantas</option>
+                                    {plants.map((plant) => (
+                                        <option key={plant.id} value={plant.id}>
+                                            {plant.name}
+                                        </option>
+                                    ))}
+                                </select>
+
+                                <select
+                                    name="area_id"
+                                    value={params.area_id}
+                                    onChange={handleChange}
+                                    className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
+                                    disabled={!params.plant_id}
+                                >
                                     <option value="">Todas las Áreas</option>
-                                    {filterAreas &&
-                                        filterAreas.map((area, i) => (
-                                            <option key={i} value={area}>
-                                                {area}
-                                            </option>
-                                        ))}
+                                    {params.plant_id &&
+                                        plants
+                                            .find(p => p.id === parseInt(params.plant_id))
+                                            ?.areas.map((area) => (
+                                                <option key={area.id} value={area.id}>
+                                                    {area.name}
+                                                </option>
+                                            ))}
                                 </select>
 
                                 <select
@@ -237,11 +256,18 @@ export default function SuperAdminView({
                 </>
             )}
 
-            {activeTab === "areas" && <AreasManagement areas={areas} />}
+            {activeTab === "areas" && (
+                <div className="space-y-10">
+                    <PlantsManagement plants={plants} />
+                    <hr className="border-gray-200 dark:border-gray-700" />
+                    <AreasManagement areas={areas} plants={plants} />
+                </div>
+            )}
 
             <CreateUserModal
                 show={showCreateModal}
                 onClose={() => setShowCreateModal(false)}
+                plants={plants}
             />
         </div>
     );

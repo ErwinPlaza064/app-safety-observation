@@ -7,12 +7,14 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
-export default function CreateUserModal({ show, onClose }) {
+export default function CreateUserModal({ show, onClose, plants = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",
         employee_number: "",
-        area: "",
+        plant_id: "",
+        area_id: "",
+        area: "", // Mantener para compatibilidad si el backend aún lo requiere
         position: "",
         password: "",
         is_ehs_manager: false,
@@ -117,23 +119,65 @@ export default function CreateUserModal({ show, onClose }) {
                     <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                         <div>
                             <InputLabel
-                                htmlFor="new_area"
-                                value="Área / Departamento"
+                                htmlFor="new_plant"
+                                value="Planta"
                             />
-                            <TextInput
-                                id="new_area"
-                                className="block w-full mt-1"
-                                value={data.area}
-                                onChange={(e) =>
-                                    setData("area", e.target.value)
-                                }
+                            <select
+                                id="new_plant"
+                                className="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                value={data.plant_id}
+                                onChange={(e) => {
+                                    setData({
+                                        ...data,
+                                        plant_id: e.target.value,
+                                        area_id: "", // Reset area when plant changes
+                                    });
+                                }}
                                 required
-                            />
+                            >
+                                <option value="">Selecciona una planta</option>
+                                {plants.map((plant) => (
+                                    <option key={plant.id} value={plant.id}>
+                                        {plant.name}
+                                    </option>
+                                ))}
+                            </select>
                             <InputError
-                                message={errors.area}
+                                message={errors.plant_id}
                                 className="mt-2"
                             />
                         </div>
+                        <div>
+                            <InputLabel
+                                htmlFor="new_area"
+                                value="Área / Departamento"
+                            />
+                            <select
+                                id="new_area"
+                                className="block w-full mt-1 border-gray-300 dark:border-gray-700 dark:bg-gray-900 dark:text-gray-300 focus:border-indigo-500 dark:focus:border-indigo-600 focus:ring-indigo-500 dark:focus:ring-indigo-600 rounded-md shadow-sm"
+                                value={data.area_id}
+                                onChange={(e) =>
+                                    setData("area_id", e.target.value)
+                                }
+                                required
+                                disabled={!data.plant_id}
+                            >
+                                <option value="">Selecciona un área</option>
+                                {data.plant_id &&
+                                    plants
+                                        .find(p => p.id === parseInt(data.plant_id))
+                                        ?.areas.map((area) => (
+                                            <option key={area.id} value={area.id}>
+                                                {area.name}
+                                            </option>
+                                        ))}
+                            </select>
+                            <InputError
+                                message={errors.area_id}
+                                className="mt-2"
+                            />
+                        </div>
+
                         <div>
                             <InputLabel
                                 htmlFor="new_position"

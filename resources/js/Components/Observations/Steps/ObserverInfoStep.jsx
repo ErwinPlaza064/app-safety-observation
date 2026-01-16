@@ -109,18 +109,26 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                         )}
                     </div>
                 )}
-                <div className={formData.observation_type === "condicion_insegura" ? "md:col-span-2" : ""}>
+                <div
+                    className={
+                        formData.observation_type === "condicion_insegura"
+                            ? "md:col-span-2"
+                            : ""
+                    }
+                >
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        {formData.observation_type === "condicion_insegura" 
-                            ? "Título de la Condición o Ubicación específica" 
-                            : "Persona Observada o Título de la Situación"}{" "}
+                        {formData.observation_type === "condicion_insegura"
+                            ? "Título de la Condición o Ubicación específica"
+                            : "Persona Observada"}{" "}
                         <span className="text-red-500">*</span>
                     </label>
                     <input
                         type="text"
-                        placeholder={formData.observation_type === "condicion_insegura" 
-                            ? "Ej: Cable expuesto en pasillo C / Fuga de aceite en máquina 5" 
-                            : "Nombre de la persona observada o Título de la situación"}
+                        placeholder={
+                            formData.observation_type === "condicion_insegura"
+                                ? "Ej: Cable expuesto en pasillo C / Fuga de aceite en máquina 5"
+                                : "Nombre de la persona observada"
+                        }
                         value={formData.observed_person}
                         onChange={(e) =>
                             onChange("observed_person", e.target.value)

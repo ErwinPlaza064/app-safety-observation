@@ -10,6 +10,7 @@ class Area extends Model
     use HasFactory;
 
     protected $fillable = [
+        'plant_id',
         'name',
         'code',
         'description',
@@ -26,6 +27,11 @@ class Area extends Model
     public function scopeActive($query)
     {
         return $query->where('is_active', true);
+    }
+
+    public function plant()
+    {
+        return $this->belongsTo(\App\Models\Plant::class);
     }
 
     public function observations()

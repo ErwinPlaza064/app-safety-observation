@@ -20,18 +20,23 @@ class UserManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', 'unique:users'],
             'employee_number' => ['required', 'string', 'max:50', 'unique:users'],
-            'area' => ['required', 'string', 'max:255'],
+            'plant_id' => ['required', 'exists:plants,id'],
+            'area_id' => ['required', 'exists:areas,id'],
             'position' => ['required', 'string', 'max:255'],
             'password' => ['required', 'string', 'min:8'],
             'is_ehs_manager' => ['boolean'],
             'is_ehs_coordinator' => ['boolean'],
         ]);
 
+        $areaName = \App\Models\Area::find($validated['area_id'])->name;
+
         User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'employee_number' => $validated['employee_number'],
-            'area' => $validated['area'],
+            'plant_id' => $validated['plant_id'],
+            'area_id' => $validated['area_id'],
+            'area' => $areaName, // Mantener por compatibilidad legacy
             'position' => $validated['position'],
             'password' => Hash::make($validated['password']),
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
@@ -48,18 +53,23 @@ class UserManagementController extends Controller
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
             'employee_number' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'area' => ['required', 'string', 'max:255'],
+            'plant_id' => ['required', 'exists:plants,id'],
+            'area_id' => ['required', 'exists:areas,id'],
             'position' => ['required', 'string', 'max:255'],
             'is_ehs_manager' => ['boolean'],
             'is_ehs_coordinator' => ['boolean'],
             'password' => ['nullable', 'string', 'min:8'],
         ]);
 
+        $areaName = \App\Models\Area::find($validated['area_id'])->name;
+
         $updateData = [
             'name' => $validated['name'],
             'email' => $validated['email'],
             'employee_number' => $validated['employee_number'],
-            'area' => $validated['area'],
+            'plant_id' => $validated['plant_id'],
+            'area_id' => $validated['area_id'],
+            'area' => $areaName, // Mantener legacy
             'position' => $validated['position'],
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
             'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),

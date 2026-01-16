@@ -22,6 +22,7 @@ class ObservationController extends Controller
             'observation_date' => 'required|date',
             'payroll_number' => 'required_unless:observation_type,condicion_insegura',
             'observed_person' => 'required|string|max:255',
+            'plant_id' => 'required|exists:plants,id',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
             'category_ids' => 'required_unless:observation_type,condicion_insegura|array',
@@ -47,6 +48,7 @@ class ObservationController extends Controller
                 'observation_date' => $validated['observation_date'],
                 'payroll_number' => $validated['payroll_number'] ?? null,
                 'observed_person' => $validated['observed_person'],
+                'plant_id' => $validated['plant_id'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
                 'description' => $validated['description'],
@@ -61,6 +63,7 @@ class ObservationController extends Controller
                 'observation_date' => $validated['observation_date'],
                 'payroll_number' => $validated['payroll_number'] ?? null,
                 'observed_person' => $validated['observed_person'],
+                'plant_id' => $validated['plant_id'],
                 'area_id' => $validated['area_id'],
                 'observation_type' => $validated['observation_type'],
                 'description' => $validated['description'],
@@ -107,6 +110,7 @@ class ObservationController extends Controller
             'observation_date' => 'required|date',
             'payroll_number' => 'required_unless:observation_type,condicion_insegura',
             'observed_person' => 'required|string|max:255',
+            'plant_id' => 'required|exists:plants,id',
             'area_id' => 'required|exists:areas,id',
             'observation_type' => 'required|in:acto_inseguro,condicion_insegura,acto_seguro',
             'category_ids' => 'required_unless:observation_type,condicion_insegura|array',
@@ -125,6 +129,7 @@ class ObservationController extends Controller
             'observation_date' => $validated['observation_date'],
             'payroll_number' => $validated['payroll_number'] ?? null,
             'observed_person' => $validated['observed_person'],
+            'plant_id' => $validated['plant_id'],
             'area_id' => $validated['area_id'],
             'observation_type' => $validated['observation_type'],
             'description' => $validated['description'],
@@ -205,6 +210,7 @@ class ObservationController extends Controller
             'observations' => $observations,
             'filters' => $request->only(['status', 'observation_type', 'area_id']),
             'areas' => Area::active()->get(),
+            'plants' => \App\Models\Plant::with('areas')->where('is_active', true)->get(),
         ]);
     }
 

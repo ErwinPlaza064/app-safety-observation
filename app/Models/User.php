@@ -22,7 +22,9 @@ class User extends Authenticatable implements MustVerifyEmail
         'name',
         'email',
         'password',
-        'area',
+        'plant_id',
+        'area_id',
+        'area', // Mantener temporalmente para compatibilidad si es necesario
         'position',
         'is_ehs_manager',
         'is_ehs_coordinator',
@@ -84,6 +86,16 @@ class User extends Authenticatable implements MustVerifyEmail
         return $this->is_ehs_coordinator === true;
     }
 
+
+    public function plant()
+    {
+        return $this->belongsTo(Plant::class);
+    }
+
+    public function areaEntity() // Cambiado nombre para evitar conflicto con el campo string 'area'
+    {
+        return $this->belongsTo(Area::class, 'area_id');
+    }
 
     /**
      * Relación con observaciones de seguridad

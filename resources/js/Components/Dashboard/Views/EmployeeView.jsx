@@ -14,6 +14,7 @@ export default function EmployeeView({
     myObservations,
     filteredReports,
     employeeNotifications = [],
+    plants = [],
 }) {
     const [showForm, setShowForm] = useState(!!savedDraft);
 
@@ -96,6 +97,7 @@ export default function EmployeeView({
                 <SafetyObservationForm
                     user={user}
                     areas={areas || []}
+                    plants={plants || []}
                     categories={categories || []}
                     savedDraft={savedDraft}
                     onClose={() => setShowForm(false)}

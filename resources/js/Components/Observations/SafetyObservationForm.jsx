@@ -11,6 +11,7 @@ import PhotosStep from "./Steps/PhotosStep";
 export default function SafetyObservationForm({
     user,
     areas,
+    plants = [],
     categories,
     onClose,
     savedDraft,
@@ -41,9 +42,8 @@ export default function SafetyObservationForm({
             : new Date().toISOString().split("T")[0],
         payroll_number: savedDraft?.payroll_number || "",
         observed_person: savedDraft?.observed_person || "",
-        area_id:
-            savedDraft?.area_id ||
-            (Array.isArray(areas) && areas.length > 0 ? areas[0].id : ""),
+        plant_id: savedDraft?.plant_id || user?.plant_id || "",
+        area_id: savedDraft?.area_id || user?.area_id || "",
         observation_type: savedDraft?.observation_type || "",
         category_ids: savedDraft?.categories
             ? savedDraft.categories.map((c) => c.id)
@@ -169,8 +169,10 @@ export default function SafetyObservationForm({
         if (step === 1) {
             if (!formData.observation_type)
                 newErrors.observation_type = "Debe seleccionar un tipo de observación";
+            if (!formData.plant_id)
+                newErrors.plant_id = "Debe seleccionar una planta";
             if (!formData.area_id)
-                newErrors.area_id = "Debe seleccionar una planta";
+                newErrors.area_id = "Debe seleccionar un área";
         }
 
         // PASO 2: Información del observador
@@ -408,6 +410,7 @@ export default function SafetyObservationForm({
                         formData={formData}
                         onChange={handleInputChange}
                         areas={areas}
+                        plants={plants}
                         errors={errors}
                         onOpenHelp={() => setShowHelpModal(true)}
                     />

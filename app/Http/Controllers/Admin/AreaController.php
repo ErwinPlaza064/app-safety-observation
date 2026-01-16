@@ -16,16 +16,22 @@ class AreaController extends Controller
     public function store(Request $request)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100', 'unique:areas'],
-            'code' => ['nullable', 'string', 'max:20', 'unique:areas'],
+            'plant_id' => ['required', 'exists:plants,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('areas')->where(fn($query) => $query->where('plant_id', $request->plant_id))
+            ],
+            'code' => ['nullable', 'string', 'max:20'],
             'description' => ['nullable', 'string', 'max:500'],
         ], [
             'name.required' => 'El nombre del área es obligatorio.',
-            'name.unique' => 'Ya existe un área con ese nombre.',
-            'code.unique' => 'Ya existe un área con ese código.',
+            'name.unique' => 'Ya existe un área con ese nombre en esta planta.',
         ]);
 
         Area::create([
+            'plant_id' => $validated['plant_id'],
             'name' => $validated['name'],
             'code' => $validated['code'] ?? null,
             'description' => $validated['description'] ?? null,
@@ -41,17 +47,23 @@ class AreaController extends Controller
     public function update(Request $request, Area $area)
     {
         $validated = $request->validate([
-            'name' => ['required', 'string', 'max:100', Rule::unique('areas')->ignore($area->id)],
-            'code' => ['nullable', 'string', 'max:20', Rule::unique('areas')->ignore($area->id)],
+            'plant_id' => ['required', 'exists:plants,id'],
+            'name' => [
+                'required',
+                'string',
+                'max:100',
+                Rule::unique('areas')->ignore($area->id)->where(fn($query) => $query->where('plant_id', $request->plant_id))
+            ],
+            'code' => ['nullable', 'string', 'max:20'],
             'description' => ['nullable', 'string', 'max:500'],
             'is_active' => ['boolean'],
         ], [
             'name.required' => 'El nombre del área es obligatorio.',
-            'name.unique' => 'Ya existe un área con ese nombre.',
-            'code.unique' => 'Ya existe un área con ese código.',
+            'name.unique' => 'Ya existe un área con ese nombre en esta planta.',
         ]);
 
         $area->update([
+            'plant_id' => $validated['plant_id'],
             'name' => $validated['name'],
             'code' => $validated['code'] ?? null,
             'description' => $validated['description'] ?? null,

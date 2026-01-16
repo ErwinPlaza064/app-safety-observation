@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Models\Area;
+use App\Models\Plant;
 use App\Models\Category;
 use App\Models\Observation;
 use App\Models\User;
@@ -44,8 +45,11 @@ class DashboardController extends Controller
                             ->orWhere('employee_number', 'like', "%{$search}%");
                     });
                 })
-                ->when(request('area'), function ($query, $area) {
-                    $query->where('area', $area);
+                ->when(request('plant_id'), function ($query, $plant_id) {
+                    $query->where('plant_id', $plant_id);
+                })
+                ->when(request('area_id'), function ($query, $area_id) {
+                    $query->where('area_id', $area_id);
                 })
                 ->when(request('role'), function ($query, $role) {
                     if ($role === 'admin') $query->where('is_super_admin', true);
@@ -58,15 +62,17 @@ class DashboardController extends Controller
                     elseif ($status === 'pending') $query->whereNull('email_verified_at');
                     elseif ($status === 'suspended') $query->where('is_suspended', true);
                 })
+                ->with(['plant', 'areaEntity'])
                 ->orderByDesc('created_at');
 
             $data['users'] = $usersQuery->paginate(10)->withQueryString();
 
-            $data['filters'] = request()->only(['search', 'area', 'role', 'status']);
-            $data['filterAreas'] = User::select('area')->distinct()->whereNotNull('area')->pluck('area');
+            $data['filters'] = request()->only(['search', 'plant_id', 'area_id', 'role', 'status']);
 
-            // Áreas para el tab de gestión de áreas
-            $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
+            // Datos para filtros y gestión
+            $data['plants'] = Plant::with('areas')->orderBy('name')->get();
+            $data['areas'] = Area::with('plant')->withCount('observations')->orderBy('name')->get();
+            $data['categories'] = Category::where('is_active', true)->get();
         }
 
         // ==========================================
