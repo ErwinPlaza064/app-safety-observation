@@ -283,7 +283,7 @@ export default function AreasManagement({ areas = [] }) {
                                 onChange={(e) =>
                                     setData("name", e.target.value)
                                 }
-                                placeholder="Ej: Planta 3"
+                                placeholder="Ej: Mantenimiento, Calidad, Almacén"
                                 required
                             />
                             <InputError
