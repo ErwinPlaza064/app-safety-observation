@@ -92,6 +92,7 @@ export default function StatusListModal({
                     <MyReportsTable
                         observations={reports}
                         onRowClick={onRowClick}
+                        observedPersonLabel="Persona / Condición"
                     />
                 ) : (
                     <div className="p-8 text-center text-gray-500 border-2 border-dashed rounded-lg dark:text-gray-400 dark:border-gray-700">
