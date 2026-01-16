@@ -102,7 +102,7 @@ export default function MyReportsTable({ observations, onRowClick, observedPerso
                                 </td>
                                 {observedPersonLabel !== "Condición" && (
                                     <td className="px-4 py-3 dark:text-gray-300">
-                                        {isCondition ? "—" : (obs.area?.name || "N/A")}
+                                        {isCondition ? "—" : (obs.plant?.name || "N/A")}
                                     </td>
                                 )}
                                 <td className="px-4 py-3 dark:text-gray-300">

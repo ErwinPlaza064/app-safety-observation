@@ -11,19 +11,51 @@ export default function DrillDownModal({
     onItemClick,
 }) {
     const [searchTerm, setSearchTerm] = useState("");
+    const [activeTab, setActiveTab] = useState("all"); // "all", "actos", "condiciones"
+
+    const showTabs = ["high_risk", "open", "closed", "total"].includes(type);
 
     const filteredData = useMemo(() => {
-        if (!data || !Array.isArray(data) || !searchTerm) return data;
+        if (!data || !Array.isArray(data)) return data;
 
-        const term = searchTerm.toLowerCase();
-        return data.filter((item) => {
-            const name = (item.name || item.observed_person || "").toLowerCase();
-            const payroll = (item.payroll_number || item.email || "").toLowerCase();
-            return name.includes(term) || payroll.includes(term);
-        });
-    }, [data, searchTerm]);
+        let result = data;
+
+        // Filter by tab (only for observation types)
+        if (showTabs && activeTab !== "all") {
+            result = result.filter((item) => {
+                if (activeTab === "actos") {
+                    return item.observation_type === "acto_seguro" || item.observation_type === "acto_inseguro";
+                }
+                return item.observation_type === "condicion_insegura";
+            });
+        }
+
+        // Filter by search term
+        if (searchTerm) {
+            const term = searchTerm.toLowerCase();
+            result = result.filter((item) => {
+                const name = (item.name || item.observed_person || "").toLowerCase();
+                const payroll = (item.payroll_number || item.email || "").toLowerCase();
+                return name.includes(term) || payroll.includes(term);
+            });
+        }
+
+        return result;
+    }, [data, searchTerm, activeTab, showTabs]);
 
     const displayData = type === "participation_summary" ? data : filteredData;
+
+    // Count for tabs
+    const actosCount = useMemo(() => {
+        if (!data || !Array.isArray(data)) return 0;
+        return data.filter(item => item.observation_type === "acto_seguro" || item.observation_type === "acto_inseguro").length;
+    }, [data]);
+
+    const condicionesCount = useMemo(() => {
+        if (!data || !Array.isArray(data)) return 0;
+        return data.filter(item => item.observation_type === "condicion_insegura").length;
+    }, [data]);
+
     return (
         <Modal show={show} onClose={onClose} maxWidth="4xl">
             <div className="p-6">
@@ -82,6 +114,42 @@ export default function DrillDownModal({
                         </button>
                     </div>
                 </div>
+
+                {/* Tabs for filtering ACTOS/CONDICIONES */}
+                {showTabs && (
+                    <div className="flex p-1 mb-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                        <button
+                            onClick={() => setActiveTab("all")}
+                            className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                activeTab === "all"
+                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            }`}
+                        >
+                            TODOS ({data?.length || 0})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("actos")}
+                            className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                activeTab === "actos"
+                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            }`}
+                        >
+                            ACTOS ({actosCount})
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("condiciones")}
+                            className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                activeTab === "condiciones"
+                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            }`}
+                        >
+                            CONDICIONES ({condicionesCount})
+                        </button>
+                    </div>
+                )}
 
                 <div className="max-h-[60vh] overflow-y-auto pr-2 custom-scrollbar">
                     {displayData && (type === "participation_summary" || displayData.length > 0) ? (
