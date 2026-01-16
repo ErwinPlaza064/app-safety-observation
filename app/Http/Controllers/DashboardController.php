@@ -150,7 +150,7 @@ class DashboardController extends Controller
 
             // Forzar plant_id si no tiene permisos globales
             $currentPlantId = $canViewAllPlants
-                ? request('plant_id', $user->plant_id)
+                ? request('plant_id') // Sin default - si viene vacío, muestra TODAS
                 : $user->plant_id;
 
             // Mantener areas globales para otros usos si es necesario
