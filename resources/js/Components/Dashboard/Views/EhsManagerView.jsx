@@ -369,9 +369,31 @@ export default function EhsManagerView({
             </div>
             <div
                 className={`grid grid-cols-1 gap-6 ${
-                    canViewAllPlants ? "lg:grid-cols-3" : "lg:grid-cols-2"
+                    canViewAllPlants ? "lg:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-2"
                 }`}
             >
+                {canViewAllPlants && stats.by_real_plant && (
+                    <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
+                        <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
+                            <svg className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                            Distribución por Planta
+                        </h3>
+                        <div className="space-y-4">
+                            {stats.by_real_plant.map((plant, index) => (
+                                <div key={index} onClick={() => handleGenericClick(`Reportes: ${plant.name}`, plant.list)} className="cursor-pointer group">
+                                    <div className="flex justify-between mb-1 text-sm">
+                                        <span className="font-medium text-gray-600 transition-colors dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">{plant.name}</span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-100">{plant.count}</span>
+                                    </div>
+                                    <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
+                                        <div className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400" style={{ width: `${(plant.count / Math.max(...stats.by_real_plant.map((p) => p.count), 1)) * 100}%` }}></div>
+                                    </div>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+                )}
+
                 {canViewAllPlants && (
                     <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
                         <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
@@ -388,7 +410,7 @@ export default function EhsManagerView({
                                     d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
                                 />
                             </svg>
-                            Distribución por Planta
+                            Distribución por Área
                         </h3>
                         <div className="space-y-4">
                             {stats.by_plant.map((plant, index) => (

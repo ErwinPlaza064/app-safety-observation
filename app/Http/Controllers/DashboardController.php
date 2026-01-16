@@ -314,19 +314,54 @@ class DashboardController extends Controller
 
             $participationRate = $totalEmployees > 0 ? round(($employeesWhoReportedCount / $totalEmployees) * 100) : 0;
 
-            // OPTIMIZACIÓN: Cargar observaciones por planta con relaciones selectivas (Sin cargar lista completa)
-            $observationsByPlant = Area::where('is_active', true)
-                ->withCount(['observations' => function ($q) {
+            // 1. Distribución por ÁREA (Antes observationsByPlant)
+            $observationsByArea = Area::where('is_active', true)
+                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
                     $q->submitted();
+                    if ($currentPlantId) {
+                        $q->where('plant_id', $currentPlantId);
+                    }
+                    $q->with($baseRelations)->latest()->take(50); // Cargar lista para el modal (limitado)
+                }])
+                ->withCount(['observations' => function ($q) use ($currentPlantId) {
+                    $q->submitted();
+                    if ($currentPlantId) {
+                        $q->where('plant_id', $currentPlantId);
+                    }
                 }])
                 ->get()
                 ->map(function ($area) {
                     return [
                         'name' => $area->name,
                         'count' => $area->observations_count,
-                        'list' => [] // No cargar lista de miles de registros aquí
+                        'list' => $area->observations // Ahora sí tiene datos
                     ];
                 });
+
+            // 2. Nueva Card: Distribución por PLANTA REAL
+            $observationsByRealPlant = Plant::where('is_active', true)
+                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
+                    $q->submitted();
+                    if ($currentPlantId) {
+                        $q->where('plant_id', $currentPlantId);
+                    }
+                    $q->with($baseRelations)->latest()->take(50);
+                }])
+                ->withCount(['observations' => function ($q) use ($currentPlantId) {
+                    $q->submitted();
+                    if ($currentPlantId) {
+                        $q->where('plant_id', $currentPlantId);
+                    }
+                }])
+                ->get()
+                ->map(function ($plant) {
+                    return [
+                        'name' => $plant->name,
+                        'count' => $plant->observations_count,
+                        'list' => $plant->observations
+                    ];
+                });
+
 
             // OPTIMIZACIÓN: Top categorías con relaciones selectivas (Solo cargar las últimas 10 observaciones por categoría)
             $topCategories = Category::where('is_active', true)
@@ -402,7 +437,9 @@ class DashboardController extends Controller
                     'rate' => $participationRate,
                     'list' => $monthlyReporters
                 ],
-                'by_plant' => $canViewAllPlants ? $observationsByPlant : [],
+                'by_area' => $canViewAllPlants ? $observationsByArea : [],
+                'by_real_plant' => $canViewAllPlants ? $observationsByRealPlant : [],
+                'by_plant' => $canViewAllPlants ? $observationsByArea : [],
                 'top_categories' => $topCategories,
                 'recent' => $recentObservations,
                 'bell_notifications' => $bellObservations,

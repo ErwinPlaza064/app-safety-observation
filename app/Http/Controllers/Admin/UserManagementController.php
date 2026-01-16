@@ -178,7 +178,7 @@ class UserManagementController extends Controller
     public function import(Request $request)
     {
         $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
+            'file' => 'required|mimes:xlsx,xls,csv,txt|max:10240',
         ]);
 
         try {
