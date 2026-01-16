@@ -31,28 +31,48 @@ export default function EditUserModal({
         password: "",
     });
 
-    const [suspensionReason, setSuspensionReason] = useState("");
-    const [showSuspendConfirm, setShowSuspendConfirm] = useState(false);
+    const [legacyWarning, setLegacyWarning] = useState(false);
 
     useEffect(() => {
         if (user) {
+            let initialAreaId = user.area_id || "";
+            let initialPlantId = user.plant_id || "";
+
+            // Intento de mapeo para usuarios legacy
+            if (!initialAreaId && user.area && areas.length > 0) {
+                const matchedArea = areas.find(
+                    (a) =>
+                        a.name.toLowerCase().trim() ===
+                        user.area.toLowerCase().trim()
+                );
+                if (matchedArea) {
+                    initialAreaId = matchedArea.id;
+                }
+            }
+
+            // Si aún no hay planta, pero hay un área válida, podrías intentar inferir la planta
+            // Pero como las áreas ya no dependen de las plantas, lo dejamos al admin.
+
             setData({
                 name: user.name || "",
                 email: user.email || "",
                 employee_number: user.employee_number || "",
-                area_id: user.area_id || "",
-                plant_id: user.plant_id || "",
+                area_id: initialAreaId,
+                plant_id: initialPlantId,
                 position: user.position || "",
                 is_ehs_manager: !!user.is_ehs_manager,
                 is_ehs_coordinator: !!user.is_ehs_coordinator,
                 password: "",
             });
+
+            setLegacyWarning(!initialAreaId || !initialPlantId);
             setSuspensionReason("");
             setShowSuspendConfirm(false);
         } else {
             reset();
+            setLegacyWarning(false);
         }
-    }, [user]);
+    }, [user, areas]);
 
     const resendVerification = () => {
         router.post(
@@ -126,6 +146,11 @@ export default function EditUserModal({
 
             <form onSubmit={submit}>
                 <div className="p-5 space-y-4 max-h-[70vh] overflow-y-auto">
+                    {legacyWarning && (
+                        <div className="p-3 mb-4 text-sm text-yellow-800 bg-yellow-100 rounded-lg dark:bg-yellow-900/30 dark:text-yellow-400">
+                            <strong>Nota:</strong> Este es un usuario antiguo con datos incompletos (sin Planta o Área asignada). Por favor, selecciona los valores correctos antes de guardar.
+                        </div>
+                    )}
                     <div className="grid grid-cols-1 gap-4 md:grid-cols-3">
                         <div className="md:col-span-2">
                             <InputLabel

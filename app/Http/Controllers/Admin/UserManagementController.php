@@ -49,39 +49,49 @@ class UserManagementController extends Controller
 
     public function update(Request $request, User $user)
     {
-        $validated = $request->validate([
-            'name' => ['required', 'string', 'max:255'],
-            'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
-            'employee_number' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
-            'plant_id' => ['required', 'exists:plants,id'],
-            'area_id' => ['required', 'exists:areas,id'],
-            'position' => ['required', 'string', 'max:255'],
-            'is_ehs_manager' => ['boolean'],
-            'is_ehs_coordinator' => ['boolean'],
-            'password' => ['nullable', 'string', 'min:8'],
-        ]);
+        try {
+            $validated = $request->validate([
+                'name' => ['required', 'string', 'max:255'],
+                'email' => ['required', 'email', 'max:255', Rule::unique('users')->ignore($user->id)],
+                'employee_number' => ['required', 'string', 'max:50', Rule::unique('users')->ignore($user->id)],
+                'plant_id' => ['required', 'exists:plants,id'],
+                'area_id' => ['required', 'exists:areas,id'],
+                'position' => ['required', 'string', 'max:255'],
+                'is_ehs_manager' => ['boolean'],
+                'is_ehs_coordinator' => ['boolean'],
+                'password' => ['nullable', 'string', 'min:8'],
+            ]);
 
-        $areaName = \App\Models\Area::find($validated['area_id'])->name;
+            $area = \App\Models\Area::find($validated['area_id']);
+            $areaName = $area ? $area->name : ($user->area ?? 'N/A');
 
-        $updateData = [
-            'name' => $validated['name'],
-            'email' => $validated['email'],
-            'employee_number' => $validated['employee_number'],
-            'plant_id' => $validated['plant_id'],
-            'area_id' => $validated['area_id'],
-            'area' => $areaName, // Mantener legacy
-            'position' => $validated['position'],
-            'is_ehs_manager' => $request->boolean('is_ehs_manager'),
-            'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
-        ];
+            $updateData = [
+                'name' => $validated['name'],
+                'email' => $validated['email'],
+                'employee_number' => $validated['employee_number'],
+                'plant_id' => $validated['plant_id'],
+                'area_id' => $validated['area_id'],
+                'area' => $areaName, // Mantener legacy para reportes antiguos
+                'position' => $validated['position'],
+                'is_ehs_manager' => $request->boolean('is_ehs_manager'),
+                'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
+            ];
 
-        if (!empty($validated['password'])) {
-            $updateData['password'] = Hash::make($validated['password']);
+            if (!empty($validated['password'])) {
+                $updateData['password'] = Hash::make($validated['password']);
+            }
+
+            $user->update($updateData);
+
+            return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
+        } catch (\Exception $e) {
+            \Log::error("Error actualizando usuario (ID: {$user->id}): " . $e->getMessage(), [
+                'request' => $request->all(),
+                'stack' => $e->getTraceAsString()
+            ]);
+
+            return back()->with('error', 'Error al actualizar usuario: ' . $e->getMessage());
         }
-
-        $user->update($updateData);
-
-        return Redirect::route('dashboard')->with('success', 'Usuario actualizado exitosamente');
     }
 
     public function resendVerification(User $user)
