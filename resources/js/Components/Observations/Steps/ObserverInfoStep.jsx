@@ -36,7 +36,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                 </div>
                 <div>
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                        Numero De Nomina
+                        Numero De Nomina De Persona Observada
                     </label>
                     <input
                         type="text"
@@ -118,7 +118,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                 >
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         {formData.observation_type === "condicion_insegura"
-                            ? "Título de la Condición o Ubicación específica"
+                            ? "Ubicación"
                             : "Persona Observada"}{" "}
                         <span className="text-red-500">*</span>
                     </label>
