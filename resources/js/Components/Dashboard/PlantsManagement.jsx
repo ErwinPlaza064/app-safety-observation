@@ -110,7 +110,10 @@ export default function PlantsManagement({ plants = [] }) {
                                         Nombre de Planta
                                     </th>
                                     <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 uppercase dark:text-gray-300">
-                                        Áreas
+                                        Usuarios
+                                    </th>
+                                    <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 uppercase dark:text-gray-300">
+                                        Observaciones
                                     </th>
                                     <th className="px-6 py-3 text-xs font-medium tracking-wider text-center text-gray-500 uppercase dark:text-gray-300">
                                         Estado
@@ -132,7 +135,10 @@ export default function PlantsManagement({ plants = [] }) {
                                                 </div>
                                             </td>
                                             <td className="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-300">
-                                                {plant.areas?.length || 0}
+                                                {plant.users_count || 0}
+                                            </td>
+                                            <td className="px-6 py-4 text-sm text-center text-gray-600 dark:text-gray-300">
+                                                {plant.observations_count || 0}
                                             </td>
                                             <td className="px-6 py-4 text-center whitespace-nowrap">
                                                 {plant.is_active ? (
