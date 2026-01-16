@@ -233,11 +233,30 @@ export default function SafetyObservationForm({
             dataToSave.category_ids = [];
         }
 
+        // Para autoguardado con archivos, es mejor usar FormData si hay fotos
+        // Aunque el auto-save no se dispara por fotos, si el usuario las agregó
+        // y se dispara por otro campo, queremos que se guarden.
+        const submitData = new FormData();
+        Object.keys(dataToSave).forEach(key => {
+            if (key === 'category_ids') {
+                dataToSave[key].forEach(id => submitData.append('category_ids[]', id));
+            } else if (key === 'photos') {
+                dataToSave[key].forEach(file => submitData.append('photos[]', file));
+            } else if (key !== 'id') {
+                submitData.append(key, dataToSave[key] ?? "");
+            }
+        });
+
+        // Marcar explícitamente como borrador para el backend
+        submitData.append('is_draft', '1');
+
         if (formData.id) {
-            router.put(
+            submitData.append('_method', 'PUT');
+            router.post(
                 route("observations.update", formData.id),
-                dataToSave,
+                submitData,
                 {
+                    forceFormData: true,
                     preserveState: true,
                     preserveScroll: true,
                     onSuccess: () => {
@@ -253,8 +272,9 @@ export default function SafetyObservationForm({
         } else {
             router.post(
                 route("observations.store"),
-                dataToSave,
+                submitData,
                 {
+                    forceFormData: true,
                     preserveState: true,
                     preserveScroll: true,
                     onSuccess: (page) => {
@@ -313,7 +333,9 @@ export default function SafetyObservationForm({
                     submitData.append("photos[]", file)
                 );
             } else if (key !== "id") {
-                submitData.append(key, dataToSubmit[key]);
+                // Asegurar que null/undefined se envíen como vacío
+                const value = dataToSubmit[key] ?? "";
+                submitData.append(key, value);
             }
         });
 

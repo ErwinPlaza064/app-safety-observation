@@ -210,7 +210,9 @@ export default function ObservationDetailsModal({
                                             </div>
                                             <div>
                                                 <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Ubicación</p>
-                                                <p className="text-xs font-bold text-gray-900 dark:text-white uppercase">{observation.area?.name || "N/A"}</p>
+                                                <p className="text-xs font-bold text-gray-900 dark:text-white uppercase">
+                                                    {observation.area?.name || (observation.plant?.name ? `General - ${observation.plant.name}` : "N/A")}
+                                                </p>
                                             </div>
                                         </div>
 

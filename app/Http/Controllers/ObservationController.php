@@ -18,6 +18,13 @@ class ObservationController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('Observation store request:', [
+            'all' => $request->except(['photos']),
+            'has_photos' => $request->hasFile('photos'),
+            'photo_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
+            'files' => array_keys($request->allFiles())
+        ]);
+
         $validated = $request->validate([
             'observation_date' => 'required|date',
             'payroll_number' => 'required_unless:observation_type,condicion_insegura',
@@ -103,6 +110,14 @@ class ObservationController extends Controller
 
     public function update(Request $request, Observation $observation)
     {
+        \Log::info('Observation update request:', [
+            'id' => $observation->id,
+            'all' => $request->except(['photos']),
+            'has_photos' => $request->hasFile('photos'),
+            'photo_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
+            'files' => array_keys($request->allFiles())
+        ]);
+
         if ($observation->user_id !== Auth::id() && !Auth::user()->is_super_admin) {
             abort(403);
         }
