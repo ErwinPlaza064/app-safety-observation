@@ -80,6 +80,7 @@ class DashboardController extends Controller
         // ==========================================
         if (!$user->is_super_admin && !$user->is_ehs_manager) {
             $data['areas'] = Area::where('is_active', true)->get();
+            $data['plants'] = Plant::where('is_active', true)->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
 
             $data['userStats'] = [
