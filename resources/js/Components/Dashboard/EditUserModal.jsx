@@ -11,6 +11,9 @@ import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
 export default function EditUserModal({
+    show,
+    user,
+    currentUser,
     onClose,
     onDelete,
     plants = [],
