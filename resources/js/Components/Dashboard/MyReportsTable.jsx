@@ -1,9 +1,9 @@
-export default function MyReportsTable({ observations, onRowClick }) {
+export default function MyReportsTable({ observations, onRowClick, showObservedPerson = true }) {
     if (!observations || observations.length === 0) {
         return (
             <div className="flex items-center justify-center h-24 text-gray-400 dark:text-gray-500 border-2 border-dashed dark:border-gray-700 rounded-lg bg-gray-50 dark:bg-gray-800">
                 <span className="px-4 text-xs text-center sm:text-sm">
-                    No tienes reportes enviados aún.
+                    No hay reportes para mostrar en esta categoría.
                 </span>
             </div>
         );
@@ -14,7 +14,7 @@ export default function MyReportsTable({ observations, onRowClick }) {
             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                 <thead className="text-xs text-gray-700 dark:text-gray-300 uppercase bg-gray-50 dark:bg-gray-700">
                     <tr>
-                        <th className="px-4 py-3">Observada</th>
+                        {showObservedPerson && <th className="px-4 py-3">Observada</th>}
                         <th className="px-4 py-3">Observador</th>
                         <th className="px-4 py-3">Descripcción</th>
                         <th className="px-4 py-3">Ubicación</th>
@@ -35,9 +35,11 @@ export default function MyReportsTable({ observations, onRowClick }) {
                                         : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                 }`}
                             >
-                                <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">
-                                    {obs.observed_person || "N/A"}
-                                </td>
+                                {showObservedPerson && (
+                                    <td className="px-4 py-3 font-semibold text-gray-900 dark:text-gray-100">
+                                        {obs.observed_person || "N/A"}
+                                    </td>
+                                )}
                                 <td className="px-4 py-3 text-gray-600 dark:text-gray-400">
                                     {obs.user?.name || "N/A"}
                                 </td>

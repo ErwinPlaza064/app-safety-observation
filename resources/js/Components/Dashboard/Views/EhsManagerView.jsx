@@ -79,6 +79,14 @@ export default function EhsManagerView({
     }, []);
 
     const [activeMetric, setActiveMetric] = useState(null);
+    const [activeTab, setActiveTab] = useState("actos");
+
+    const filteredRecent = stats.recent?.filter((obs) => {
+        if (activeTab === "actos") {
+            return obs.observation_type === "acto_seguro" || obs.observation_type === "acto_inseguro";
+        }
+        return obs.observation_type === "condicion_insegura";
+    }) || [];
 
     const [params, setParams] = useState({
         search: filters?.search || "",
@@ -650,19 +658,38 @@ export default function EhsManagerView({
             ) : (
                 <>
                     <div className="overflow-hidden bg-white shadow-sm dark:bg-gray-800 rounded-xl">
-                        <div className="flex items-center justify-between px-6 py-4 border-b border-gray-100 dark:border-gray-700">
+                        <div className="flex flex-col gap-4 px-6 py-4 border-b border-gray-100 dark:border-gray-700 sm:flex-row sm:items-center sm:justify-between">
                             <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-100">
                                 Observaciones Recientes
                             </h3>
-                            <span className="bg-blue-100 dark:bg-blue-900 text-blue-800 dark:text-blue-200 text-xs font-semibold px-2.5 py-0.5 rounded">
-                                {stats.recent.length} mostrados
-                            </span>
+                            <div className="flex p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                                <button
+                                    onClick={() => setActiveTab("actos")}
+                                    className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "actos"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    ACTOS
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("condiciones")}
+                                    className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "condiciones"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    CONDICIONES
+                                </button>
+                            </div>
                         </div>
                         <div className="overflow-x-auto">
                             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th className="px-6 py-3">Observada</th>
+                                        {activeTab === "actos" && <th className="px-6 py-3">Observada</th>}
                                         <th className="px-6 py-3">
                                             Descripción
                                         </th>
@@ -676,8 +703,8 @@ export default function EhsManagerView({
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
-                                    {stats.recent.length > 0 ? (
-                                        stats.recent.map((obs) => (
+                                    {filteredRecent.length > 0 ? (
+                                        filteredRecent.map((obs) => (
                                             <tr
                                                 key={obs.id}
                                                 onClick={() =>
@@ -691,9 +718,11 @@ export default function EhsManagerView({
                                                 }
                                                 className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                             >
-                                                <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
-                                                    {obs.observed_person}
-                                                </td>
+                                                {activeTab === "actos" && (
+                                                    <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
+                                                        {obs.observed_person}
+                                                    </td>
+                                                )}
                                                 <td className="max-w-xs px-6 py-4 text-gray-900 truncate dark:text-gray-200">
                                                     {obs.description}
                                                 </td>

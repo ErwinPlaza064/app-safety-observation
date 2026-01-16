@@ -26,6 +26,15 @@ export default function EmployeeView({
 
     const [showReadyToCloseModal, setShowReadyToCloseModal] = useState(false);
 
+    const [activeTab, setActiveTab] = useState("actos");
+
+    const filteredObservations = myObservations?.filter((obs) => {
+        if (activeTab === "actos") {
+            return obs.observation_type === "acto_seguro" || obs.observation_type === "acto_inseguro";
+        }
+        return obs.observation_type === "condicion_insegura";
+    }) || [];
+
     useEffect(() => {
         if (savedDraft) setShowForm(true);
     }, [savedDraft]);
@@ -269,31 +278,54 @@ export default function EmployeeView({
             </div>
 
             <div className="p-4 bg-white shadow-sm dark:bg-gray-800 sm:p-6 sm:rounded-lg rounded-xl">
-                <div className="flex items-center justify-between mb-4">
-                    <h3 className="flex items-center text-base font-semibold text-gray-800 dark:text-gray-200 sm:text-lg">
-                        <svg
-                            className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400"
-                            fill="none"
-                            stroke="currentColor"
-                            viewBox="0 0 24 24"
+                <div className="flex flex-col gap-4 mb-6 sm:flex-row sm:items-center sm:justify-between">
+                    <div>
+                        <h3 className="flex items-center text-base font-semibold text-gray-800 dark:text-gray-200 sm:text-lg">
+                            <svg
+                                className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
+                                />
+                            </svg>
+                            Mis Reportes Recientes
+                        </h3>
+                    </div>
+
+                    <div className="flex p-1 bg-gray-100 dark:bg-gray-700 rounded-xl">
+                        <button
+                            onClick={() => setActiveTab("actos")}
+                            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                activeTab === "actos"
+                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            }`}
                         >
-                            <path
-                                strokeLinecap="round"
-                                strokeLinejoin="round"
-                                strokeWidth={2}
-                                d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"
-                            />
-                        </svg>
-                        Mis Reportes Recientes
-                    </h3>
-                    <span className="px-3 py-1 text-xs font-semibold text-blue-800 bg-blue-100 rounded-full dark:text-blue-300 dark:bg-blue-900/40">
-                        {(userStats?.total || 0) + " Total"}
-                    </span>
+                            ACTOS
+                        </button>
+                        <button
+                            onClick={() => setActiveTab("condiciones")}
+                            className={`flex-1 sm:flex-none px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                activeTab === "condiciones"
+                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                            }`}
+                        >
+                            CONDICIONES
+                        </button>
+                    </div>
                 </div>
 
                 <MyReportsTable
-                    observations={myObservations}
+                    observations={filteredObservations}
                     onRowClick={(obs) => setSelectedObservation(obs)}
+                    showObservedPerson={activeTab === "actos"}
                 />
             </div>
 
