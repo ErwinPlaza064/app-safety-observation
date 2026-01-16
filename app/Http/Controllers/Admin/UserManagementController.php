@@ -155,6 +155,11 @@ class UserManagementController extends Controller
             return Redirect::route('dashboard')->with('error', 'No puedes eliminar tu propia cuenta');
         }
 
+        // Verificar si tiene observaciones registradas o cerradas
+        if ($user->observations()->count() > 0 || \App\Models\Observation::where('closed_by', $user->id)->count() > 0) {
+            return Redirect::route('dashboard')->with('error', 'No se puede eliminar este usuario porque tiene observaciones asociadas (creadas o cerradas).');
+        }
+
         $user->delete();
 
         return Redirect::route('dashboard')->with('success', 'Usuario eliminado exitosamente');

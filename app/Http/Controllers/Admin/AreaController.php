@@ -78,8 +78,8 @@ class AreaController extends Controller
     public function destroy(Area $area)
     {
         // Verificar si hay observaciones asociadas
-        if ($area->observations()->count() > 0) {
-            return Redirect::route('dashboard')->with('error', 'No se puede eliminar esta área porque tiene observaciones asociadas. Puedes desactivarla en su lugar.');
+        if ($area->users()->count() > 0 || $area->observations()->count() > 0) {
+            return Redirect::route('dashboard')->with('error', 'No se puede eliminar esta área porque tiene registros asociados (usuarios u observaciones). Puedes desactivarla en su lugar.');
         }
 
         $area->delete();

@@ -30,6 +30,11 @@ class Area extends Model
 
     // Relationship with Plant removed
 
+    public function users()
+    {
+        return $this->hasMany(\App\Models\User::class, 'area_id');
+    }
+
     public function observations()
     {
         return $this->hasMany(\App\Models\Observation::class, 'area_id');

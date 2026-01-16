@@ -72,7 +72,7 @@ class PlantController extends Controller
     public function destroy(Plant $plant)
     {
         // Verificar si hay áreas, usuarios u observaciones asociadas
-        if ($plant->areas()->count() > 0 || $plant->users()->count() > 0 || $plant->observations()->count() > 0) {
+        if ($plant->users()->count() > 0 || $plant->observations()->count() > 0) {
             return Redirect::route('dashboard')->with('error', 'No se puede eliminar esta planta porque tiene registros asociados. Puedes desactivarla en su lugar.');
         }
 
