@@ -4,6 +4,7 @@ export default function AreaTypeStep({
     formData,
     onChange,
     areas,
+    plants,
     errors,
     onOpenHelp,
 }) {
