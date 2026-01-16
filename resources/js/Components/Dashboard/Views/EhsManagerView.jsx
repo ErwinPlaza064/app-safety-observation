@@ -585,7 +585,8 @@ export default function EhsManagerView({
                                         <th className="px-6 py-3">Observador</th>
                                         <th className="px-6 py-3">Fecha</th>
                                         <th className="px-6 py-3">Descripción</th>
-                                        <th className="px-6 py-3">Ubicación</th>
+                                        <th className="px-6 py-3">Planta</th>
+                                        <th className="px-6 py-3">Área</th>
                                         <th className="px-6 py-3">Estado</th>
                                     </tr>
                                 </thead>
@@ -617,6 +618,9 @@ export default function EhsManagerView({
                                                 >
                                                     {obs.description}
                                                 </p>
+                                            </td>
+                                            <td className="px-6 py-4">
+                                                {obs.plant?.name || "N/A"}
                                             </td>
                                             <td className="px-6 py-4">
                                                 {obs.area?.name || "N/A"}
@@ -665,7 +669,8 @@ export default function EhsManagerView({
                                         <th className="px-6 py-3">
                                             Observador
                                         </th>
-                                        <th className="px-6 py-3">Ubicación</th>
+                                        <th className="px-6 py-3">Planta</th>
+                                        <th className="px-6 py-3">Área</th>
                                         <th className="px-6 py-3">Estado</th>
                                         <th className="px-6 py-3">Fecha</th>
                                     </tr>
@@ -696,7 +701,10 @@ export default function EhsManagerView({
                                                     {obs.user?.name}
                                                 </td>
                                                 <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                                    {obs.area?.name}
+                                                    {obs.plant?.name || "N/A"}
+                                                </td>
+                                                <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
+                                                    {obs.area?.name || "N/A"}
                                                 </td>
                                                 <td className="px-6 py-4">
                                                     <span

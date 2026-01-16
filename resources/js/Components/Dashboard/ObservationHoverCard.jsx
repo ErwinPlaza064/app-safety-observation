@@ -101,8 +101,10 @@ export default function ObservationHoverCard({ observation, position }) {
                         </div>
                         <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">
                             <MdCategory className="w-4 h-4 text-purple-500" />
-                            <span className="truncate">
-                                {observation.category?.name || "Sin categoría"}
+                            <span className="truncate" title={observation.categories?.map(c => c.name).join(', ')}>
+                                {observation.categories?.length > 0 
+                                    ? observation.categories.map(c => c.name).join(', ')
+                                    : "Sin categoría"}
                             </span>
                         </div>
                         <div className="flex items-center gap-1.5 text-gray-500 dark:text-gray-400">

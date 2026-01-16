@@ -93,7 +93,7 @@ class DashboardController extends Controller
             $data['employeeNotifications'] = Observation::where('user_id', $user->id)
                 ->where('status', 'en_progreso')
                 ->where('is_draft', false)
-                ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
+                ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
                 ->latest()
                 ->get();
 
@@ -103,14 +103,14 @@ class DashboardController extends Controller
                 $data['filteredReports'] = Observation::where('user_id', $user->id)
                     ->where('is_draft', false)
                     ->where('status', request('filter_status'))
-                    ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
+                    ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
                     ->latest()
                     ->get();
             }
 
             $data['myObservations'] = Observation::where('user_id', $user->id)
                 ->where('is_draft', false)
-                ->with(['area', 'user', 'images', 'categories', 'closedByUser'])
+                ->with(['plant', 'area', 'user', 'images', 'categories', 'closedByUser'])
                 ->latest('observation_date')
                 ->take(10)
                 ->get();
@@ -150,6 +150,7 @@ class DashboardController extends Controller
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [
                 'user:id,name,email,area',
+                'plant:id,name',
                 'area:id,name',
                 'closedByUser:id,name',
                 'categories:id,name',

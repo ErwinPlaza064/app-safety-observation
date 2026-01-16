@@ -191,6 +191,7 @@ class ObservationController extends Controller
     {
         $observation->load([
             'user',
+            'plant',
             'area',
             'categories',
             'images',
@@ -204,7 +205,7 @@ class ObservationController extends Controller
 
     public function index(Request $request)
     {
-        $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])
+        $query = Observation::with(['user', 'plant', 'area', 'categories', 'closedByUser'])
             ->submitted()
             ->latest('observation_date');
 
@@ -308,7 +309,7 @@ class ObservationController extends Controller
     {
         $user = Auth::user();
 
-        $query = Observation::with(['user', 'area', 'categories', 'closedByUser'])->submitted();
+        $query = Observation::with(['user', 'plant', 'area', 'categories', 'closedByUser'])->submitted();
 
         if ($user->is_ehs_manager && !$user->is_super_admin) {
             $canViewAllPlants = $user->is_ehs_coordinator;

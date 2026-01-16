@@ -288,7 +288,10 @@ export default function DrillDownModal({
                                                         Fecha
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
-                                                        Ubicación
+                                                        Planta
+                                                    </th>
+                                                    <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
+                                                        Área
                                                     </th>
                                                     <th className="px-4 py-2 bg-gray-50 dark:bg-gray-700">
                                                         Descripción
@@ -333,8 +336,10 @@ export default function DrillDownModal({
                                                             ).toLocaleDateString()}
                                                         </td>
                                                         <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
-                                                            {obs.area?.name ||
-                                                                "N/A"}
+                                                            {obs.plant?.name || "N/A"}
+                                                        </td>
+                                                        <td className="px-4 py-3 text-gray-900 dark:text-gray-100">
+                                                            {obs.area?.name || "N/A"}
                                                         </td>
                                                         <td className="px-4 py-3 dark:text-gray-300">
                                                             <p
