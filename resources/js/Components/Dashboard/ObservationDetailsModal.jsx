@@ -156,7 +156,9 @@ export default function ObservationDetailsModal({
                                         <h3 className="flex items-center gap-2 mb-3 text-[10px] font-black tracking-widest text-gray-400 uppercase">
                                             {observation.observation_type === "condicion_insegura" 
                                                 ? "Detalle de la Condición" 
-                                                : "Persona Observada"}
+                                                : observation.company === "WASION"
+                                                    ? "Persona Observada"
+                                                    : "Nombre"}
                                         </h3>
                                         <div className="flex items-center gap-3 p-3 border border-gray-100 dark:border-gray-700 bg-blue-50/20 dark:bg-blue-900/10 rounded-2xl shadow-sm">
                                             <div className="flex-shrink-0 w-10 h-10 rounded-xl bg-purple-100 dark:bg-purple-900/50 flex items-center justify-center text-purple-700 dark:text-purple-300 font-black text-sm">
@@ -169,7 +171,9 @@ export default function ObservationDetailsModal({
                                                 <p className="text-[10px] text-gray-500 dark:text-gray-400 truncate">
                                                     {observation.observation_type === "condicion_insegura" 
                                                         ? "Título / Resumen" 
-                                                        : "Sujeto de la observación"}
+                                                        : observation.company === "WASION"
+                                                            ? "Sujeto de la observación"
+                                                            : `Personal de ${observation.company}`}
                                                 </p>
                                             </div>
                                         </div>
@@ -192,6 +196,43 @@ export default function ObservationDetailsModal({
                                             </div>
                                         </div>
                                     </section>
+
+                                    {/* Información de Identificación (Nómina/Empresa) */}
+                                    {observation.observation_type !== "condicion_insegura" && (
+                                        <section className="p-4 border border-gray-100 dark:border-gray-700 bg-gray-50/30 dark:bg-gray-900/10 rounded-2xl">
+                                            <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-indigo-50 dark:bg-indigo-900/30 rounded-xl">
+                                                        <svg className="w-4 h-4 text-indigo-600 dark:text-indigo-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M10 6H5a2 2 0 00-2 2v9a2 2 0 002 2h14a2 2 0 002-2V8a2 2 0 00-2-2h-5m-4 0V5a2 2 0 114 0v1m-4 0a2 2 0 104 0m-5 8a2 2 0 100-4 2 2 0 000 4zm0 0c1.306 0 2.417.835 2.83 2M9 14a3.001 3.001 0 00-2.83 2M15 11h3m-3 4h2" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">
+                                                            {observation.company === "WASION" ? "N. Nómina" : "Identificador"}
+                                                        </p>
+                                                        <p className="text-sm font-bold text-gray-900 dark:text-white">
+                                                            {observation.payroll_number || "N/A"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+
+                                                <div className="flex items-center gap-3">
+                                                    <div className="p-2 bg-blue-50 dark:bg-blue-900/30 rounded-xl">
+                                                        <svg className="w-4 h-4 text-blue-600 dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+                                                        </svg>
+                                                    </div>
+                                                    <div>
+                                                        <p className="text-[9px] font-black text-gray-400 uppercase tracking-widest">Empresa</p>
+                                                        <p className={`text-xs font-bold uppercase ${observation.company !== "WASION" ? "text-blue-600 dark:text-blue-400" : "text-gray-900 dark:text-white"}`}>
+                                                            {observation.company || "WASION"}
+                                                        </p>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                        </section>
+                                    )}
 
                                     {/* Descripción */}
                                     <section>

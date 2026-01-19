@@ -124,9 +124,11 @@ export default function Show({ auth, observation }) {
                                         observation.observed_person) && (
                                         <div className="p-5 bg-white border border-gray-100 shadow-sm dark:bg-gray-800 dark:border-gray-700 rounded-xl">
                                             <h3 className="mb-3 text-xs font-bold tracking-wider text-gray-400 uppercase dark:text-gray-500">
-                                                {observation.observation_type === "condicion_insegura"
+                                                    {observation.observation_type === "condicion_insegura"
                                                     ? "Detalle de la Condición"
-                                                    : "Persona Observada"}
+                                                    : observation.company === "WASION"
+                                                        ? "Persona Observada"
+                                                        : "Nombre"}
                                             </h3>
                                             <div className="space-y-3">
                                                 {observation.payroll_number && (
@@ -146,12 +148,35 @@ export default function Show({ auth, observation }) {
                                                         </svg>
                                                         <div>
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">
-                                                                N. Nómina:
+                                                                {observation.company === "WASION" ? "N. Nómina:" : "Identificador:"}
                                                             </span>
                                                             <span className="ml-2 font-medium">
-                                                                {
-                                                                    observation.payroll_number
-                                                                }
+                                                                {observation.payroll_number}
+                                                            </span>
+                                                        </div>
+                                                    </div>
+                                                )}
+                                                {observation.company && (
+                                                    <div className="flex items-center gap-2 text-gray-800 dark:text-gray-200">
+                                                        <svg
+                                                            className="w-5 h-5 text-gray-400 dark:text-gray-500"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-7h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                                            />
+                                                        </svg>
+                                                        <div>
+                                                            <span className="text-xs text-gray-500 dark:text-gray-400">
+                                                                Empresa:
+                                                            </span>
+                                                            <span className={`ml-2 font-bold ${observation.company !== "WASION" ? "text-blue-600 dark:text-blue-400 uppercase" : ""}`}>
+                                                                {observation.company}
                                                             </span>
                                                         </div>
                                                     </div>
@@ -175,7 +200,9 @@ export default function Show({ auth, observation }) {
                                                             <span className="text-xs text-gray-500 dark:text-gray-400">
                                                                 {observation.observation_type === "condicion_insegura"
                                                                     ? "Título:"
-                                                                    : "Nombre/Título:"}
+                                                                    : observation.company === "WASION"
+                                                                        ? "Nombre:"
+                                                                        : "Nombre completo:"}
                                                             </span>
                                                             <span className="ml-2 font-medium">
                                                                 {
