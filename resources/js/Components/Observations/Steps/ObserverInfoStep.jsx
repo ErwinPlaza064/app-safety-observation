@@ -173,7 +173,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                                 ? "Ej: Cable expuesto en pasillo C / Fuga de aceite en máquina 5"
                                 : formData.company === "WASION"
                                     ? "Nombre de la persona observada"
-                                    : "Nombre completo"
+                                    : "Nombre"
                         }
                         value={formData.observed_person}
                         onChange={(e) =>
