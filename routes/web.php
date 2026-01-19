@@ -89,10 +89,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
         Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
         Route::put('/{observation}/close', [ObservationController::class, 'close'])
-            ->middleware('role:super_admin,ehs_manager,ehs_coordinator')
             ->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])
-            ->middleware('role:super_admin,ehs_manager,ehs_coordinator')
             ->name('reopen');
     });
 

@@ -9,7 +9,7 @@ class ObservationPolicy
 {
     public function viewAny(User $user): bool
     {
-        return $user->is_ehs_manager || $user->is_super_admin;
+        return $user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator;
     }
 
     public function view(User $user, Observation $observation): bool
@@ -18,7 +18,7 @@ class ObservationPolicy
             return true;
         }
 
-        return $user->is_ehs_manager || $user->is_super_admin;
+        return $user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator;
     }
 
     public function create(User $user): bool
@@ -33,7 +33,7 @@ class ObservationPolicy
             return true;
         }
 
-        return $user->is_ehs_manager || $user->is_super_admin;
+        return $user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator;
     }
 
 
@@ -49,20 +49,21 @@ class ObservationPolicy
 
     public function manage(User $user): bool
     {
-        return $user->is_ehs_manager || $user->is_super_admin;
+        return $user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator;
     }
 
 
     public function close(User $user, Observation $observation): bool
     {
-        return ($user->is_ehs_manager || $user->is_super_admin)
+        // El dueño de la observación o un administrador/manager/coordinator pueden cerrarla
+        return ($user->id === $observation->user_id || $user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator)
             && $observation->status === 'en_progreso';
     }
 
 
     public function reopen(User $user, Observation $observation): bool
     {
-        return ($user->is_ehs_manager || $user->is_super_admin)
+        return ($user->is_ehs_manager || $user->is_super_admin || $user->is_ehs_coordinator)
             && $observation->status === 'cerrada';
     }
 }

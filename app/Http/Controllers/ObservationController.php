@@ -238,46 +238,45 @@ class ObservationController extends Controller
 
     public function close(Request $request, Observation $observation)
     {
-        if (Auth::user()->is_ehs_manager || $observation->user_id === Auth::id()) {
-            $validated = $request->validate([
-                'closure_notes' => 'required|string|min:10',
-                'photos' => 'nullable|array|max:5',
-                'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
-            ], [
-                'closure_notes.required' => 'El comentario de cierre es obligatorio',
-                'closure_notes.min' => 'El comentario debe tener al menos 10 caracteres',
-            ]);
+        $this->authorize('close', $observation);
 
-            $observation->update([
-                'status' => 'cerrada',
-                'closed_at' => now(),
-                'closed_by' => Auth::id(),
-                'closure_notes' => $validated['closure_notes'],
-            ]);
+        $validated = $request->validate([
+            'closure_notes' => 'required|string|min:10',
+            'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+        ], [
+            'closure_notes.required' => 'El comentario de cierre es obligatorio',
+            'closure_notes.min' => 'El comentario debe tener al menos 10 caracteres',
+        ]);
 
-            if ($request->hasFile('photos')) {
-                foreach ($request->file('photos') as $index => $photo) {
-                    $path = $photo->store('observations/' . $observation->id . '/closure', 'public');
+        $observation->update([
+            'status' => 'cerrada',
+            'closed_at' => now(),
+            'closed_by' => Auth::id(),
+            'closure_notes' => $validated['closure_notes'],
+        ]);
 
-                    $nextOrder = $observation->images()->max('sort_order') + 1;
+        if ($request->hasFile('photos')) {
+            foreach ($request->file('photos') as $index => $photo) {
+                $path = $photo->store('observations/' . $observation->id . '/closure', 'public');
 
-                    $observation->images()->create([
-                        'path' => $path,
-                        'original_name' => $photo->getClientOriginalName(),
-                        'size' => $photo->getSize(),
-                        'sort_order' => $nextOrder + $index,
-                    ]);
-                }
+                $nextOrder = $observation->images()->max('sort_order') + 1;
+
+                $observation->images()->create([
+                    'path' => $path,
+                    'original_name' => $photo->getClientOriginalName(),
+                    'size' => $photo->getSize(),
+                    'sort_order' => $nextOrder + $index,
+                ]);
             }
-
-            return redirect()->back()->with('success', 'Observación cerrada exitosamente con evidencia');
         }
-        abort(403);
+
+        return redirect()->back()->with('success', 'Observación cerrada exitosamente con evidencia');
     }
 
     public function reopen(Observation $observation)
     {
-        $this->authorize('manage', Observation::class);
+        $this->authorize('reopen', $observation);
 
         $observation->update([
             'status' => 'en_progreso',
