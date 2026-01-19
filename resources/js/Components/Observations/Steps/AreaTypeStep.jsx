@@ -122,7 +122,7 @@ export default function AreaTypeStep({
                 {!isUnsafeCondition && (
                     <div className="animate-fade-in">
                         <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                            Área
+                            Área de la persona observada
                             <span className="text-red-500">*</span>
                         </label>
                         <select
