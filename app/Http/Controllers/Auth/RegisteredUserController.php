@@ -58,16 +58,18 @@ class RegisteredUserController extends Controller
 
         Log::info('Usuario creado', ['user_id' => $user->id]);
 
-        // Enviar correo de verificación directamente
+        // Disparar el evento de registro (estándar de Laravel)
+        event(new Registered($user));
+
+        // Enviar correo de verificación manualmente para asegurar entrega inmediata 
+        // (especialmente útil si no hay worker de colas corriendo)
         try {
             $user->sendEmailVerificationNotification();
-            Log::info('Correo de verificación enviado correctamente', ['user_id' => $user->id, 'email' => $user->email]);
+            Log::info('Correo de verificación enviado manualmente', ['user_id' => $user->id]);
         } catch (\Exception $e) {
-            Log::error('Error al enviar correo de verificación', [
+            Log::error('Error al enviar correo de verificación manual', [
                 'user_id' => $user->id,
-                'email' => $user->email,
-                'error' => $e->getMessage(),
-                'trace' => $e->getTraceAsString()
+                'error' => $e->getMessage()
             ]);
         }
 

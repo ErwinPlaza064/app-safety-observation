@@ -30,7 +30,7 @@ class UserManagementController extends Controller
 
         $areaName = \App\Models\Area::find($validated['area_id'])->name;
 
-        User::create([
+        $user = User::create([
             'name' => $validated['name'],
             'email' => $validated['email'],
             'employee_number' => $validated['employee_number'],
@@ -41,10 +41,16 @@ class UserManagementController extends Controller
             'password' => Hash::make($validated['password']),
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
             'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
         ]);
 
-        return Redirect::route('dashboard')->with('success', 'Usuario creado y verificado exitosamente.');
+        try {
+            $user->sendEmailVerificationNotification();
+        } catch (\Exception $e) {
+            \Log::error("Error enviando verificación a usuario creado por admin: " . $e->getMessage());
+        }
+
+        return Redirect::route('dashboard')->with('success', 'Usuario creado exitosamente. Se ha enviado un correo de verificación.');
     }
 
     public function update(Request $request, User $user)

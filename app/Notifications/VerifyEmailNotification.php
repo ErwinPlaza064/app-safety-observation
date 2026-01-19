@@ -10,7 +10,7 @@ use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\URL;
 
-class VerifyEmailNotification extends VerifyEmail implements ShouldQueue
+class VerifyEmailNotification extends VerifyEmail
 {
     use Queueable;
 

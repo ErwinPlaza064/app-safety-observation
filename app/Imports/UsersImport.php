@@ -38,7 +38,7 @@ class UsersImport implements ToModel, WithHeadingRow, WithValidation
             'area'              => $row['area'], // Legacy
             'position'          => $row['puesto'],
             'password'          => Hash::make($row['password'] ?? 'Wasion2025*'),
-            'email_verified_at' => now(),
+            'email_verified_at' => null,
             'is_ehs_manager'    => strtolower($row['es_gerente_ehs'] ?? '') === 'si',
             'is_ehs_coordinator' => strtolower($row['es_coordinador_ehs'] ?? '') === 'si',
         ]);
