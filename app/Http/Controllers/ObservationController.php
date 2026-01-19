@@ -18,11 +18,10 @@ class ObservationController extends Controller
 
     public function store(Request $request)
     {
-        \Log::info('Observation store request:', [
-            'all' => $request->except(['photos']),
+        \Log::info('Observation store attempt', [
+            'user_id' => Auth::id(),
+            'type' => $request->observation_type,
             'has_photos' => $request->hasFile('photos'),
-            'photo_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
-            'files' => array_keys($request->allFiles())
         ]);
 
         $validated = $request->validate([
@@ -36,7 +35,7 @@ class ObservationController extends Controller
             'category_ids.*' => 'exists:categories,id',
             'description' => 'required|string|min:20',
             'photos' => 'nullable|array|max:5',
-            'photos.*' => 'image|mimes:jpeg,png,jpg,gif|max:2048',
+            'photos.*' => 'image|mimetypes:image/jpeg,image/png,image/gif|max:2048',
             'is_draft' => 'sometimes|nullable',
         ], [
             'payroll_number.required_unless' => 'El número de nómina es obligatorio para actos.',
@@ -110,12 +109,10 @@ class ObservationController extends Controller
 
     public function update(Request $request, Observation $observation)
     {
-        \Log::info('Observation update request:', [
+        \Log::info('Observation update attempt', [
             'id' => $observation->id,
-            'all' => $request->except(['photos']),
+            'user_id' => Auth::id(),
             'has_photos' => $request->hasFile('photos'),
-            'photo_count' => $request->hasFile('photos') ? count($request->file('photos')) : 0,
-            'files' => array_keys($request->allFiles())
         ]);
 
         if ($observation->user_id !== Auth::id() && !Auth::user()->is_super_admin) {
@@ -134,6 +131,7 @@ class ObservationController extends Controller
             'description' => 'required|string|min:20',
             'is_draft' => 'sometimes|nullable',
             'photos' => 'nullable|array|max:5',
+            'photos.*' => 'image|mimetypes:image/jpeg,image/png,image/gif|max:2048',
         ], [
             'payroll_number.required_unless' => 'El número de nómina es obligatorio para actos.',
             'category_ids.required_unless' => 'Debe seleccionar al menos una categoría.',
