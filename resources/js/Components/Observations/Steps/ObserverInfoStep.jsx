@@ -73,17 +73,46 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                 </div>
             </div>
 
+            {formData.observation_type !== "condicion_insegura" && (
+                <div className="mb-6">
+                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        Empresa <span className="text-red-500">*</span>
+                    </label>
+                    <select
+                        value={formData.company || "WASION"}
+                        onChange={(e) => {
+                            const newCompany = e.target.value;
+                            onChange("company", newCompany);
+                            
+                            // Auto-set payroll number for external companies
+                            if (newCompany === "PROVEDORES") onChange("payroll_number", "99999");
+                            else if (newCompany === "EXTRANJERO") onChange("payroll_number", "99998");
+                            else if (newCompany === "LSCR") onChange("payroll_number", "99997");
+                            else if (newCompany === "WASION") onChange("payroll_number", "");
+                        }}
+                        className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
+                    >
+                        <option value="WASION">WASION</option>
+                        <option value="PROVEDORES">PROVEDORES</option>
+                        <option value="EXTRANJERO">EXTRANJERO</option>
+                        <option value="LSCR">LSCR</option>
+                    </select>
+                </div>
+            )}
+
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 {formData.observation_type !== "condicion_insegura" && (
                     <div>
                         <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
-                            N. Nómina de la persona observada <span className="text-red-500">*</span>
+                            {formData.company === "WASION" ? "N. Nómina de la persona observada" : "Identificador"} <span className="text-red-500">*</span>
                         </label>
                         <input
                             type="text"
                             placeholder="00000"
                             value={formData.payroll_number}
+                            readOnly={formData.company !== "WASION"}
                             onChange={(e) => {
+                                if (formData.company !== "WASION") return;
                                 const value = e.target.value.replace(/\D/g, ""); // Solo números
                                 if (value.length <= 5) {
                                     onChange("payroll_number", value);
@@ -92,6 +121,8 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                             maxLength={5}
                             required
                             className={`w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200 dark:placeholder-gray-400 ${
+                                formData.company !== "WASION" ? "bg-gray-100 dark:bg-gray-800" : ""
+                            } ${
                                 errors?.payroll_number
                                     ? "border-red-500 dark:border-red-500"
                                     : ""
@@ -102,7 +133,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                                 {errors.payroll_number}
                             </p>
                         )}
-                        {!errors?.payroll_number && (
+                        {formData.company === "WASION" && !errors?.payroll_number && (
                             <p className="mt-1 text-xs text-gray-500 dark:text-gray-400">
                                 Exactamente 5 dígitos numéricos
                             </p>
@@ -119,7 +150,9 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                     <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         {formData.observation_type === "condicion_insegura"
                             ? "Ubicación"
-                            : "Persona Observada"}{" "}
+                            : formData.company === "WASION" 
+                                ? "Persona Observada"
+                                : "Nombre"}{" "}
                         <span className="text-red-500">*</span>
                     </label>
                     <input
@@ -127,7 +160,9 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                         placeholder={
                             formData.observation_type === "condicion_insegura"
                                 ? "Ej: Cable expuesto en pasillo C / Fuga de aceite en máquina 5"
-                                : "Nombre de la persona observada"
+                                : formData.company === "WASION"
+                                    ? "Nombre de la persona observada"
+                                    : "Nombre completo"
                         }
                         value={formData.observed_person}
                         onChange={(e) =>

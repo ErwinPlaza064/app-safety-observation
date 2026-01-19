@@ -50,6 +50,7 @@ export default function SafetyObservationForm({
             : [],
         description: savedDraft?.description || "",
         photos: [],
+        company: savedDraft?.company || "WASION",
     });
 
     const [errors, setErrors] = useState({});
@@ -85,6 +86,7 @@ export default function SafetyObservationForm({
         formData.observer_name,
         formData.employee_id,
         formData.department,
+        formData.company,
     ]);
 
     useEffect(() => {

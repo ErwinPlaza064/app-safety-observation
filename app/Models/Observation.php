@@ -16,6 +16,7 @@ class Observation extends Model
         'observation_date',
         'payroll_number',
         'observed_person',
+        'company',
         'observation_type',
         'description',
         'status',

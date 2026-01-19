@@ -43,6 +43,7 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
             'Usuario',
             'N. Nómina',
             'Persona Observada',
+            'Empresa',
             'Área',
             'Tipo',
             'Descripción',
@@ -54,7 +55,7 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
     public function map($observation): array
     {
         // Mapear tipo de observación a texto legible
-        $tipo = match($observation->observation_type) {
+        $tipo = match ($observation->observation_type) {
             'acto_inseguro' => 'Acto Inseguro',
             'condicion_insegura' => 'Condición Insegura',
             'acto_seguro' => 'Acto Seguro',
@@ -62,7 +63,7 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
         };
 
         // Mapear estado a texto legible
-        $estado = match($observation->status) {
+        $estado = match ($observation->status) {
             'en_progreso' => 'En Progreso',
             'cerrada' => 'Cerrada',
             'borrador' => 'Borrador',
@@ -75,7 +76,8 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
             $observation->user->name,
             $observation->payroll_number ?? 'N/A',
             $observation->observed_person ?? 'N/A',
-            $observation->area->name,
+            $observation->company ?? 'WASION',
+            $observation->area->name ?? 'N/A',
             $tipo,
             $observation->description,
             $observation->categories->pluck('name')->implode(', '),
@@ -91,18 +93,19 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
             'C' => 20,  // Usuario
             'D' => 12,  // N. Nómina
             'E' => 20,  // Persona Observada
-            'F' => 15,  // Área
-            'G' => 18,  // Tipo
-            'H' => 50,  // Descripción
-            'I' => 30,  // Categorías
-            'J' => 15,  // Estado
+            'F' => 15,  // Empresa
+            'G' => 15,  // Área
+            'H' => 18,  // Tipo
+            'I' => 50,  // Descripción
+            'J' => 30,  // Categorías
+            'K' => 15,  // Estado
         ];
     }
 
     public function styles(Worksheet $sheet)
     {
         // Estilo del encabezado
-        $sheet->getStyle('A1:J1')->applyFromArray([
+        $sheet->getStyle('A1:K1')->applyFromArray([
             'font' => [
                 'bold' => true,
                 'color' => ['rgb' => 'FFFFFF'],
@@ -132,7 +135,7 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
 
         // Estilo para todas las celdas de datos
         if ($rowCount > 1) {
-            $sheet->getStyle('A2:J' . $rowCount)->applyFromArray([
+            $sheet->getStyle('A2:K' . $rowCount)->applyFromArray([
                 'borders' => [
                     'allBorders' => [
                         'borderStyle' => Border::BORDER_THIN,
@@ -148,13 +151,13 @@ class ObservationsExport implements FromQuery, WithHeadings, WithMapping, WithSt
             // Centrar columnas específicas
             $sheet->getStyle('A2:B' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
             $sheet->getStyle('D2:D' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('F2:G' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
-            $sheet->getStyle('J2:J' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('F2:H' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
+            $sheet->getStyle('K2:K' . $rowCount)->getAlignment()->setHorizontal(Alignment::HORIZONTAL_CENTER);
 
             // Alternar colores de filas
             for ($row = 2; $row <= $rowCount; $row++) {
                 if ($row % 2 == 0) {
-                    $sheet->getStyle('A' . $row . ':J' . $row)->applyFromArray([
+                    $sheet->getStyle('A' . $row . ':K' . $row)->applyFromArray([
                         'fill' => [
                             'fillType' => Fill::FILL_SOLID,
                             'startColor' => ['rgb' => 'F9FAFB'],

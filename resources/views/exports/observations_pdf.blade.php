@@ -284,24 +284,30 @@
                     <div class="info-value">{{ $obs->area->name }}</div>
                 </div>
             </div>
-            @if($obs->payroll_number || $obs->observed_person)
+            @if($obs->payroll_number || $obs->observed_person || $obs->company)
             <div class="info-row">
                 @if($obs->payroll_number)
                 <div class="info-item">
-                    <div class="info-label">N. Nómina:</div>
+                    <div class="info-label">{{ $obs->company === 'WASION' ? 'N. Nómina:' : 'Identificador:' }}</div>
                     <div class="info-value">{{ $obs->payroll_number }}</div>
                 </div>
                 @endif
                 @if($obs->observed_person)
                 <div class="info-item">
-                    <div class="info-label">Persona observada:</div>
+                    <div class="info-label">{{ $obs->company === 'WASION' ? 'Persona observada:' : 'Nombre:' }}</div>
                     <div class="info-value">{{ $obs->observed_person }}</div>
                 </div>
                 @endif
-                @if(!$obs->payroll_number || !$obs->observed_person)
-                <div class="info-item"></div>
-                @endif
             </div>
+            @if($obs->company)
+            <div class="info-row">
+                <div class="info-item">
+                    <div class="info-label">Empresa:</div>
+                    <div class="info-value">{{ $obs->company }}</div>
+                </div>
+                <div class="info-item"></div>
+            </div>
+            @endif
             @endif
         </div>
 
