@@ -105,4 +105,16 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
         ->name('participation.observations');
 });
 
+Route::get('/test-graph-final', function () {
+    try {
+        Mail::raw('¡Funciona! Este es un correo de prueba enviado vía Microsoft Graph API desde Laravel.', function ($message) {
+            $message->to('erwin.martinez@wasionmx.onmicrosoft.com')
+                ->subject('✅ Prueba Final Microsoft Graph');
+        });
+        return "Correo enviado exitosamente. Revisa tu bandeja de entrada.";
+    } catch (\Exception $e) {
+        return "Error: " . $e->getMessage();
+    }
+});
+
 require __DIR__ . '/auth.php';
