@@ -18,7 +18,7 @@ export default function ObservationDetailsModal({
     const { data, setData, post, processing, errors, reset } = useForm({
         closure_notes: "",
         photos: [],
-        _method: 'PUT' // Para que Laravel reconozca el PUT con FormData
+        _method: 'PUT' 
     });
 
     if (!observation) return null;
