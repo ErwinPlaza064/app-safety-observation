@@ -97,7 +97,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                                 // Auto-set payroll number for external companies
                                 if (newCompany === "PROVEDORES") onChange("payroll_number", "99999");
                                 else if (newCompany === "EXTRANJERO") onChange("payroll_number", "99998");
-                                else if (newCompany === "LSCR") onChange("payroll_number", "99997");
+                                else if (newCompany === "LSR") onChange("payroll_number", "99997");
                                 else if (newCompany === "WASION") onChange("payroll_number", "");
                             }}
                             className="w-full px-4 py-2 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] dark:bg-gray-700 dark:border-gray-600 dark:text-gray-200"
@@ -105,7 +105,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                             <option value="WASION">WASION</option>
                             <option value="PROVEDORES">PROVEDORES</option>
                             <option value="EXTRANJERO">EXTRANJERO</option>
-                            <option value="LSCR">LSCR</option>
+                            <option value="LSR">LSR</option>
                         </select>
                     </div>
                 </>
