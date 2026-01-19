@@ -80,6 +80,10 @@ return [
             'transport' => 'array',
         ],
 
+        'microsoft_graph' => [
+            'transport' => 'microsoft_graph',
+        ],
+
         'failover' => [
             'transport' => 'failover',
             'mailers' => [
