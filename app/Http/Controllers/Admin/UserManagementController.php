@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Illuminate\Validation\Rule;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Facades\Excel;
 use App\Imports\UsersImport;
 use Symfony\Component\HttpFoundation\StreamedResponse;
@@ -167,18 +168,41 @@ class UserManagementController extends Controller
 
     public function destroy(Request $request, User $user)
     {
+        Log::info('Iniciando proceso de eliminación de usuario', [
+            'admin_id' => $request->user()->id,
+            'target_user_id' => $user->id,
+            'target_user_email' => $user->email
+        ]);
+
         if ($user->id === $request->user()->id) {
-            return Redirect::route('dashboard')->with('error', 'No puedes eliminar tu propia cuenta');
+            Log::warning('Intento de auto-eliminación bloqueado', ['user_id' => $user->id]);
+            return Redirect::route('dashboard')->with('error', 'No puedes eliminar tu propia cuenta.');
         }
 
         // Verificar si tiene observaciones registradas o cerradas
-        if ($user->observations()->count() > 0 || \App\Models\Observation::where('closed_by', $user->id)->count() > 0) {
-            return Redirect::route('dashboard')->with('error', 'No se puede eliminar este usuario porque tiene observaciones asociadas (creadas o cerradas).');
+        $observationsCount = $user->observations()->count();
+        $closedCount = \App\Models\Observation::where('closed_by', $user->id)->count();
+
+        if ($observationsCount > 0 || $closedCount > 0) {
+            Log::warning('Eliminación de usuario bloqueada por datos asociados', [
+                'user_id' => $user->id,
+                'observations_count' => $observationsCount,
+                'closed_observations_count' => $closedCount
+            ]);
+            return Redirect::route('dashboard')->with('error', "No se puede eliminar este usuario porque tiene {$observationsCount} observaciones creadas y {$closedCount} cerradas. Debe eliminar o reasignar estos datos primero.");
         }
 
-        $user->delete();
-
-        return Redirect::route('dashboard')->with('success', 'Usuario eliminado exitosamente');
+        try {
+            $user->delete();
+            Log::info('Usuario eliminado exitosamente', ['user_id' => $user->id]);
+            return Redirect::route('dashboard')->with('success', 'Usuario eliminado exitosamente.');
+        } catch (\Exception $e) {
+            Log::error('Error al eliminar usuario', [
+                'user_id' => $user->id,
+                'error' => $e->getMessage()
+            ]);
+            return Redirect::route('dashboard')->with('error', 'Error técnico al intentar eliminar el usuario: ' . $e->getMessage());
+        }
     }
 
     public function import(Request $request)
