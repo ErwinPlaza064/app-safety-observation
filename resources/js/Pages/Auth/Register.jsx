@@ -7,7 +7,7 @@ import { Head, Link, useForm } from "@inertiajs/react";
 import { useState, useMemo } from "react";
 import ThemeToggle from "@/Components/ThemeToggle";
 
-export default function Register() {
+export default function Register({ areas = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         employee_number: "",
         name: "",
@@ -175,15 +175,21 @@ export default function Register() {
                             htmlFor="area"
                             value="Área / Departamento"
                         />
-                        <TextInput
+                        <select
                             id="area"
                             name="area"
                             value={data.area}
-                            className="block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm"
-                            autoComplete="organization-title"
+                            className="block w-full mt-1 text-sm bg-gray-100 border-transparent rounded-full shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white py-[9px]"
                             onChange={(e) => setData("area", e.target.value)}
-                            placeholder="Ej: Almacén"
-                        />
+                            required
+                        >
+                            <option value="">Selecciona...</option>
+                            {areas.map((area) => (
+                                <option key={area.id} value={area.id}>
+                                    {area.name}
+                                </option>
+                            ))}
+                        </select>
                         <InputError message={errors.area} className="mt-2" />
                     </div>
                     <div>
@@ -221,7 +227,7 @@ export default function Register() {
                     />
                     <InputError message={errors.email} className="mt-2" />
                     <p className="mt-1 text-xs text-gray-500">
-                        Solo se permiten correos @wasion.cn o @wasion.com
+                        Solo se permiten correos @wasion.cn, @wasion.com o @wasionmx.onmicrosoft.com
                     </p>
                 </div>
 
@@ -408,7 +414,7 @@ export default function Register() {
                                     r="10"
                                     stroke="currentColor"
                                     strokeWidth="4"
-                                ></circle>
+                                Red   ></circle>
                                 <path
                                     className="opacity-75"
                                     fill="currentColor"

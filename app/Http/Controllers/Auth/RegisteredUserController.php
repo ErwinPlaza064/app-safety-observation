@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\RegisterRequest;
+use App\Models\Area;
 use App\Models\User;
 use Illuminate\Auth\Events\Registered;
 use Illuminate\Http\RedirectResponse;
@@ -19,7 +20,9 @@ class RegisteredUserController extends Controller
      */
     public function create(): Response
     {
-        return Inertia::render('Auth/Register');
+        return Inertia::render('Auth/Register', [
+            'areas' => Area::active()->orderBy('name')->get(['id', 'name'])
+        ]);
     }
 
     /**
@@ -31,11 +34,24 @@ class RegisteredUserController extends Controller
     {
         Log::info('Iniciando registro de usuario', ['email' => $request->email]);
 
+        // Buscar el nombre del área si se envió un ID
+        $areaName = $request->area;
+        $areaId = null;
+
+        if (is_numeric($request->area)) {
+            $area = Area::find($request->area);
+            if ($area) {
+                $areaName = $area->name;
+                $areaId = $area->id;
+            }
+        }
+
         $user = User::create([
             'employee_number' => $request->employee_number,
             'name' => $request->name,
             'email' => $request->email,
-            'area' => $request->area,
+            'area_id' => $areaId,
+            'area' => $areaName,
             'position' => $request->position,
             'password' => Hash::make($request->password),
         ]);
