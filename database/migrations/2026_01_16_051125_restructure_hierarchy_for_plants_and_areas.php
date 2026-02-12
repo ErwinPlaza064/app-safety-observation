@@ -106,20 +106,11 @@ return new class extends Migration
         }
     }
 
-    private function hasIndex($table, $index)
+    private function hasIndex($table, $indexName)
     {
-        $conn = Schema::getConnection();
-        $dbName = $conn->getDatabaseName();
-
-        $results = DB::select("
-            SELECT INDEX_NAME 
-            FROM INFORMATION_SCHEMA.STATISTICS 
-            WHERE TABLE_SCHEMA = ? 
-            AND TABLE_NAME = ? 
-            AND INDEX_NAME = ?
-        ", [$dbName, $table, $index]);
-
-        return count($results) > 0;
+        $schemaBuilder = Schema::getConnection()->getSchemaBuilder();
+        $indexes = $schemaBuilder->getIndexes($table);
+        return collect($indexes)->contains('name', $indexName);
     }
 
     /**
