@@ -42,9 +42,12 @@ return new class extends Migration
     private function addIndexIfMissing($table, $column)
     {
         $indexName = "{$table}_{$column}_index";
-        $exists = DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
+        $schemaBuilder = Schema::getConnection()->getSchemaBuilder();
 
-        if (empty($exists)) {
+        $indexes = $schemaBuilder->getIndexes($table);
+        $exists = collect($indexes)->contains('name', $indexName);
+
+        if (!$exists) {
             Schema::table($table, function (Blueprint $tableObj) use ($column) {
                 $tableObj->index($column);
             });
@@ -54,9 +57,12 @@ return new class extends Migration
     private function dropIndexIfExists($table, $column)
     {
         $indexName = "{$table}_{$column}_index";
-        $exists = DB::select("SHOW INDEX FROM {$table} WHERE Key_name = ?", [$indexName]);
+        $schemaBuilder = Schema::getConnection()->getSchemaBuilder();
 
-        if (!empty($exists)) {
+        $indexes = $schemaBuilder->getIndexes($table);
+        $exists = collect($indexes)->contains('name', $indexName);
+
+        if ($exists) {
             Schema::table($table, function (Blueprint $tableObj) use ($column) {
                 $tableObj->dropIndex([$column]);
             });
