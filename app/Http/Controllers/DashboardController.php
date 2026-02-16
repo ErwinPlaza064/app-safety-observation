@@ -321,7 +321,7 @@ class DashboardController extends Controller
                     if ($currentPlantId) {
                         $q->where('plant_id', $currentPlantId);
                     }
-                    $q->with($baseRelations)->latest()->take(50); // Cargar lista para el modal (limitado)
+                    $q->with($baseRelations)->latest('observations.created_at')->take(50); // Cargar lista para el modal (limitado)
                 }])
                 ->withCount(['observations' => function ($q) use ($currentPlantId) {
                     $q->submitted();
@@ -345,7 +345,7 @@ class DashboardController extends Controller
                     if ($currentPlantId) {
                         $q->where('plant_id', $currentPlantId);
                     }
-                    $q->with($baseRelations)->latest()->take(50);
+                    $q->with($baseRelations)->latest('observations.created_at')->take(50);
                 }])
                 ->withCount(['observations' => function ($q) use ($currentPlantId) {
                     $q->submitted();
@@ -366,7 +366,7 @@ class DashboardController extends Controller
             // OPTIMIZACIÓN: Top categorías con relaciones selectivas (Solo cargar las últimas 10 observaciones por categoría)
             $topCategories = Category::where('is_active', true)
                 ->with(['observations' => function ($q) use ($applyFilters, $baseRelations) {
-                    $applyFilters($q)->with($baseRelations)->latest()->take(10);
+                    $applyFilters($q)->with($baseRelations)->latest('observations.created_at')->take(10);
                 }])
                 ->withCount(['observations' => function ($q) use ($applyFilters) {
                     $applyFilters($q);
