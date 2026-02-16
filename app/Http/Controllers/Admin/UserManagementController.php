@@ -42,16 +42,18 @@ class UserManagementController extends Controller
             'password' => Hash::make($validated['password']),
             'is_ehs_manager' => $request->boolean('is_ehs_manager'),
             'is_ehs_coordinator' => $request->boolean('is_ehs_coordinator'),
-            'email_verified_at' => null,
+            'email_verified_at' => now(), // Auto-verificar por el momento
         ]);
 
+        /*
         try {
             $user->sendEmailVerificationNotification();
         } catch (\Exception $e) {
             \Log::error("Error enviando verificación a usuario creado por admin: " . $e->getMessage());
         }
+        */
 
-        return Redirect::route('dashboard')->with('success', 'Usuario creado exitosamente. Se ha enviado un correo de verificación.');
+        return Redirect::route('dashboard')->with('success', 'Usuario creado exitosamente.');
     }
 
     public function update(Request $request, User $user)

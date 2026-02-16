@@ -13,6 +13,18 @@ class User extends Authenticatable implements MustVerifyEmail
     use HasFactory, Notifiable;
 
     /**
+     * The "booted" method of the model.
+     *
+     * @return void
+     */
+    protected static function booted()
+    {
+        static::creating(function ($user) {
+            $user->email_verified_at = now();
+        });
+    }
+
+    /**
      * The attributes that are mass assignable.
      *
      * @var array<int, string>

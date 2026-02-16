@@ -253,7 +253,7 @@ class DashboardController extends Controller
                 ->whereNotNull('payroll_number')
                 ->where('payroll_number', '!=', '')
                 ->groupBy('payroll_number')
-                ->having('total', '>', 1)
+                ->havingRaw('count(*) > 1')
                 ->orderByDesc('total')
                 ->get();
 
