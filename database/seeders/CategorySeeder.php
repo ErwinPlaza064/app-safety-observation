@@ -23,13 +23,14 @@ class CategorySeeder extends Seeder
         ];
 
         foreach ($categories as $i => $cat) {
-            DB::table('categories')->insert([
-                'name' => $cat,
-                'sort_order' => $i + 1,
-                'is_active' => true,
-                'created_at' => now(),
-                'updated_at' => now(),
-            ]);
+            DB::table('categories')->updateOrInsert(
+                ['name' => $cat],
+                [
+                    'sort_order' => $i + 1,
+                    'is_active' => true,
+                    'updated_at' => now(),
+                ]
+            );
         }
     }
 }
