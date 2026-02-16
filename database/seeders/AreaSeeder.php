@@ -13,8 +13,8 @@ class AreaSeeder extends Seeder
     public function run(): void
     {
         // Limpiar áreas que fueron creadas erróneamente con nombres de plantas
-        \App\Models\Area::whereNull('plant_id')
-            ->where('name', 'like', 'Planta%')
+        // Ya que las áreas ahora son globales e independientes de las plantas.
+        \App\Models\Area::where('name', 'like', 'Planta%')
             ->delete();
 
         $this->command->info('Áreas duplicadas (Plantas) eliminadas de la tabla de áreas.');

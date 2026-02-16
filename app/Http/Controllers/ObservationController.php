@@ -232,7 +232,7 @@ class ObservationController extends Controller
             'observations' => $observations,
             'filters' => $request->only(['status', 'observation_type', 'area_id']),
             'areas' => Area::active()->get(),
-            'plants' => \App\Models\Plant::with('areas')->where('is_active', true)->get(),
+            'plants' => \App\Models\Plant::where('is_active', true)->get(),
         ]);
     }
 

@@ -71,7 +71,7 @@ class DashboardController extends Controller
 
             // Datos para filtros y gestión
             $data['plants'] = Plant::withCount(['observations', 'users'])->get()->sortBy('name')->values();
-            $data['areas'] = Area::whereNotNull('plant_id')->withCount('observations')->orderBy('name')->get();
+            $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
         }
 
@@ -79,13 +79,7 @@ class DashboardController extends Controller
         // 2. LÓGICA PARA EMPLEADO REGULAR
         // ==========================================
         if (!$user->is_super_admin && !$user->is_ehs_manager) {
-            $data['areas'] = Area::where('is_active', true)
-                ->when($user->plant_id, function ($q) use ($user) {
-                    $q->where('plant_id', $user->plant_id);
-                }, function ($q) {
-                    $q->whereNotNull('plant_id');
-                })
-                ->get();
+            $data['areas'] = Area::where('is_active', true)->get();
             $data['plants'] = Plant::where('is_active', true)->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
 
@@ -109,7 +103,7 @@ class DashboardController extends Controller
                 ->where('status', 'en_progreso')
                 ->where('is_draft', false)
                 ->with($baseRelations)
-                ->latest()
+                ->latest('observations.created_at')
                 ->get();
 
             $data['employeeNotificationCount'] = $data['employeeNotifications']->count();
@@ -119,7 +113,7 @@ class DashboardController extends Controller
                     ->where('is_draft', false)
                     ->where('status', request('filter_status'))
                     ->with($baseRelations)
-                    ->latest()
+                    ->latest('observations.created_at')
                     ->get();
             }
 
@@ -132,7 +126,7 @@ class DashboardController extends Controller
 
             $draft = Observation::where('user_id', $user->id)
                 ->where('is_draft', true)
-                ->latest()
+                ->latest('observations.created_at')
                 ->first();
 
             if ($draft) {
@@ -159,12 +153,8 @@ class DashboardController extends Controller
                 ? request('plant_id') // Sin default - si viene vacío, muestra TODAS
                 : $user->plant_id;
 
-            // Filtrar áreas según la planta seleccionada
-            $data['areas'] = Area::where('is_active', true)
-                ->when($currentPlantId, function ($q) use ($currentPlantId) {
-                    $q->where('plant_id', $currentPlantId);
-                })
-                ->get();
+            // Las áreas son globales
+            $data['areas'] = Area::where('is_active', true)->get();
 
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [
@@ -197,7 +187,7 @@ class DashboardController extends Controller
             }
 
             $recentObservations = $query
-                ->orderByDesc('created_at')
+                ->orderByDesc('observations.created_at')
                 ->take(100)
                 ->get();
 
@@ -212,7 +202,7 @@ class DashboardController extends Controller
             // OPTIMIZACIÓN: Cargar todas las observaciones filtradas UNA SOLA VEZ
             $allFilteredObservations = $applyFilters(Observation::query())
                 ->with($baseRelations)
-                ->latest('created_at')
+                ->latest('observations.created_at')
                 ->get();
 
             // Usar la colección cargada para todas las estadísticas
@@ -405,7 +395,7 @@ class DashboardController extends Controller
                     $planta1Observations = Observation::submitted()
                         ->where('plant_id', $planta1->id)
                         ->with($baseRelations)
-                        ->latest()
+                        ->latest('observations.created_at')
                         ->take(20)
                         ->get();
 
