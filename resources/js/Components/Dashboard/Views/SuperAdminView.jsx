@@ -43,7 +43,7 @@ export default function SuperAdminView({
             router.get(route("dashboard"), params, {
                 preserveState: true,
                 replace: true,
-                only: ["users", "filters"],
+                only: ["users", "filters", "areas"],
             });
         }, 300);
 

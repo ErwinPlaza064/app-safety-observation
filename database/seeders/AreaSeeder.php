@@ -12,18 +12,11 @@ class AreaSeeder extends Seeder
      */
     public function run(): void
     {
-        $areas = [
-            'Planta 1',
-            'Planta 3',
-            'Planta 5',
-            'Planta 7',
-        ];
+        // Limpiar áreas que fueron creadas erróneamente con nombres de plantas
+        \App\Models\Area::whereNull('plant_id')
+            ->where('name', 'like', 'Planta%')
+            ->delete();
 
-        foreach ($areas as $areaName) {
-            Area::firstOrCreate(
-                ['name' => $areaName],
-                ['is_active' => true]
-            );
-        }
+        $this->command->info('Áreas duplicadas (Plantas) eliminadas de la tabla de áreas.');
     }
 }

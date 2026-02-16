@@ -38,21 +38,31 @@ class AdminUserSeeder extends Seeder
             $exists = User::where('email', $manager['email'])->exists();
 
             if (!$exists) {
+                $plant = \App\Models\Plant::where('name', $manager['area'])->first();
+
                 User::create([
                     'employee_number' => 'EHS-' . strtoupper(str_replace(' ', '', $manager['area'])),
                     'name' => $manager['name'],
                     'email' => $manager['email'],
                     'password' => Hash::make('Wasion2025'),
+                    'plant_id' => $plant ? $plant->id : null,
                     'area' => $manager['area'],
                     'position' => $manager['position'],
                     'is_ehs_manager' => true,
                     'email_verified_at' => now(),
                 ]);
-                $this->command->info("Usuario creado: {$manager['email']}");
+                $this->command->info("Usuario creado: {$manager['email']} con Planta ID: " . ($plant ? $plant->id : 'N/A'));
             } else {
+                $user = User::where('email', $manager['email'])->first();
+                $plant = \App\Models\Plant::where('name', $manager['area'])->first();
+
+                if ($plant && !$user->plant_id) {
+                    $user->update(['plant_id' => $plant->id]);
+                    $this->command->info("Planta ID actualizada para: {$manager['email']}");
+                }
+
                 $this->command->warn("El usuario {$manager['email']} ya existe.");
             }
         }
-
     }
 }

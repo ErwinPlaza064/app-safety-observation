@@ -17,11 +17,14 @@ class UserSeeder extends Seeder
         $employeeExists = User::where('email', 'employee@wasion.com')->exists();
 
         if (!$employeeExists) {
+            $plant = \App\Models\Plant::where('name', 'Planta 1')->first();
+
             User::create([
                 'employee_number' => 'EMP-001',
                 'name' => 'Empleado de Prueba',
                 'email' => 'employee@wasion.com',
                 'password' => Hash::make('password'),
+                'plant_id' => $plant ? $plant->id : null,
                 'area' => 'Producción',
                 'position' => 'Operador',
                 'is_ehs_manager' => false,

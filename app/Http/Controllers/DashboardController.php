@@ -71,7 +71,7 @@ class DashboardController extends Controller
 
             // Datos para filtros y gestión
             $data['plants'] = Plant::withCount(['observations', 'users'])->get()->sortBy('name')->values();
-            $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
+            $data['areas'] = Area::whereNotNull('plant_id')->withCount('observations')->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
         }
 
@@ -79,7 +79,13 @@ class DashboardController extends Controller
         // 2. LÓGICA PARA EMPLEADO REGULAR
         // ==========================================
         if (!$user->is_super_admin && !$user->is_ehs_manager) {
-            $data['areas'] = Area::where('is_active', true)->get();
+            $data['areas'] = Area::where('is_active', true)
+                ->when($user->plant_id, function ($q) use ($user) {
+                    $q->where('plant_id', $user->plant_id);
+                }, function ($q) {
+                    $q->whereNotNull('plant_id');
+                })
+                ->get();
             $data['plants'] = Plant::where('is_active', true)->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
 
@@ -153,8 +159,12 @@ class DashboardController extends Controller
                 ? request('plant_id') // Sin default - si viene vacío, muestra TODAS
                 : $user->plant_id;
 
-            // Mantener areas globales para otros usos si es necesario
-            $data['areas'] = Area::where('is_active', true)->get();
+            // Filtrar áreas según la planta seleccionada
+            $data['areas'] = Area::where('is_active', true)
+                ->when($currentPlantId, function ($q) use ($currentPlantId) {
+                    $q->where('plant_id', $currentPlantId);
+                })
+                ->get();
 
             // Configurar relaciones optimizadas (solo campos necesarios)
             $baseRelations = [

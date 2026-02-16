@@ -46,7 +46,7 @@ export default function EhsManagerView({
 
         if (observationId && stats.recent) {
             const obs = stats.recent.find(
-                (o) => o.id === parseInt(observationId)
+                (o) => o.id === parseInt(observationId),
             );
             if (obs) {
                 setSelectedObservation(obs);
@@ -81,12 +81,16 @@ export default function EhsManagerView({
     const [activeMetric, setActiveMetric] = useState(null);
     const [activeTab, setActiveTab] = useState("actos");
 
-    const filteredRecent = stats.recent?.filter((obs) => {
-        if (activeTab === "actos") {
-            return obs.observation_type === "acto_seguro" || obs.observation_type === "acto_inseguro";
-        }
-        return obs.observation_type === "condicion_insegura";
-    }) || [];
+    const filteredRecent =
+        stats.recent?.filter((obs) => {
+            if (activeTab === "actos") {
+                return (
+                    obs.observation_type === "acto_seguro" ||
+                    obs.observation_type === "acto_inseguro"
+                );
+            }
+            return obs.observation_type === "condicion_insegura";
+        }) || [];
 
     const [params, setParams] = useState({
         search: filters?.search || "",
@@ -106,7 +110,7 @@ export default function EhsManagerView({
             router.get(route("dashboard"), params, {
                 preserveState: true,
                 preserveScroll: true,
-                only: ["ehsStats", "filters"],
+                only: ["ehsStats", "filters", "areas"],
                 replace: true,
             });
         }, 300);
@@ -136,7 +140,7 @@ export default function EhsManagerView({
                         setHistoryData(page.props.ehsStats.recent);
                         setLoadingHistory(false);
                     },
-                }
+                },
             );
         } catch (error) {
             console.error(error);
@@ -207,16 +211,27 @@ export default function EhsManagerView({
                         </p>
                         {canViewAllPlants && plants && plants.length > 0 && (
                             <div className="flex items-center gap-2 px-2 py-1 bg-blue-50/50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-lg animate-fade-in">
-                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">Planta:</span>
+                                <span className="text-xs font-semibold text-blue-600 dark:text-blue-400 uppercase tracking-wider">
+                                    Planta:
+                                </span>
                                 <select
                                     name="plant_id"
                                     value={params.plant_id}
                                     onChange={handleFilterChange}
                                     className="bg-transparent border-none text-sm font-bold text-blue-700 dark:text-blue-400 focus:ring-0 py-0 pl-1 pr-8 cursor-pointer hover:text-blue-800 transition-colors"
                                 >
-                                    <option value="" className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">Todas las Plantas</option>
+                                    <option
+                                        value=""
+                                        className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                    >
+                                        Todas las Plantas
+                                    </option>
                                     {plants.map((plant) => (
-                                        <option key={plant.id} value={plant.id} className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100">
+                                        <option
+                                            key={plant.id}
+                                            value={plant.id}
+                                            className="bg-white dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+                                        >
                                             {plant.name}
                                         </option>
                                     ))}
@@ -369,24 +384,56 @@ export default function EhsManagerView({
             </div>
             <div
                 className={`grid grid-cols-1 gap-6 ${
-                    canViewAllPlants ? "lg:grid-cols-2 xl:grid-cols-4" : "lg:grid-cols-2"
+                    canViewAllPlants
+                        ? "lg:grid-cols-2 xl:grid-cols-4"
+                        : "lg:grid-cols-2"
                 }`}
             >
                 {canViewAllPlants && stats.by_real_plant && (
                     <div className="p-6 bg-white shadow-sm dark:bg-gray-800 rounded-xl">
                         <h3 className="flex items-center mb-6 text-lg font-semibold text-gray-800 dark:text-gray-100">
-                            <svg className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" /></svg>
+                            <svg
+                                className="w-5 h-5 mr-2 text-[#1e3a8a] dark:text-blue-400"
+                                fill="none"
+                                stroke="currentColor"
+                                viewBox="0 0 24 24"
+                            >
+                                <path
+                                    strokeLinecap="round"
+                                    strokeLinejoin="round"
+                                    strokeWidth={2}
+                                    d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"
+                                />
+                            </svg>
                             Distribución por Planta
                         </h3>
                         <div className="space-y-4">
                             {stats.by_real_plant.map((plant, index) => (
-                                <div key={index} onClick={() => handleGenericClick(`Reportes: ${plant.name}`, plant.list)} className="cursor-pointer group">
+                                <div
+                                    key={index}
+                                    onClick={() =>
+                                        handleGenericClick(
+                                            `Reportes: ${plant.name}`,
+                                            plant.list,
+                                        )
+                                    }
+                                    className="cursor-pointer group"
+                                >
                                     <div className="flex justify-between mb-1 text-sm">
-                                        <span className="font-medium text-gray-600 transition-colors dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">{plant.name}</span>
-                                        <span className="font-semibold text-gray-800 dark:text-gray-100">{plant.count}</span>
+                                        <span className="font-medium text-gray-600 transition-colors dark:text-gray-300 group-hover:text-blue-600 dark:group-hover:text-blue-400">
+                                            {plant.name}
+                                        </span>
+                                        <span className="font-semibold text-gray-800 dark:text-gray-100">
+                                            {plant.count}
+                                        </span>
                                     </div>
                                     <div className="w-full bg-gray-100 dark:bg-gray-700 rounded-full h-2.5">
-                                        <div className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400" style={{ width: `${(plant.count / Math.max(...stats.by_real_plant.map((p) => p.count), 1)) * 100}%` }}></div>
+                                        <div
+                                            className="bg-[#1e3a8a] dark:bg-blue-500 h-2.5 rounded-full transition-all group-hover:bg-blue-500 dark:group-hover:bg-blue-400"
+                                            style={{
+                                                width: `${(plant.count / Math.max(...stats.by_real_plant.map((p) => p.count), 1)) * 100}%`,
+                                            }}
+                                        ></div>
                                     </div>
                                 </div>
                             ))}
@@ -419,7 +466,7 @@ export default function EhsManagerView({
                                     onClick={() =>
                                         handleGenericClick(
                                             `Reportes: ${plant.name}`,
-                                            plant.list
+                                            plant.list,
                                         )
                                     }
                                     className="cursor-pointer group"
@@ -440,9 +487,9 @@ export default function EhsManagerView({
                                                     (plant.count /
                                                         Math.max(
                                                             ...stats.by_plant.map(
-                                                                (p) => p.count
+                                                                (p) => p.count,
                                                             ),
-                                                            1
+                                                            1,
                                                         )) *
                                                     100
                                                 }%`,
@@ -467,7 +514,7 @@ export default function EhsManagerView({
                                 onClick={() =>
                                     handleGenericClick(
                                         `Categoría: ${cat.name}`,
-                                        cat.list
+                                        cat.list,
                                     )
                                 }
                                 className="flex items-center justify-between p-3 transition-colors border border-transparent rounded-lg cursor-pointer bg-gray-50 dark:bg-gray-700 hover:bg-purple-50 dark:hover:bg-purple-900/30 hover:border-purple-200 dark:hover:border-purple-700"
@@ -475,7 +522,7 @@ export default function EhsManagerView({
                                 <div className="flex items-center">
                                     <span
                                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-bold mr-3 ${getCategoryColor(
-                                            index
+                                            index,
                                         )}`}
                                     >
                                         {index + 1}
@@ -611,10 +658,16 @@ export default function EhsManagerView({
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th className="px-6 py-3">Folio</th>
-                                        <th className="px-6 py-3">Persona Observada</th>
-                                        <th className="px-6 py-3">Observador</th>
+                                        <th className="px-6 py-3">
+                                            Persona Observada
+                                        </th>
+                                        <th className="px-6 py-3">
+                                            Observador
+                                        </th>
                                         <th className="px-6 py-3">Fecha</th>
-                                        <th className="px-6 py-3">Descripción</th>
+                                        <th className="px-6 py-3">
+                                            Descripción
+                                        </th>
                                         <th className="px-6 py-3">Planta</th>
                                         <th className="px-6 py-3">Área</th>
                                         <th className="px-6 py-3">Estado</th>
@@ -638,7 +691,7 @@ export default function EhsManagerView({
                                             </td>
                                             <td className="px-6 py-4 whitespace-nowrap">
                                                 {new Date(
-                                                    obs.observation_date
+                                                    obs.observation_date,
                                                 ).toLocaleDateString()}
                                             </td>
                                             <td className="px-6 py-4 max-w-xs">
@@ -712,7 +765,9 @@ export default function EhsManagerView({
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
                                         <th className="px-6 py-3">
-                                            {activeTab === "actos" ? "Observada" : "Condición"}
+                                            {activeTab === "actos"
+                                                ? "Observada"
+                                                : "Condición"}
                                         </th>
                                         <th className="px-6 py-3">
                                             Descripción
@@ -756,9 +811,11 @@ export default function EhsManagerView({
                                                 <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                                     {obs.plant?.name || "N/A"}
                                                 </td>
-                                                {activeTab !== "condiciones" && (
+                                                {activeTab !==
+                                                    "condiciones" && (
                                                     <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
-                                                        {obs.area?.name || "N/A"}
+                                                        {obs.area?.name ||
+                                                            "N/A"}
                                                     </td>
                                                 )}
                                                 <td className="px-6 py-4">
@@ -768,9 +825,9 @@ export default function EhsManagerView({
                                                             "en_progreso"
                                                                 ? "bg-blue-100 text-blue-800"
                                                                 : obs.status ===
-                                                                  "cerrada"
-                                                                ? "bg-green-100 text-green-800"
-                                                                : "bg-gray-100 text-gray-800"
+                                                                    "cerrada"
+                                                                  ? "bg-green-100 text-green-800"
+                                                                  : "bg-gray-100 text-gray-800"
                                                         }`}
                                                     >
                                                         {obs.status ===
@@ -781,7 +838,7 @@ export default function EhsManagerView({
                                                 </td>
                                                 <td className="px-6 py-4 text-gray-900 dark:text-gray-200">
                                                     {new Date(
-                                                        obs.observation_date
+                                                        obs.observation_date,
                                                     ).toLocaleDateString()}
                                                 </td>
                                             </tr>
@@ -811,47 +868,49 @@ export default function EhsManagerView({
                     activeMetric === "custom"
                         ? customDrillDown.title
                         : activeMetric === "recidivism"
-                        ? "Detalle: Personas Reincidentes"
-                        : activeMetric === "high_risk"
-                        ? "Atención Inmediata: Riesgo Alto"
-                        : activeMetric === "open"
-                        ? "Reportes en Progreso"
-                        : activeMetric === "closed"
-                        ? "Reportes Cerrados"
-                        : activeMetric === "total"
-                        ? "Total del Mes"
-                        : activeMetric === "participation_summary"
-                        ? "Resumen de Participación"
-                        : activeMetric === "participation_daily"
-                        ? "Participación de Hoy"
-                        : activeMetric === "participation_weekly"
-                        ? "Participación de la Semana"
-                        : activeMetric === "participation_monthly"
-                        ? "Participación del Mes"
-                        : ""
+                          ? "Detalle: Personas Reincidentes"
+                          : activeMetric === "high_risk"
+                            ? "Atención Inmediata: Riesgo Alto"
+                            : activeMetric === "open"
+                              ? "Reportes en Progreso"
+                              : activeMetric === "closed"
+                                ? "Reportes Cerrados"
+                                : activeMetric === "total"
+                                  ? "Total del Mes"
+                                  : activeMetric === "participation_summary"
+                                    ? "Resumen de Participación"
+                                    : activeMetric === "participation_daily"
+                                      ? "Participación de Hoy"
+                                      : activeMetric === "participation_weekly"
+                                        ? "Participación de la Semana"
+                                        : activeMetric ===
+                                            "participation_monthly"
+                                          ? "Participación del Mes"
+                                          : ""
                 }
                 data={
                     activeMetric === "custom"
                         ? customDrillDown.data
                         : activeMetric === "recidivism"
-                        ? stats.recidivism_list
-                        : activeMetric === "high_risk"
-                        ? stats.high_risk_list
-                        : activeMetric === "open"
-                        ? stats.open_list
-                        : activeMetric === "closed"
-                        ? stats.closed_list
-                        : activeMetric === "total"
-                        ? stats.total_month_list
-                        : activeMetric === "participation_summary"
-                        ? stats
-                        : activeMetric === "participation_daily"
-                        ? stats.participation_daily.list
-                        : activeMetric === "participation_weekly"
-                        ? stats.participation_weekly.list
-                        : activeMetric === "participation_monthly"
-                        ? stats.participation_monthly.list
-                        : []
+                          ? stats.recidivism_list
+                          : activeMetric === "high_risk"
+                            ? stats.high_risk_list
+                            : activeMetric === "open"
+                              ? stats.open_list
+                              : activeMetric === "closed"
+                                ? stats.closed_list
+                                : activeMetric === "total"
+                                  ? stats.total_month_list
+                                  : activeMetric === "participation_summary"
+                                    ? stats
+                                    : activeMetric === "participation_daily"
+                                      ? stats.participation_daily.list
+                                      : activeMetric === "participation_weekly"
+                                        ? stats.participation_weekly.list
+                                        : activeMetric ===
+                                            "participation_monthly"
+                                          ? stats.participation_monthly.list
+                                          : []
                 }
                 type={activeMetric === "custom" ? "open" : activeMetric}
                 onItemClick={(item) => {
