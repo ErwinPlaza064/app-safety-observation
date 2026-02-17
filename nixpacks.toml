@@ -1,7 +1,6 @@
 [phases.setup]
 nixPkgs = ["php82", "php82Packages.composer", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.pdo_pgsql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.dom", "php82Extensions.tokenizer", "nodejs", "postgresql_17"]
 
-
 [phases.install]
 cmds = [
     "composer install --no-dev --optimize-autoloader --no-scripts --ignore-platform-reqs",
@@ -13,10 +12,14 @@ cmds = [
     "npm run build",
     "mkdir -p storage/framework/sessions storage/framework/views storage/framework/cache storage/logs bootstrap/cache",
     "chmod -R 775 storage bootstrap/cache",
+    "printf '[openssl_init]\\nssl_conf = ssl_configuration\\n\\n[ssl_configuration]\\nsystem_default = tls_system_default\\n\\n[tls_system_default]\\nMinProtocol = TLSv1.2\\nCipherString = DEFAULT:@SECLEVEL=0\\n' > /app/openssl-custom.cnf",
     "php artisan config:cache",
     "php artisan route:cache",
     "php artisan view:cache"
 ]
+
+[variables]
+OPENSSL_CONF = "/app/openssl-custom.cnf"
 
 [start]
 cmd = "php artisan migrate --force && php artisan serve --host=0.0.0.0 --port=$PORT"

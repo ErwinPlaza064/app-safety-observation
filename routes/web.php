@@ -36,6 +36,98 @@ Route::get('/trigger-backup', function () {
     }
 });
 
+// TEMPORARY - TLS Diagnostic endpoint
+Route::get('/debug-tls', function () {
+    $r2Endpoint = env('R2_ENDPOINT', 'NOT SET');
+
+    $info = [
+        'php_version' => PHP_VERSION,
+        'openssl_version' => defined('OPENSSL_VERSION_TEXT') ? OPENSSL_VERSION_TEXT : 'N/A',
+        'curl_version' => curl_version(),
+        'env' => [
+            'OPENSSL_CONF' => getenv('OPENSSL_CONF') ?: '(not set)',
+            'SSL_CERT_FILE' => getenv('SSL_CERT_FILE') ?: '(not set)',
+            'CURL_CA_BUNDLE' => getenv('CURL_CA_BUNDLE') ?: '(not set)',
+        ],
+        'r2_endpoint' => $r2Endpoint,
+        'openssl_cnf_exists' => file_exists('/app/openssl-custom.cnf'),
+        'openssl_cnf_contents' => file_exists('/app/openssl-custom.cnf') ? file_get_contents('/app/openssl-custom.cnf') : 'FILE NOT FOUND',
+    ];
+
+    // Test 1: Raw PHP curl with SECLEVEL=0
+    $ch = curl_init();
+    curl_setopt($ch, CURLOPT_URL, $r2Endpoint);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_NOBODY, true);
+    curl_setopt($ch, CURLOPT_TIMEOUT, 10);
+    curl_setopt($ch, CURLOPT_SSLVERSION, CURL_SSLVERSION_TLSv1_2);
+    curl_setopt($ch, CURLOPT_SSL_CIPHER_LIST, 'DEFAULT@SECLEVEL=0');
+
+    $verbose = fopen('php://temp', 'w+');
+    curl_setopt($ch, CURLOPT_STDERR, $verbose);
+    curl_setopt($ch, CURLOPT_VERBOSE, true);
+
+    curl_exec($ch);
+    $info['test_seclevel0'] = [
+        'error' => curl_error($ch),
+        'errno' => curl_errno($ch),
+        'http_code' => curl_getinfo($ch, CURLINFO_HTTP_CODE),
+    ];
+    rewind($verbose);
+    $info['test_seclevel0']['verbose'] = stream_get_contents($verbose);
+    curl_close($ch);
+    fclose($verbose);
+
+    // Test 2: Raw PHP curl with DEFAULT ciphers (no SECLEVEL override)
+    $ch2 = curl_init();
+    curl_setopt($ch2, CURLOPT_URL, $r2Endpoint);
+    curl_setopt($ch2, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch2, CURLOPT_NOBODY, true);
+    curl_setopt($ch2, CURLOPT_TIMEOUT, 10);
+
+    $verbose2 = fopen('php://temp', 'w+');
+    curl_setopt($ch2, CURLOPT_STDERR, $verbose2);
+    curl_setopt($ch2, CURLOPT_VERBOSE, true);
+
+    curl_exec($ch2);
+    $info['test_default'] = [
+        'error' => curl_error($ch2),
+        'errno' => curl_errno($ch2),
+        'http_code' => curl_getinfo($ch2, CURLINFO_HTTP_CODE),
+    ];
+    rewind($verbose2);
+    $info['test_default']['verbose'] = stream_get_contents($verbose2);
+    curl_close($ch2);
+    fclose($verbose2);
+
+    // Test 3: Try connecting to a known-good HTTPS endpoint
+    $ch3 = curl_init();
+    curl_setopt($ch3, CURLOPT_URL, 'https://cloudflare.com');
+    curl_setopt($ch3, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch3, CURLOPT_NOBODY, true);
+    curl_setopt($ch3, CURLOPT_TIMEOUT, 10);
+
+    curl_exec($ch3);
+    $info['test_cloudflare_com'] = [
+        'error' => curl_error($ch3),
+        'errno' => curl_errno($ch3),
+        'http_code' => curl_getinfo($ch3, CURLINFO_HTTP_CODE),
+    ];
+    curl_close($ch3);
+
+    // Test 4: Check if CA certificates exist
+    $caPaths = [
+        '/etc/ssl/certs/ca-certificates.crt',
+        '/etc/ssl/certs/ca-bundle.crt',
+        '/etc/pki/tls/certs/ca-bundle.crt',
+    ];
+    foreach ($caPaths as $p) {
+        $info['ca_files'][$p] = file_exists($p) ? filesize($p) . ' bytes' : 'NOT FOUND';
+    }
+
+    return response()->json($info, 200, [], JSON_PRETTY_PRINT | JSON_UNESCAPED_SLASHES);
+});
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
