@@ -1,5 +1,14 @@
 [phases.setup]
-nixPkgs = ["php82", "php82Packages.composer", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.pdo_pgsql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.dom", "php82Extensions.tokenizer", "nodejs", "postgresql_17", "openssl", "curl", "cacert"]
+nixPkgs = ["php82", "php82Packages.composer", "php82Extensions.pdo", "php82Extensions.pdo_mysql", "php82Extensions.pdo_pgsql", "php82Extensions.mbstring", "php82Extensions.curl", "php82Extensions.zip", "php82Extensions.dom", "php82Extensions.tokenizer", "nodejs", "postgresql_17", "openssl", "curl"]
+nixOverlays = []
+nixLibs = []
+
+[phases.setup.nixpkgsArchive]
+archive = "e24b4c09e963677b1beea49d411cd315a024ad3a"
+
+[variables]
+SSL_CERT_FILE = "/etc/ssl/certs/ca-certificates.crt"
+CURL_CA_BUNDLE = "/etc/ssl/certs/ca-certificates.crt"
 
 
 [phases.install]
