@@ -57,15 +57,21 @@ return [
         ],
 
         'r2' => [
-            'driver' => 'r2',
+            'driver' => 's3',
             'key' => env('R2_ACCESS_KEY_ID'),
             'secret' => env('R2_SECRET_ACCESS_KEY'),
             'region' => 'auto',
             'bucket' => env('R2_BUCKET'),
             'url' => env('R2_URL'),
             'endpoint' => env('R2_ENDPOINT'),
-            'use_path_style_endpoint' => false,
+            'use_path_style_endpoint' => true,
             'throw' => false,
+            'http' => [
+                'curl' => [
+                    CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
+                    CURLOPT_SSL_CIPHER_LIST => 'DEFAULT@SECLEVEL=1',
+                ],
+            ],
         ],
 
     ],
