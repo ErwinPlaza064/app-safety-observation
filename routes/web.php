@@ -16,6 +16,30 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()], 200);
 });
 
+// Backup trigger endpoint (super admin only)
+Route::get('/trigger-backup', function () {
+    if (!auth()->check() || !auth()->user()->hasRole('super_admin')) {
+        abort(403, 'Unauthorized');
+    }
+
+    try {
+        \Illuminate\Support\Facades\Artisan::call('backup:run', ['--disable-notifications' => true]);
+        $output = \Illuminate\Support\Facades\Artisan::output();
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'Backup completed successfully',
+            'output' => $output
+        ], 200);
+    } catch (\Exception $e) {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Backup failed',
+            'error' => $e->getMessage()
+        ], 500);
+    }
+})->middleware('auth');
+
 Route::get('/', function () {
     return redirect()->route('login');
 });
