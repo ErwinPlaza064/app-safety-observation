@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import { IoMdClose } from "react-icons/io";
-import { HiUsers, HiOfficeBuilding, HiUpload } from "react-icons/hi";
+import { HiUsers, HiOfficeBuilding, HiUpload, HiDatabase } from "react-icons/hi";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
@@ -144,6 +144,18 @@ export default function SuperAdminView({
                             >
                                 <HiUpload className="w-5 h-5 mr-2 text-blue-600 dark:text-blue-400" />
                                 Importar Excel/CSV
+                            </button>
+
+                            <button
+                                onClick={() => {
+                                    if (confirm("¿Estás seguro de que deseas iniciar un respaldo de la base de datos?")) {
+                                        window.location.href = "/trigger-backup";
+                                    }
+                                }}
+                                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all active:scale-95"
+                            >
+                                <HiDatabase className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
+                                Crear Respaldo
                             </button>
                         </div>
                     </div>
