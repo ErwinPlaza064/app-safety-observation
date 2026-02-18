@@ -16,8 +16,15 @@ Route::get('/health', function () {
     return response()->json(['status' => 'ok', 'timestamp' => now()->toIso8601String()], 200);
 });
 
-// Backup trigger endpoint (TEMPORARY - REMOVE AUTH FOR TESTING)
+// Backup trigger endpoint (Protected: Only superadmin@wasion.com)
 Route::get('/trigger-backup', function () {
+    if (!auth()->check() || auth()->user()->email !== 'superadmin@wasion.com') {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Acceso denegado. Solo el super administrador puede ejecutar respaldos manually.'
+        ], 403);
+    }
+
     try {
         \Illuminate\Support\Facades\Artisan::call('backup:run', ['--disable-notifications' => true]);
         $output = \Illuminate\Support\Facades\Artisan::output();
