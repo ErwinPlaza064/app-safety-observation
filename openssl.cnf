@@ -1,0 +1,9 @@
+[openssl_init]
+ssl_conf = ssl_configuration
+
+[ssl_configuration]
+system_default = tls_system_default
+
+[tls_system_default]
+MinProtocol = TLSv1.2
+CipherString = DEFAULT:@SECLEVEL=0

@@ -69,7 +69,7 @@ return [
             'http' => [
                 'curl' => [
                     CURLOPT_SSLVERSION => CURL_SSLVERSION_TLSv1_2,
-                    CURLOPT_SSL_CIPHER_LIST => 'DEFAULT@SECLEVEL=1',
+                    CURLOPT_SSL_CIPHER_LIST => 'DEFAULT@SECLEVEL=0',
                 ],
             ],
         ],
