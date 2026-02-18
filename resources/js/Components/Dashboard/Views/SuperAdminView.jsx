@@ -8,6 +8,8 @@ import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
 import AreasManagement from "@/Components/Dashboard/AreasManagement";
 import PlantsManagement from "@/Components/Dashboard/PlantsManagement";
 import PrimaryButton from "@/Components/PrimaryButton";
+import Modal from "@/Components/Modal";
+import SecondaryButton from "@/Components/SecondaryButton";
 
 export default function SuperAdminView({
     stats,
@@ -19,6 +21,7 @@ export default function SuperAdminView({
     filters,
 }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
+    const [showBackupModal, setShowBackupModal] = useState(false);
     const [activeTab, setActiveTab] = useState("users");
 
     const [params, setParams] = useState({
@@ -147,11 +150,7 @@ export default function SuperAdminView({
                             </button>
 
                             <button
-                                onClick={() => {
-                                    if (confirm("¿Estás seguro de que deseas iniciar un respaldo de la base de datos?")) {
-                                        window.location.href = "/trigger-backup";
-                                    }
-                                }}
+                                onClick={() => setShowBackupModal(true)}
                                 className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-gray-700 dark:text-gray-300 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-all active:scale-95"
                             >
                                 <HiDatabase className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
@@ -278,6 +277,39 @@ export default function SuperAdminView({
                 plants={plants}
                 areas={areas}
             />
+
+            <Modal show={showBackupModal} onClose={() => setShowBackupModal(false)} maxWidth="md">
+                <div className="p-6">
+                    <div className="flex items-center gap-4 mb-4">
+                        <div className="p-3 bg-green-100 rounded-full dark:bg-green-900/30">
+                            <HiDatabase className="w-6 h-6 text-green-600 dark:text-green-400" />
+                        </div>
+                        <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                            Confirmar Respaldo
+                        </h2>
+                    </div>
+
+                    <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+                        ¿Estás seguro de que deseas iniciar un nuevo respaldo completo de la base de datos y archivos? 
+                        Este proceso puede tardar unos segundos. El archivo se guardará automáticamente en Cloudflare R2.
+                    </p>
+
+                    <div className="flex justify-end gap-3">
+                        <SecondaryButton onClick={() => setShowBackupModal(false)}>
+                            Cancelar
+                        </SecondaryButton>
+                        <PrimaryButton
+                            onClick={() => {
+                                setShowBackupModal(false);
+                                window.location.href = "/trigger-backup";
+                            }}
+                            className="!bg-green-600 hover:!bg-green-700 dark:!bg-green-500 dark:hover:!bg-green-600"
+                        >
+                            Comenzar Respaldo
+                        </PrimaryButton>
+                    </div>
+                </div>
+            </Modal>
         </div>
     );
 }
