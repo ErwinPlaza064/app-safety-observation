@@ -6,6 +6,7 @@ import GuestLayout from "@/Layouts/GuestLayout";
 import { Head, Link, useForm } from "@inertiajs/react";
 import { useState, useMemo } from "react";
 import ThemeToggle from "@/Components/ThemeToggle";
+import { Transition } from "@headlessui/react";
 
 export default function Register({ areas = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
@@ -17,6 +18,8 @@ export default function Register({ areas = [] }) {
         password: "",
         password_confirmation: "",
     });
+
+    const [isNominaFocused, setIsNominaFocused] = useState(false);
 
     const [showPassword, setShowPassword] = useState(false);
 
@@ -132,18 +135,45 @@ export default function Register({ areas = [] }) {
             </h2>
 
             <form onSubmit={submit}>
-                <div>
+                <div className="relative">
                     <InputLabel
                         htmlFor="employee_number"
                         value="Número de Nómina"
                     />
+                    
+                    {/* Burbuja de aviso Onomatopéyica/Chatbot */}
+                    <Transition
+                        show={isNominaFocused}
+                        enter="transition ease-out duration-300 transform"
+                        enterFrom="opacity-0 translate-y-2 scale-95"
+                        enterTo="opacity-100 translate-y-0 scale-100"
+                        leave="transition ease-in duration-200 transform"
+                        leaveFrom="opacity-100 translate-y-0 scale-100"
+                        leaveTo="opacity-0 translate-y-2 scale-95"
+                    >
+                        <div className="absolute z-10 -top-12 left-0 w-full">
+                            <div className="relative inline-block px-4 py-2 bg-[#1e3a8a] text-white text-xs font-bold rounded-xl shadow-xl animate-bounce">
+                                <div className="flex items-center gap-2">
+                                    <span className="text-lg">💡</span>
+                                    <span>¡Recuerda incluir el <span className="text-yellow-400 underline">0</span> al principio! (Ej: 09015)</span>
+                                </div>
+                                {/* Flecha del globo */}
+                                <div className="absolute -bottom-1 left-6 w-3 h-3 bg-[#1e3a8a] rotate-45"></div>
+                            </div>
+                        </div>
+                    </Transition>
+
                     <TextInput
                         id="employee_number"
                         name="employee_number"
                         value={data.employee_number}
-                        className="block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm"
+                        className={`block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm transition-all duration-300 ${
+                            isNominaFocused ? 'ring-4 ring-blue-500/20 border-blue-500 bg-white' : ''
+                        }`}
                         autoComplete="off"
                         isFocused={true}
+                        onFocus={() => setIsNominaFocused(true)}
+                        onBlur={() => setIsNominaFocused(false)}
                         onChange={(e) =>
                             setData("employee_number", e.target.value)
                         }
@@ -156,7 +186,7 @@ export default function Register({ areas = [] }) {
                 </div>
 
                 <div className="mt-4">
-                    <InputLabel htmlFor="name" value="Nombre Completo" />
+                    <InputLabel htmlFor="name" value="Nombre y Apellido" />
                     <TextInput
                         id="name"
                         name="name"
@@ -164,7 +194,7 @@ export default function Register({ areas = [] }) {
                         className="block w-full mt-1 text-sm bg-gray-100 rounded-full shadow-sm"
                         autoComplete="name"
                         onChange={(e) => setData("name", e.target.value)}
-                        placeholder="Ej: Juan Pérez Martinez"
+                        placeholder="Ej: Juan Pérez"
                     />
                     <InputError message={errors.name} className="mt-2" />
                 </div>
