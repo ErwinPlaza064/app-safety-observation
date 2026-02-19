@@ -14,6 +14,7 @@ export default function ObservationDetailsModal({
     canClose,
 }) {
     const [showClosureForm, setShowClosureForm] = useState(false);
+    const [copied, setCopied] = useState(false);
     
     const { data, setData, post, processing, errors, reset } = useForm({
         closure_notes: "",
@@ -99,6 +100,14 @@ export default function ObservationDetailsModal({
         onClose();
     };
 
+    const handleShare = () => {
+        const url = `${window.location.origin}/observations/${observation.id}`;
+        navigator.clipboard.writeText(url).then(() => {
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        });
+    };
+
     return (
         <Modal show={show} onClose={handleCloseModal} maxWidth="2xl">
             <div className="flex flex-col h-full max-h-[90vh]">
@@ -119,14 +128,41 @@ export default function ObservationDetailsModal({
                             </p>
                         </div>
                     </div>
-                    <button
-                        onClick={handleCloseModal}
-                        className="p-2 text-gray-400 transition-all rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white active:scale-90"
-                    >
-                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
-                        </svg>
-                    </button>
+                    <div className="flex items-center gap-2">
+                        <button
+                            onClick={handleShare}
+                            className={`flex items-center gap-1.5 px-3 py-1.5 text-xs font-bold rounded-xl transition-all active:scale-95 ${
+                                copied 
+                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400 border border-green-200 dark:border-green-800" 
+                                : "bg-blue-50 text-blue-700 dark:bg-blue-900/30 dark:text-blue-400 border border-blue-100 dark:border-blue-800 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                            }`}
+                            title="Copiar enlace del reporte"
+                        >
+                            {copied ? (
+                                <>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="3" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                    Copiado
+                                </>
+                            ) : (
+                                <>
+                                    <svg className="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.684 13.342C8.886 12.938 9 12.482 9 12c0-.482-.114-.938-.316-1.342m0 2.684a3 3 0 110-2.684m0 2.684l6.632 3.316m-6.632-6l6.632-3.316m0 0a3 3 0 105.367-2.684 3 3 0 00-5.367 2.684zm0 9.316a3 3 0 105.368 2.684 3 3 0 00-5.368-2.684z" />
+                                    </svg>
+                                    Compartir
+                                </>
+                            )}
+                        </button>
+                        <button
+                            onClick={handleCloseModal}
+                            className="p-2 text-gray-400 transition-all rounded-xl hover:bg-gray-100 dark:hover:bg-gray-700 hover:text-gray-900 dark:hover:text-white active:scale-90"
+                        >
+                            <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                            </svg>
+                        </button>
+                    </div>
                 </div>
 
                 {/* Cuerpo del Modal - Scrollable */}
