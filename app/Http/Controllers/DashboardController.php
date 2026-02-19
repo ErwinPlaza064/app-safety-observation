@@ -149,8 +149,11 @@ class DashboardController extends Controller
             }
 
             // Forzar plant_id si no tiene permisos globales
+            $canViewAllPlants = (bool)$user->is_ehs_coordinator;
+            $requestPlantId = RequestFacade::input('plant_id');
+
             $currentPlantId = $canViewAllPlants
-                ? request('plant_id') // Sin default - si viene vacío, muestra TODAS
+                ? ($requestPlantId !== null && $requestPlantId !== '' ? $requestPlantId : null)
                 : $user->plant_id;
 
             // Las áreas son globales
@@ -169,8 +172,8 @@ class DashboardController extends Controller
             $query = Observation::with($baseRelations)
                 ->submitted();
 
-            if (request('search')) {
-                $search = request('search');
+            if (RequestFacade::input('search')) {
+                $search = RequestFacade::input('search');
                 $query->where(function ($q) use ($search) {
                     $q->where('folio', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")
@@ -182,8 +185,8 @@ class DashboardController extends Controller
                 });
             }
 
-            if ($currentPlantId) {
-                $query->where('plant_id', $currentPlantId);
+            if ($currentPlantId !== null && $currentPlantId !== '') {
+                $query->where('observations.plant_id', $currentPlantId);
             }
 
             $recentObservations = $query
@@ -193,8 +196,8 @@ class DashboardController extends Controller
 
             $applyFilters = function ($q) use ($currentPlantId) {
                 $q->submitted();
-                if ($currentPlantId) {
-                    $q->where('plant_id', $currentPlantId);
+                if ($currentPlantId !== null && $currentPlantId !== '') {
+                    $q->where('observations.plant_id', $currentPlantId);
                 }
                 return $q;
             };
@@ -274,10 +277,8 @@ class DashboardController extends Controller
                         if ($days) {
                             $q->where('observations.created_at', '>=', now()->subDays($days));
                         }
-                        if (!$canViewAllPlants && $currentPlantId) {
+                        if ($currentPlantId !== null && $currentPlantId !== '') {
                             $q->where('observations.plant_id', $currentPlantId);
-                        } elseif (request('plant_id')) {
-                            $q->where('observations.plant_id', request('plant_id'));
                         }
                     });
 
@@ -286,10 +287,8 @@ class DashboardController extends Controller
                     if ($days) {
                         $q->where('observations.created_at', '>=', now()->subDays($days));
                     }
-                    if (!$canViewAllPlants && $currentPlantId) {
+                    if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
-                    } elseif (request('plant_id')) {
-                        $q->where('observations.plant_id', request('plant_id'));
                     }
                 }])
                     // Solo cargar los últimos 3 para el preview si es necesario, o nada para ahorrar datos
@@ -319,15 +318,15 @@ class DashboardController extends Controller
             $observationsByArea = Area::where('is_active', true)
                 ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
                     $q->submitted();
-                    if ($currentPlantId) {
-                        $q->where('plant_id', $currentPlantId);
+                    if ($currentPlantId !== null && $currentPlantId !== '') {
+                        $q->where('observations.plant_id', $currentPlantId);
                     }
                     $q->with($baseRelations)->latest('observations.created_at')->take(50); // Cargar lista para el modal (limitado)
                 }])
                 ->withCount(['observations' => function ($q) use ($currentPlantId) {
                     $q->submitted();
-                    if ($currentPlantId) {
-                        $q->where('plant_id', $currentPlantId);
+                    if ($currentPlantId !== null && $currentPlantId !== '') {
+                        $q->where('observations.plant_id', $currentPlantId);
                     }
                 }])
                 ->get()
@@ -343,15 +342,15 @@ class DashboardController extends Controller
             $observationsByRealPlant = Plant::where('is_active', true)
                 ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
                     $q->submitted();
-                    if ($currentPlantId) {
-                        $q->where('plant_id', $currentPlantId);
+                    if ($currentPlantId !== null && $currentPlantId !== '') {
+                        $q->where('observations.plant_id', $currentPlantId);
                     }
                     $q->with($baseRelations)->latest('observations.created_at')->take(50);
                 }])
                 ->withCount(['observations' => function ($q) use ($currentPlantId) {
                     $q->submitted();
-                    if ($currentPlantId) {
-                        $q->where('plant_id', $currentPlantId);
+                    if ($currentPlantId !== null && $currentPlantId !== '') {
+                        $q->where('observations.plant_id', $currentPlantId);
                     }
                 }])
                 ->get()
