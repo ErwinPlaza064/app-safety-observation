@@ -61,8 +61,7 @@ class RegisteredUserController extends Controller
         // Disparar el evento de registro (estándar de Laravel)
         event(new Registered($user));
 
-        // Enviar correo de verificación manualmente (DESACTIVADO TEMPORALMENTE)
-        /*
+        // Enviar correo de verificación manualmente
         try {
             $user->sendEmailVerificationNotification();
             Log::info('Correo de verificación enviado manualmente', ['user_id' => $user->id]);
@@ -72,8 +71,7 @@ class RegisteredUserController extends Controller
                 'error' => $e->getMessage()
             ]);
         }
-        */
 
-        return redirect()->route('login')->with('status', 'Usuario registrado con éxito. Ya puedes iniciar sesión.');
+        return redirect()->route('login')->with('success', '¡Registro exitoso! Por favor, revisa tu correo electrónico para verificar tu cuenta antes de iniciar sesión.');
     }
 }
