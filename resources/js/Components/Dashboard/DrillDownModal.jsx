@@ -13,16 +13,26 @@ export default function DrillDownModal({
     const [searchTerm, setSearchTerm] = useState("");
     const [activeTab, setActiveTab] = useState("all"); // "all", "actos", "condiciones"
 
-    const showTabs = ["high_risk", "open", "closed", "total"].includes(type);
+    const showTabs = ["high_risk", "open", "closed", "total", "recidivism"].includes(type);
+
+    // Initial state for tabs based on type
+    if (type === "recidivism" && activeTab === "all") {
+        // We can keep "all" or default to "wasion"
+    }
 
     const filteredData = useMemo(() => {
         if (!data || !Array.isArray(data)) return data;
 
         let result = data;
 
-        // Filter by tab (only for observation types)
+        // Filter by tab
         if (showTabs && activeTab !== "all") {
             result = result.filter((item) => {
+                if (type === "recidivism") {
+                    if (activeTab === "wasion") return item.company === "WASION";
+                    if (activeTab === "externo") return item.company !== "WASION";
+                    return true;
+                }
                 if (activeTab === "actos") {
                     return item.observation_type === "acto_seguro" || item.observation_type === "acto_inseguro";
                 }
@@ -41,19 +51,19 @@ export default function DrillDownModal({
         }
 
         return result;
-    }, [data, searchTerm, activeTab, showTabs]);
+    }, [data, searchTerm, activeTab, showTabs, type]);
 
     const displayData = type === "participation_summary" ? data : filteredData;
 
-    // Count for tabs
-    const actosCount = useMemo(() => {
-        if (!data || !Array.isArray(data)) return 0;
-        return data.filter(item => item.observation_type === "acto_seguro" || item.observation_type === "acto_inseguro").length;
-    }, [data]);
-
-    const condicionesCount = useMemo(() => {
-        if (!data || !Array.isArray(data)) return 0;
-        return data.filter(item => item.observation_type === "condicion_insegura").length;
+    // Counts for tabs
+    const counts = useMemo(() => {
+        if (!data || !Array.isArray(data)) return { actos: 0, condiciones: 0, wasion: 0, externo: 0 };
+        return {
+            actos: data.filter(item => item.observation_type === "acto_seguro" || item.observation_type === "acto_inseguro").length,
+            condiciones: data.filter(item => item.observation_type === "condicion_insegura").length,
+            wasion: data.filter(item => item.company === "WASION").length,
+            externo: data.filter(item => item.company !== "WASION").length
+        };
     }, [data]);
 
     return (
@@ -115,7 +125,7 @@ export default function DrillDownModal({
                     </div>
                 </div>
 
-                {/* Tabs for filtering ACTOS/CONDICIONES */}
+                {/* Tabs for filtering */}
                 {showTabs && (
                     <div className="flex p-1 mb-4 bg-gray-100 dark:bg-gray-700 rounded-xl">
                         <button
@@ -128,26 +138,53 @@ export default function DrillDownModal({
                         >
                             TODOS ({data?.length || 0})
                         </button>
-                        <button
-                            onClick={() => setActiveTab("actos")}
-                            className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                activeTab === "actos"
-                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
-                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                            }`}
-                        >
-                            ACTOS ({actosCount})
-                        </button>
-                        <button
-                            onClick={() => setActiveTab("condiciones")}
-                            className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
-                                activeTab === "condiciones"
-                                    ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
-                                    : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
-                            }`}
-                        >
-                            CONDICIONES ({condicionesCount})
-                        </button>
+                        {type === "recidivism" ? (
+                            <>
+                                <button
+                                    onClick={() => setActiveTab("wasion")}
+                                    className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "wasion"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    PERSONAL WASION ({counts.wasion})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("externo")}
+                                    className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "externo"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    PERSONAL EXTERNO ({counts.externo})
+                                </button>
+                            </>
+                        ) : (
+                            <>
+                                <button
+                                    onClick={() => setActiveTab("actos")}
+                                    className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "actos"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    ACTOS ({counts.actos})
+                                </button>
+                                <button
+                                    onClick={() => setActiveTab("condiciones")}
+                                    className={`flex-1 px-4 py-2 text-xs font-bold rounded-lg transition-all ${
+                                        activeTab === "condiciones"
+                                            ? "bg-white dark:bg-gray-600 text-blue-600 dark:text-blue-400 shadow-sm"
+                                            : "text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200"
+                                    }`}
+                                >
+                                    CONDICIONES ({counts.condiciones})
+                                </button>
+                            </>
+                        )}
                     </div>
                 )}
 
@@ -299,7 +336,7 @@ export default function DrillDownModal({
                                                 </tr>
                                             </thead>
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
-                                                {data.map((item, index) => (
+                                                {displayData.map((item, index) => (
                                                     <tr
                                                         key={index}
                                                         onClick={() =>
@@ -316,10 +353,15 @@ export default function DrillDownModal({
                                                                     }
                                                                 </span>
                                                                 <span className="text-xs font-normal text-gray-500">
-                                                                    Nómina:{" "}
+                                                                    {item.company === "WASION" ? "Nómina: " : "ID: "}
                                                                     {
                                                                         item.payroll_number
                                                                     }
+                                                                    {item.company !== "WASION" && (
+                                                                        <span className="ml-1 text-[10px] uppercase opacity-70">
+                                                                            ({item.company})
+                                                                        </span>
+                                                                    )}
                                                                 </span>
                                                             </div>
                                                         </td>
