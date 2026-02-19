@@ -194,6 +194,16 @@ class ObservationController extends Controller
 
     public function show(Observation $observation)
     {
+        // Si es borrador, solo el dueño o admins pueden verlo (requiere login)
+        if ($observation->is_draft) {
+            if (!auth()->check()) {
+                return redirect()->route('login');
+            }
+
+            // Si está logado, usar la política
+            $this->authorize('view', $observation);
+        }
+
         $observation->load([
             'user',
             'plant',

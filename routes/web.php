@@ -49,6 +49,10 @@ Route::get('/', function () {
 });
 
 
+// Ruta pública para ver reportes compartidos
+Route::get('/observations/{observation}', [App\Http\Controllers\ObservationController::class, 'show'])
+    ->name('observations.show');
+
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
 
 
@@ -115,7 +119,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             ->middleware('role:super_admin,ehs_manager,ehs_coordinator')
             ->name('export.pdf');
 
-        Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
+        // Movido fuera para permitir ver reportes compartidos sin logearse
+        // Route::get('/{observation}', [ObservationController::class, 'show'])->name('show');
         Route::put('/{observation}/close', [ObservationController::class, 'close'])
             ->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])

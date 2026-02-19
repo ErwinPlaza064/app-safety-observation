@@ -3,9 +3,9 @@ import { useState } from "react";
 
 export default function Show({ auth, observation }) {
     const [processing, setProcessing] = useState(false);
-    const user = auth.user;
+    const user = auth?.user;
 
-    const canClose = user.is_ehs_manager || user.id === observation.user_id;
+    const canClose = user ? (user.is_ehs_manager || user.id === observation.user_id) : false;
 
     const formatDate = (dateString) => {
         if (!dateString) return "N/A";
@@ -357,14 +357,14 @@ export default function Show({ auth, observation }) {
                         <div className="flex flex-col items-center gap-4 px-6 py-4 border-t border-gray-100 dark:border-gray-700 bg-gray-50 dark:bg-gray-900/50">
                             <div className="flex justify-center gap-3 w-full">
                                 <Link
-                                    href={route("dashboard")}
+                                    href={user ? route("dashboard") : route("login")}
                                     className="px-4 py-2 text-sm font-medium text-gray-700 bg-white border border-gray-300 rounded-lg shadow-sm dark:text-gray-300 dark:bg-gray-700 dark:border-gray-600 hover:bg-gray-50 dark:hover:bg-gray-600"
                                 >
-                                    Volver al Dashboard
+                                    {user ? "Volver al Dashboard" : "Iniciar Sesión"}
                                 </Link>
 
                                 {/* Permitir cerrar la observación al usuario dueño */}
-                                {user.id === observation.user_id &&
+                                {user && user.id === observation.user_id &&
                                     !user.is_ehs_manager &&
                                     observation.status === "en_progreso" && (
                                         <button
