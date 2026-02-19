@@ -249,10 +249,11 @@ class DashboardController extends Controller
             }
 
             $repeatOffendersList = $applyFilters(Observation::query())
-                ->select('payroll_number', DB::raw('MAX(observed_person) as observed_person'), DB::raw('count(*) as total'))
+                ->select('payroll_number', DB::raw('MAX(observed_person) as observed_person'), DB::raw('MAX(company) as company'), DB::raw('count(*) as total'))
                 ->whereNotNull('payroll_number')
                 ->where('payroll_number', '!=', '')
-                ->groupBy('payroll_number')
+                ->groupBy('payroll_number', 'company')
+                ->groupBy(DB::raw("CASE WHEN company = 'WASION' THEN '' ELSE observed_person END"))
                 ->havingRaw('count(*) > 1')
                 ->orderByDesc('total')
                 ->get();

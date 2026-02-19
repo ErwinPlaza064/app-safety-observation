@@ -151,7 +151,13 @@ export default function EhsManagerView({
     const handleRecidivismClick = (item) => {
         setActiveMetric(null);
         setSelectedPayroll(item);
-        setParams({ ...params, search: item.payroll_number });
+        
+        // Si no es WASION, buscamos por nombre para ser específicos y evitar colisiones de nóminas placeholder (99998, 99999)
+        const searchTerm = item.company === "WASION" 
+            ? item.payroll_number 
+            : item.observed_person;
+
+        setParams({ ...params, search: searchTerm });
 
         // Hacer scroll automático a la tabla de resultados
         setTimeout(() => {
