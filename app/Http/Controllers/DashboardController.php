@@ -252,8 +252,8 @@ class DashboardController extends Controller
                 ->select('payroll_number', DB::raw('MAX(observed_person) as observed_person'), DB::raw('MAX(company) as company'), DB::raw('count(*) as total'))
                 ->whereNotNull('payroll_number')
                 ->where('payroll_number', '!=', '')
-                ->groupBy('payroll_number', 'company')
-                ->groupBy(DB::raw("CASE WHEN company = 'WASION' THEN '' ELSE observed_person END"))
+                ->groupBy('payroll_number')
+                ->groupBy(DB::raw("CASE WHEN company = 'WASION' THEN '' ELSE TRIM(UPPER(observed_person)) END"))
                 ->havingRaw('count(*) > 1')
                 ->orderByDesc('total')
                 ->get();
