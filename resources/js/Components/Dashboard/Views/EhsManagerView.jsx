@@ -306,16 +306,18 @@ export default function EhsManagerView({
                         </svg>
                         PDF
                     </a>
-                    <button
-                        onClick={() => {
-                            const section = document.getElementById('recent-observations-table');
-                            section?.scrollIntoView({ behavior: 'smooth' });
-                        }}
-                        className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 flex items-center justify-center transition-all active:scale-95 shadow-sm"
-                    >
-                        <IoMdShare className="w-4 h-4 mr-2" />
-                        Compartir Reporte
-                    </button>
+                    {canViewAllPlants && (
+                        <button
+                            onClick={() => {
+                                const section = document.getElementById('recent-observations-table');
+                                section?.scrollIntoView({ behavior: 'smooth' });
+                            }}
+                            className="px-4 py-2 bg-purple-600 text-white rounded-lg text-sm font-medium hover:bg-purple-700 flex items-center justify-center transition-all active:scale-95 shadow-sm"
+                        >
+                            <IoMdShare className="w-4 h-4 mr-2" />
+                            Compartir Reporte
+                        </button>
+                    )}
                 </div>
             </div>
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-5">
@@ -806,7 +808,7 @@ export default function EhsManagerView({
                                             <th className="px-6 py-3">Área</th>
                                         )}
                                         <th className="px-6 py-3">Estado</th>
-                                        <th className="px-6 py-3 text-center">Acción</th>
+                                        {canViewAllPlants && <th className="px-6 py-3 text-center">Acción</th>}
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -867,23 +869,25 @@ export default function EhsManagerView({
                                                         obs.observation_date,
                                                     ).toLocaleDateString()}
                                                 </td>
-                                                <td className="px-6 py-4 text-center">
-                                                    <button
-                                                        onClick={(e) => handleShare(e, obs)}
-                                                        className={`p-2 rounded-lg transition-all active:scale-90 ${
-                                                            copiedId === obs.id
-                                                            ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
-                                                            : "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50"
-                                                        }`}
-                                                        title="Compartir enlace"
-                                                    >
-                                                        {copiedId === obs.id ? (
-                                                            <span className="text-[10px] font-bold">¡Copiado!</span>
-                                                        ) : (
-                                                            <IoMdShare className="w-4 h-4" />
-                                                        )}
-                                                    </button>
-                                                </td>
+                                                {canViewAllPlants && (
+                                                    <td className="px-6 py-4 text-center">
+                                                        <button
+                                                            onClick={(e) => handleShare(e, obs)}
+                                                            className={`p-2 rounded-lg transition-all active:scale-90 ${
+                                                                copiedId === obs.id
+                                                                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400"
+                                                                : "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50"
+                                                            }`}
+                                                            title="Compartir enlace"
+                                                        >
+                                                            {copiedId === obs.id ? (
+                                                                <span className="text-[10px] font-bold">¡Copiado!</span>
+                                                            ) : (
+                                                                <IoMdShare className="w-4 h-4" />
+                                                            )}
+                                                        </button>
+                                                    </td>
+                                                )}
                                             </tr>
                                         ))
                                     ) : (
@@ -980,6 +984,7 @@ export default function EhsManagerView({
                 show={!!selectedObservation}
                 observation={selectedObservation}
                 onClose={handleCloseModal}
+                canShare={canViewAllPlants}
             />
             {!isMobile && (
                 <ObservationHoverCard
