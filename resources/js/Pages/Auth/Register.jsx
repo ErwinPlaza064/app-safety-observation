@@ -8,11 +8,12 @@ import { useState, useMemo } from "react";
 import ThemeToggle from "@/Components/ThemeToggle";
 import { Transition } from "@headlessui/react";
 
-export default function Register({ areas = [] }) {
+export default function Register({ areas = [], plants = [] }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         employee_number: "",
         name: "",
         email: "",
+        plant_id: "",
         area: "",
         position: "",
         password: "",
@@ -197,6 +198,25 @@ export default function Register({ areas = [] }) {
                         placeholder="Ej: Juan Pérez"
                     />
                     <InputError message={errors.name} className="mt-2" />
+                </div>
+                <div className="mt-4">
+                    <InputLabel htmlFor="plant_id" value="Planta" />
+                    <select
+                        id="plant_id"
+                        name="plant_id"
+                        value={data.plant_id}
+                        className="block w-full mt-1 text-sm bg-gray-100 border-transparent rounded-full shadow-sm focus:border-blue-500 focus:ring-blue-500 dark:bg-gray-700 dark:text-white py-[9px]"
+                        onChange={(e) => setData("plant_id", e.target.value)}
+                        required
+                    >
+                        <option value="">Selecciona una planta...</option>
+                        {plants.map((plant) => (
+                            <option key={plant.id} value={plant.id}>
+                                {plant.name}
+                            </option>
+                        ))}
+                    </select>
+                    <InputError message={errors.plant_id} className="mt-2" />
                 </div>
 
                 <div className="grid grid-cols-1 gap-4 mt-4 md:grid-cols-2">

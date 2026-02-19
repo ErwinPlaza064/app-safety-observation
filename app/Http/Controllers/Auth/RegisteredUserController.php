@@ -21,7 +21,8 @@ class RegisteredUserController extends Controller
     public function create(): Response
     {
         return Inertia::render('Auth/Register', [
-            'areas' => Area::active()->orderBy('name')->get(['id', 'name'])
+            'areas' => Area::active()->orderBy('name')->get(['id', 'name']),
+            'plants' => \App\Models\Plant::active()->orderBy('name')->get(['id', 'name'])
         ]);
     }
 
@@ -50,6 +51,7 @@ class RegisteredUserController extends Controller
             'employee_number' => $request->employee_number,
             'name' => $request->name,
             'email' => $request->email,
+            'plant_id' => $request->plant_id,
             'area_id' => $areaId,
             'area' => $areaName,
             'position' => $request->position,
