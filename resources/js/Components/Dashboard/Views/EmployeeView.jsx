@@ -3,6 +3,7 @@ import SafetyObservationForm from "@/Components/Observations/SafetyObservationFo
 import MyReportsTable from "@/Components/Dashboard/MyReportsTable";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 import StatusListModal from "@/Components/Dashboard/StatusListModal";
+import SupportTicketModal from "@/Components/Dashboard/SupportTicketModal";
 import { router } from "@inertiajs/react";
 
 export default function EmployeeView({
@@ -25,7 +26,7 @@ export default function EmployeeView({
     const [currentStatusFilter, setCurrentStatusFilter] = useState(null);
 
     const [showReadyToCloseModal, setShowReadyToCloseModal] = useState(false);
-
+    const [showSupportModal, setShowSupportModal] = useState(false);
     const [activeTab, setActiveTab] = useState("actos");
 
     const filteredObservations = myObservations?.filter((obs) => {
@@ -117,7 +118,7 @@ export default function EmployeeView({
 
     return (
         <div className="space-y-6 animate-fade-in">
-            <div>
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <button
                     onClick={() => setShowForm(true)}
                     className="w-full sm:w-auto flex items-center justify-center px-8 py-4 text-lg font-semibold text-white transition-all transform bg-[#1e3a8a] dark:bg-blue-700 rounded-xl shadow-lg hover:bg-blue-900 dark:hover:bg-blue-600 hover:scale-105 active:scale-95 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 focus:ring-offset-2 dark:focus:ring-offset-gray-900"
@@ -136,6 +137,21 @@ export default function EmployeeView({
                         />
                     </svg>
                     Nueva Observación
+                </button>
+
+                <button
+                    onClick={() => setShowSupportModal(true)}
+                    className="group relative flex items-center justify-center px-6 py-3 text-sm font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/30 dark:text-blue-400 rounded-xl transition-all border border-blue-100 dark:border-blue-800 shadow-sm hover:shadow-md"
+                >
+                    <div className="mr-3 p-1.5 bg-blue-100 dark:bg-blue-800 rounded-lg group-hover:scale-110 transition-transform">
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                    </div>
+                    <div className="text-left">
+                        <p className="leading-tight">¿Necesitas corregir algo?</p>
+                        <p className="text-[10px] uppercase tracking-wider opacity-60">Soporte IT</p>
+                    </div>
                 </button>
             </div>
 
@@ -352,6 +368,11 @@ export default function EmployeeView({
                 observation={selectedObservation}
                 onClose={() => setSelectedObservation(null)}
                 canClose={true}
+            />
+
+            <SupportTicketModal 
+                show={showSupportModal}
+                onClose={() => setShowSupportModal(false)}
             />
         </div>
     );
