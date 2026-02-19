@@ -44,7 +44,15 @@ export default function Dashboard({
     const handleDelete = () => {
         if (deletingUser) {
             router.delete(route("admin.users.destroy", deletingUser.id), {
-                onSuccess: () => setDeletingUser(null),
+                onSuccess: () => {
+                    setDeletingUser(null);
+                },
+                onError: (errors) => {
+                    // Si hay errores de validación, se mostrarán via flash o props
+                },
+                onFinish: () => {
+                    // Limpieza final si es necesaria
+                },
                 preserveScroll: true,
             });
         }
@@ -72,6 +80,7 @@ export default function Dashboard({
                             plants={plants}
                             areas={areas}
                             onUserClick={openEditModal}
+                            onDeleteUser={setDeletingUser}
                             onImportClick={() => setShowImportModal(true)}
                             filters={filters}
                             filterAreas={filterAreas}

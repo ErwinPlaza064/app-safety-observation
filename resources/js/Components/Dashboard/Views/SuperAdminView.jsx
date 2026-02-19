@@ -18,6 +18,7 @@ export default function SuperAdminView({
     plants = [],
     areas = [],
     onUserClick,
+    onDeleteUser,
     onImportClick,
     filters,
 }) {
@@ -291,7 +292,11 @@ export default function SuperAdminView({
                     </div>
 
                     {users && (
-                        <UsersTable users={users} onUserClick={onUserClick} />
+                        <UsersTable 
+                            users={users} 
+                            onUserClick={onUserClick} 
+                            onDelete={onDeleteUser} 
+                        />
                     )}
                 </>
             )}

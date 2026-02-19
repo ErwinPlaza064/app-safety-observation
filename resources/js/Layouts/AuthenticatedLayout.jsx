@@ -12,6 +12,7 @@ import {
     HiOutlineShieldCheck,
     HiOutlineShieldExclamation,
 } from "react-icons/hi";
+import FlashMessages from "@/Components/FlashMessages";
 
 export default function AuthenticatedLayout({
     header,
@@ -45,6 +46,7 @@ export default function AuthenticatedLayout({
 
     return (
         <div className="min-h-screen bg-gray-100 dark:bg-gray-900">
+            <FlashMessages />
             <nav className="bg-white border-b border-gray-100 dark:bg-gray-800 dark:border-gray-700">
                 <div className="px-4 mx-auto max-w-7xl sm:px-6 lg:px-8">
                     <div className="flex justify-between h-16">
