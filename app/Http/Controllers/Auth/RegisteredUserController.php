@@ -40,10 +40,13 @@ class RegisteredUserController extends Controller
         $areaId = null;
 
         if (is_numeric($request->area)) {
+            Log::info('Buscando área por ID', ['id' => $request->area]);
             $area = Area::find($request->area);
             if ($area) {
                 $areaName = $area->name;
                 $areaId = $area->id;
+            } else {
+                Log::warning('Área no encontrada por ID', ['id' => $request->area]);
             }
         }
 

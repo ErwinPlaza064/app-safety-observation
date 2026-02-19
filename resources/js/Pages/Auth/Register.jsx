@@ -64,12 +64,14 @@ export default function Register({ areas = [], plants = [] }) {
 
     const submit = (e) => {
         e.preventDefault();
+        console.log("Enviando registro...", data);
 
         setIsLoading(true);
 
         setTimeout(() => {
             post(route("register"), {
-                onSuccess: () => {
+                onSuccess: (page) => {
+                    console.log("Registro exitoso", page);
                     setShowToast(true);
                     setTimeout(() => setShowToast(false), 5000);
                 },
@@ -77,7 +79,8 @@ export default function Register({ areas = [], plants = [] }) {
                     reset("password", "password_confirmation");
                     setIsLoading(false);
                 },
-                onError: () => {
+                onError: (err) => {
+                    console.error("Error en registro:", err);
                     setIsLoading(false);
                 },
             });

@@ -18,6 +18,11 @@ class Plant extends Model
         'is_active' => 'boolean',
     ];
 
+    public function scopeActive($query)
+    {
+        return $query->where('is_active', true);
+    }
+
     // Relationship with Areas removed
 
     public function users()
