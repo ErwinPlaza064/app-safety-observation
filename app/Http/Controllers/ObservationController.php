@@ -220,27 +220,11 @@ class ObservationController extends Controller
 
     public function index(Request $request)
     {
-        $query = Observation::with(['user', 'plant', 'area', 'categories', 'closedByUser'])
-            ->submitted()
-            ->latest('observation_date');
-
-        if ($request->filled('status')) {
-            $query->where('status', $request->status);
-        }
-
-        if ($request->filled('observation_type')) {
-            $query->where('observation_type', $request->observation_type);
-        }
-
-        if ($request->filled('area_id')) {
-            $query->where('area_id', $request->area_id);
-        }
-
-        $observations = $query->paginate(20);
+        $observations = $this->getFilteredQuery()->paginate(20);
 
         return Inertia::render('Observations/Index', [
             'observations' => $observations,
-            'filters' => $request->only(['status', 'observation_type', 'area_id']),
+            'filters' => $request->only(['status', 'observation_type', 'area_id', 'plant_id', 'search']),
             'areas' => Area::active()->get(),
             'plants' => \App\Models\Plant::where('is_active', true)->get(),
         ]);
@@ -323,44 +307,50 @@ class ObservationController extends Controller
     {
         $user = Auth::user();
 
-        $query = Observation::with(['user', 'plant', 'area', 'categories', 'closedByUser'])->submitted();
+        $query = Observation::with(['user', 'plant', 'area', 'categories', 'closedByUser'])
+            ->submitted();
 
-        if ($user->is_ehs_manager && !$user->is_super_admin) {
-            $canViewAllPlants = $user->is_ehs_coordinator;
+        // Determinar si puede ver todas las plantas
+        $canViewAllPlants = $user->is_super_admin || $user->is_ehs_coordinator;
+        $requestPlantId = request('plant_id');
 
-            if (!$canViewAllPlants) {
-                $query->where('plant_id', $user->plant_id);
-            }
+        // Calcular el ID de planta actual
+        $currentPlantId = $canViewAllPlants
+            ? ($requestPlantId !== null && $requestPlantId !== '' ? $requestPlantId : null)
+            : $user->plant_id;
 
-            $query->when(request('plant_id'), function ($q, $plantId) use ($canViewAllPlants, $user) {
-                if ($canViewAllPlants) {
-                    $q->where('plant_id', $plantId);
-                }
-            });
-        } else {
-            $query->when(request('plant_id'), function ($q, $plantId) {
-                $q->where('plant_id', $plantId);
-            });
+        // Aplicar filtro de planta
+        if ($currentPlantId !== null && $currentPlantId !== '') {
+            $query->where('observations.plant_id', $currentPlantId);
         }
 
+        // Filtro por área
         $query->when(request('area_id'), function ($q, $areaId) {
-            $q->where('area_id', $areaId);
+            $q->where('observations.area_id', $areaId);
         });
 
+        // Filtro por búsqueda de texto
         $query->when(request('search'), function ($q, $search) {
             $q->where(function ($subQ) use ($search) {
-                $subQ->where('folio', 'like', "%{$search}%")
-                    ->orWhere('description', 'like', "%{$search}%")
-                    ->orWhere('observed_person', 'like', "%{$search}%")
+                $subQ->where('observations.folio', 'like', "%{$search}%")
+                    ->orWhere('observations.description', 'like', "%{$search}%")
+                    ->orWhere('observations.observed_person', 'like', "%{$search}%")
                     ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"));
             });
         });
 
+        // Filtro por estado
         $query->when(request('status'), function ($q, $status) {
-            $q->where('status', $status);
+            $q->where('observations.status', $status);
         });
 
-        return $query->latest('observation_date');
+        // Filtro por tipo de observación (acto/condición)
+        $query->when(request('observation_type'), function ($q, $type) {
+            $q->where('observations.observation_type', $type);
+        });
+
+        return $query->orderByDesc('observations.observation_date')
+            ->orderByDesc('observations.created_at');
     }
 
     public function exportPdf(Request $request)

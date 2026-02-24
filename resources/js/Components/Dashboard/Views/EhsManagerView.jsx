@@ -267,7 +267,7 @@ export default function EhsManagerView({
                         </span>
                     </div>
                     <a
-                        href={route("observations.export.csv")}
+                        href={route("observations.export.csv", params)}
                         target="_blank"
                         className="px-4 py-2 bg-green-700 text-white rounded-lg text-sm font-medium hover:bg-green-800 flex items-center justify-center transition-all active:scale-95 shadow-sm"
                     >
@@ -287,7 +287,7 @@ export default function EhsManagerView({
                         CSV
                     </a>
                     <a
-                        href={route("observations.export.pdf")}
+                        href={route("observations.export.pdf", params)}
                         target="_blank"
                         className="px-4 py-2 bg-[#1e3a8a] text-white rounded-lg text-sm font-medium hover:bg-blue-900 flex items-center justify-center transition-all active:scale-95 shadow-sm"
                     >
