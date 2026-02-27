@@ -242,6 +242,7 @@ class DashboardController extends Controller
             if ($open > 0) {
                 $highRiskList = $applyFilters(Observation::query())
                     ->where('status', 'en_progreso')
+                    ->where('observation_type', '!=', 'acto_seguro')
                     ->whereHas('categories', function ($q) use ($highRiskCategories) {
                         $q->whereIn('name', $highRiskCategories);
                     })
