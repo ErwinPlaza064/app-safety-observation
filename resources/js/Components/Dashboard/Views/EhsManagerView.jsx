@@ -41,6 +41,9 @@ export default function EhsManagerView({
 
     const [isSyncing, setIsSyncing] = useState(false);
 
+    const searchSectionRef = useRef(null);
+    const isFirstRender = useRef(true);
+
     // 1. Efecto para recarga automática
     useEffect(() => {
         const intervalId = setInterval(() => {
