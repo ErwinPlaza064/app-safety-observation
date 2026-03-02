@@ -1,5 +1,5 @@
 import React from "react";
-import { route } from "@/utils/helpers";
+import { route } from "@/Utils/helpers";
 import { IoMdShare } from "react-icons/io";
 
 export default function EhsManagerHeader({ 

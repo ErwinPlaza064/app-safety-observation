@@ -1,15 +1,15 @@
 import { useState, useEffect, useRef } from "react";
 import { router, usePage } from "@inertiajs/react";
-import { route } from "@/utils/helpers";
+import { route } from "@/Utils/helpers";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
 import ObservationHoverCard from "@/Components/Dashboard/ObservationHoverCard";
 
 // Sub-componentes
-import EhsManagerHeader from "./EhsManager/EhsManagerHeader";
-import EhsStatsGrid from "./EhsManager/EhsStatsGrid";
-import EhsDistributionsGrid from "./EhsManager/EhsDistributionsGrid";
-import EhsObservationsTable from "./EhsManager/EhsObservationsTable";
+import EhsManagerHeader from "../EhsManager/EhsManagerHeader";
+import EhsStatsGrid from "../EhsManager/EhsStatsGrid";
+import EhsDistributionsGrid from "../EhsManager/EhsDistributionsGrid";
+import EhsObservationsTable from "../EhsManager/EhsObservationsTable";
 
 export default function EhsManagerView({
     user,
