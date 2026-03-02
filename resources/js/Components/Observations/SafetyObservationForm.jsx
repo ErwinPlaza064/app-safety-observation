@@ -8,10 +8,12 @@ import DetailsStep from "./Steps/DetailsStep";
 import ObservationHelpModal from "./ObservationHelpModal";
 import PhotosStep from "./Steps/PhotosStep";
 
+const EMPTY_PLANTS = [];
+
 export default function SafetyObservationForm({
     user,
     areas,
-    plants = [],
+    plants = EMPTY_PLANTS,
     categories,
     onClose,
     savedDraft,
@@ -214,11 +216,11 @@ export default function SafetyObservationForm({
     };
 
     const handleNext = () => {
-        if (validateStep(currentStep)) setCurrentStep(currentStep + 1);
+        if (validateStep(currentStep)) setCurrentStep(prev => prev + 1);
     };
 
     const handlePrevious = () => {
-        if (currentStep > 1) setCurrentStep(currentStep - 1);
+        if (currentStep > 1) setCurrentStep(prev => prev - 1);
         else if (onClose) onClose();
     };
 

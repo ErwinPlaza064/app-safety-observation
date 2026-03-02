@@ -24,10 +24,11 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
 
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observer_name" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Nombre
                     </label>
                     <input
+                        id="observer_name"
                         type="text"
                         value={formData.observer_name}
                         readOnly
@@ -35,10 +36,11 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observer_employee_id" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Numero De Nomina
                     </label>
                     <input
+                        id="observer_employee_id"
                         type="text"
                         value={formData.employee_id}
                         readOnly
@@ -49,20 +51,22 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
 
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observer_department" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Depto
                     </label>
                     <input
+                        id="observer_department"
                         value={formData.department}
                         readOnly
                         className="w-full px-4 py-2 border rounded-lg bg-gray-50 dark:bg-gray-700 dark:border-gray-600 dark:text-gray-400"
                     />
                 </div>
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observation_date" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Fecha
                     </label>
                     <input
+                        id="observation_date"
                         type="date"
                         value={formData.observation_date}
                         readOnly
@@ -83,10 +87,11 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                     </div>
 
                     <div className="mb-6">
-                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        <label htmlFor="company" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                             Empresa <span className="text-red-500">*</span>
                         </label>
                         <select
+                            id="company"
                             value={formData.company || "WASION"}
                             onChange={(e) => {
                                 const newCompany = e.target.value;
@@ -112,10 +117,11 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
             <div className="grid grid-cols-1 gap-4 mb-4 md:grid-cols-2 md:gap-6 md:mb-6">
                 {formData.observation_type !== "condicion_insegura" && (
                     <div>
-                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        <label htmlFor="payroll_number" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                             {formData.company === "WASION" ? "N. Nómina de la persona observada" : "Identificador"} <span className="text-red-500">*</span>
                         </label>
                         <input
+                            id="payroll_number"
                             type="text"
                             placeholder="00000"
                             value={formData.payroll_number}
@@ -156,7 +162,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                             : ""
                     }
                 >
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observed_person" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         {formData.observation_type === "condicion_insegura"
                             ? "Ubicación"
                             : formData.company === "WASION" 
@@ -165,6 +171,7 @@ export default function ObserverInfoStep({ formData, onChange, errors }) {
                         <span className="text-red-500">*</span>
                     </label>
                     <input
+                        id="observed_person"
                         type="text"
                         placeholder={
                             formData.observation_type === "condicion_insegura"

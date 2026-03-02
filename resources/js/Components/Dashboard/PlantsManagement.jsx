@@ -16,7 +16,9 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 
-export default function PlantsManagement({ plants = [] }) {
+const EMPTY_PLANTS = [];
+
+export default function PlantsManagement({ plants = EMPTY_PLANTS }) {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingPlant, setEditingPlant] = useState(null);

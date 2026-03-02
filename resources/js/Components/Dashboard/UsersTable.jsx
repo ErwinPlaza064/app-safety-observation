@@ -1,6 +1,18 @@
 import { Link, usePage, router } from "@inertiajs/react";
 
+const decodePaginationLabel = (label) => {
+    return label
+        .replace(/&laquo;/g, '\u00AB')
+        .replace(/&raquo;/g, '\u00BB')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+};
+
 export default function UsersTable({ users, onUserClick, onDelete }) {
+    const { auth } = usePage().props;
+    const currentUserId = auth.user.id;
+
     const formatLastActivity = (timestamp) => {
         if (!timestamp) return "Nunca";
         const date = new Date(timestamp * 1000);
@@ -132,7 +144,7 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                                             {formatLastActivity(
-                                                userData.last_activity
+                                                userData.last_activity,
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-sm whitespace-nowrap">
@@ -148,12 +160,23 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                                     className="p-1 px-2 text-blue-600 transition-colors bg-blue-100 rounded-md dark:text-blue-400 dark:bg-blue-900/30 hover:bg-blue-200 dark:hover:bg-blue-900/50"
                                                     title="Editar"
                                                 >
-                                                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z" />
+                                                    <svg
+                                                        className="w-5 h-5"
+                                                        fill="none"
+                                                        stroke="currentColor"
+                                                        viewBox="0 0 24 24"
+                                                    >
+                                                        <path
+                                                            strokeLinecap="round"
+                                                            strokeLinejoin="round"
+                                                            strokeWidth="2"
+                                                            d="M15.232 5.232l3.536 3.536m-2.036-5.036a2.5 2.5 0 113.536 3.536L6.5 21.036H3v-3.572L16.732 3.732z"
+                                                        />
                                                     </svg>
                                                 </button>
-                                                
-                                                {userData.id !== usePage().props.auth.user.id && (
+
+                                                {userData.id !==
+                                                    currentUserId && (
                                                     <button
                                                         onClick={(e) => {
                                                             e.stopPropagation();
@@ -162,8 +185,18 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                                         className="p-1 px-2 text-red-600 transition-colors bg-red-100 rounded-md dark:text-red-400 dark:bg-red-900/30 hover:bg-red-200 dark:hover:bg-red-900/50"
                                                         title="Eliminar"
                                                     >
-                                                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                                        <svg
+                                                            className="w-5 h-5"
+                                                            fill="none"
+                                                            stroke="currentColor"
+                                                            viewBox="0 0 24 24"
+                                                        >
+                                                            <path
+                                                                strokeLinecap="round"
+                                                                strokeLinejoin="round"
+                                                                strokeWidth="2"
+                                                                d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                                                            />
                                                         </svg>
                                                     </button>
                                                 )}
@@ -211,7 +244,7 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                     {links.map((link, key) =>
                                         link.url ? (
                                             <Link
-                                                key={key}
+                                                key={`page-${link.label}-${key}`}
                                                 href={link.url}
                                                 preserveState
                                                 className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium ${
@@ -219,19 +252,17 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                                         ? "z-10 bg-blue-50 dark:bg-blue-900/30 border-blue-500 dark:border-blue-600 text-blue-600 dark:text-blue-400"
                                                         : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                                                 }`}
-                                                dangerouslySetInnerHTML={{
-                                                    __html: link.label,
-                                                }}
-                                            />
+                                            >
+                                                {decodePaginationLabel(link.label)}
+                                            </Link>
                                         ) : (
                                             <span
-                                                key={key}
+                                                key={`page-${link.label}-${key}`}
                                                 className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 dark:text-gray-600 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 cursor-default"
-                                                dangerouslySetInnerHTML={{
-                                                    __html: link.label,
-                                                }}
-                                            />
-                                        )
+                                            >
+                                                {decodePaginationLabel(link.label)}
+                                            </span>
+                                        ),
                                     )}
                                 </nav>
                             </div>

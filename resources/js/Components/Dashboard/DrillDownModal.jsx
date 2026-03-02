@@ -294,7 +294,7 @@ export default function DrillDownModal({
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                 {data.map((item, index) => (
                                                     <tr
-                                                        key={index}
+                                                        key={`${item.email}-${index}`}
                                                         onClick={() =>
                                                             onItemClick &&
                                                             onItemClick(item)
@@ -338,7 +338,7 @@ export default function DrillDownModal({
                                             <tbody className="divide-y divide-gray-100 dark:divide-gray-700">
                                                 {displayData.map((item, index) => (
                                                     <tr
-                                                        key={index}
+                                                        key={`${item.payroll_number}-${index}`}
                                                         onClick={() =>
                                                             onItemClick &&
                                                             onItemClick(item)

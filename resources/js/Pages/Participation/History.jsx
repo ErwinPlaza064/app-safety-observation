@@ -5,6 +5,15 @@ import DrillDownModal from "@/Components/Dashboard/DrillDownModal";
 import ObservationDetailsModal from "@/Components/Dashboard/ObservationDetailsModal";
 import axios from "axios";
 
+const decodePaginationLabel = (label) => {
+    return label
+        .replace(/&laquo;/g, '\u00AB')
+        .replace(/&raquo;/g, '\u00BB')
+        .replace(/&amp;/g, '&')
+        .replace(/&lt;/g, '<')
+        .replace(/&gt;/g, '>');
+};
+
 export default function History({ auth, history, areas, filters }) {
     const [selectedEmployee, setSelectedEmployee] = useState(null);
     const [employeeObservations, setEmployeeObservations] = useState([]);
@@ -83,10 +92,11 @@ export default function History({ auth, history, areas, filters }) {
                             className="grid grid-cols-1 md:grid-cols-5 gap-4 items-end"
                         >
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                                <label htmlFor="filter_start_date" className="block text-xs font-bold text-gray-500 uppercase mb-1">
                                     Inicio
                                 </label>
                                 <input
+                                    id="filter_start_date"
                                     type="date"
                                     value={data.start_date}
                                     onChange={(e) =>
@@ -96,10 +106,11 @@ export default function History({ auth, history, areas, filters }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                                <label htmlFor="filter_end_date" className="block text-xs font-bold text-gray-500 uppercase mb-1">
                                     Fin
                                 </label>
                                 <input
+                                    id="filter_end_date"
                                     type="date"
                                     value={data.end_date}
                                     onChange={(e) =>
@@ -109,10 +120,11 @@ export default function History({ auth, history, areas, filters }) {
                                 />
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                                <label htmlFor="filter_area_id" className="block text-xs font-bold text-gray-500 uppercase mb-1">
                                     Planta / Área
                                 </label>
                                 <select
+                                    id="filter_area_id"
                                     value={data.area_id}
                                     onChange={(e) =>
                                         setData("area_id", e.target.value)
@@ -128,10 +140,11 @@ export default function History({ auth, history, areas, filters }) {
                                 </select>
                             </div>
                             <div>
-                                <label className="block text-xs font-bold text-gray-500 uppercase mb-1">
+                                <label htmlFor="filter_search" className="block text-xs font-bold text-gray-500 uppercase mb-1">
                                     Empleado / Nómina
                                 </label>
                                 <input
+                                    id="filter_search"
                                     type="text"
                                     placeholder="Nombre o nómina..."
                                     value={data.search}
@@ -242,17 +255,16 @@ export default function History({ auth, history, areas, filters }) {
                             <div className="px-6 py-4 border-t border-gray-100 dark:border-gray-700 flex justify-center gap-1">
                                 {history.links.map((link, i) => (
                                     <Link
-                                        key={i}
+                                        key={`page-${link.label}-${i}`}
                                         href={link.url}
                                         className={`px-3 py-1 text-sm rounded-md transition-colors ${
                                             link.active
                                                 ? "bg-blue-600 text-white font-bold"
                                                 : "text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700"
                                         } ${!link.url ? "opacity-30 cursor-not-allowed" : ""}`}
-                                        dangerouslySetInnerHTML={{
-                                            __html: link.label,
-                                        }}
-                                    />
+                                    >
+                                        {decodePaginationLabel(link.label)}
+                                    </Link>
                                 ))}
                             </div>
                         )}

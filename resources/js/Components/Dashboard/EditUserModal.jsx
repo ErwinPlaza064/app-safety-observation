@@ -10,14 +10,17 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
+const EMPTY_PLANTS = [];
+const EMPTY_AREAS = [];
+
 export default function EditUserModal({
     show,
     user,
     currentUser,
     onClose,
     onDelete,
-    plants = [],
-    areas = [],
+    plants = EMPTY_PLANTS,
+    areas = EMPTY_AREAS,
 }) {
     const { data, setData, patch, processing, errors, reset } = useForm({
         name: "",

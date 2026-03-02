@@ -6,6 +6,9 @@ import StatusListModal from "@/Components/Dashboard/StatusListModal";
 import SupportTicketModal from "@/Components/Dashboard/SupportTicketModal";
 import { router } from "@inertiajs/react";
 
+const EMPTY_NOTIFICATIONS = [];
+const EMPTY_PLANTS = [];
+
 export default function EmployeeView({
     user,
     userStats,
@@ -14,8 +17,8 @@ export default function EmployeeView({
     savedDraft,
     myObservations,
     filteredReports,
-    employeeNotifications = [],
-    plants = [],
+    employeeNotifications = EMPTY_NOTIFICATIONS,
+    plants = EMPTY_PLANTS,
 }) {
     const [showForm, setShowForm] = useState(!!savedDraft);
 
@@ -187,6 +190,9 @@ export default function EmployeeView({
 
                 <div
                     onClick={() => setShowReadyToCloseModal(true)}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); setShowReadyToCloseModal(true); } }}
+                    role="button"
+                    tabIndex={0}
                     className={`p-4 transition shadow-sm sm:p-6 rounded-xl hover:cursor-pointer ${
                         employeeNotifications.length > 0
                             ? "bg-gradient-to-br from-green-50 to-emerald-50 dark:from-green-900/30 dark:to-emerald-900/30 border-l-4 border-green-500 dark:border-green-400 hover:from-green-100 hover:to-emerald-100 dark:hover:from-green-900/50 dark:hover:to-emerald-900/50 ring-2 ring-green-200 dark:ring-green-800"
@@ -262,6 +268,9 @@ export default function EmployeeView({
 
                 <div
                     onClick={() => handleCardClick("cerrada")}
+                    onKeyDown={(e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); handleCardClick("cerrada"); } }}
+                    role="button"
+                    tabIndex={0}
                     className="p-4 bg-white border-l-4 border-green-500 shadow-sm dark:bg-gray-800 dark:border-green-400 hover:cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 sm:p-6 rounded-xl"
                 >
                     <div className="flex items-center justify-between mb-4">

@@ -456,7 +456,7 @@ export default function ObservationDetailsModal({
                                     {data.photos.length > 0 && (
                                         <div className="flex gap-2 flex-wrap pt-2">
                                             {data.photos.map((file, i) => (
-                                                <div key={i} className="flex items-center gap-2 pl-3 pr-2 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[9px] font-bold rounded-xl border border-blue-100 dark:border-blue-800 group shadow-sm">
+                                                <div key={`${file.name}-${i}`} className="flex items-center gap-2 pl-3 pr-2 py-1.5 bg-blue-50 dark:bg-blue-900/30 text-blue-700 dark:text-blue-300 text-[9px] font-bold rounded-xl border border-blue-100 dark:border-blue-800 group shadow-sm">
                                                     <span className="truncate max-w-[120px]">{file.name}</span>
                                                     <button 
                                                         type="button" 

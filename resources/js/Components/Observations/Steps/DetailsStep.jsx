@@ -233,7 +233,7 @@ export default function DetailsStep({
             )}
 
             <div className="mb-6">
-                <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                <label htmlFor="description" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                     {currentConfig.label}{" "}
                     <span className="text-red-500">*</span>
                 </label>
@@ -348,6 +348,7 @@ export default function DetailsStep({
                 )}
 
                 <textarea
+                    id="description"
                     value={formData.description}
                     onChange={(e) => onChange("description", e.target.value)}
                     className={`w-full p-3 border rounded-lg focus:ring-[#1e3a8a] focus:border-[#1e3a8a] outline-none dark:bg-gray-700 dark:text-gray-200 dark:placeholder-gray-400 transition-colors ${

@@ -3,7 +3,9 @@ import { Link, router } from "@inertiajs/react";
 import Dropdown from "@/Components/Dropdown";
 import { BiBell } from "react-icons/bi";
 
-export default function NotificationBell({ user, count = 0, list = [] }) {
+const EMPTY_LIST = [];
+
+export default function NotificationBell({ user, count = 0, list = EMPTY_LIST }) {
     const [badgeCount, setBadgeCount] = useState(0);
     const [viewedNotifications, setViewedNotifications] = useState(new Set());
     const [newNotifications, setNewNotifications] = useState(new Set());

@@ -12,11 +12,14 @@ import Modal from "@/Components/Modal";
 import SecondaryButton from "@/Components/SecondaryButton";
 import axios from "axios";
 
+const EMPTY_PLANTS = [];
+const EMPTY_AREAS = [];
+
 export default function SuperAdminView({
     stats,
     users,
-    plants = [],
-    areas = [],
+    plants = EMPTY_PLANTS,
+    areas = EMPTY_AREAS,
     onUserClick,
     onDeleteUser,
     onImportClick,
@@ -217,6 +220,7 @@ export default function SuperAdminView({
                                     value={params.search}
                                     onChange={handleChange}
                                     placeholder="Buscar por nombre, email o ID..."
+                                    aria-label="Buscar por nombre, email o ID"
                                     className="w-full py-2 pl-10 pr-10 text-sm text-gray-900 placeholder-gray-400 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 dark:placeholder-gray-500 focus:ring-blue-500 focus:border-blue-500"
                                 />
                                 {params.search && (
@@ -235,6 +239,7 @@ export default function SuperAdminView({
                             <div className="flex flex-col w-full gap-2 sm:flex-row md:w-auto">
                                 <select
                                     name="plant_id"
+                                    aria-label="Filtrar por planta"
                                     value={params.plant_id}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
@@ -249,6 +254,7 @@ export default function SuperAdminView({
 
                                 <select
                                     name="area_id"
+                                    aria-label="Filtrar por área"
                                     value={params.area_id}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
@@ -263,6 +269,7 @@ export default function SuperAdminView({
 
                                 <select
                                     name="role"
+                                    aria-label="Filtrar por rol"
                                     value={params.role}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"
@@ -276,6 +283,7 @@ export default function SuperAdminView({
 
                                 <select
                                     name="status"
+                                    aria-label="Filtrar por estado"
                                     value={params.status}
                                     onChange={handleChange}
                                     className="text-sm text-gray-900 bg-white border-gray-300 rounded-lg dark:bg-gray-700 dark:border-gray-600 dark:text-gray-100 focus:ring-blue-500 focus:border-blue-500"

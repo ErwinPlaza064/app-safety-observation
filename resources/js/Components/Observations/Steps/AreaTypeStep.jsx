@@ -14,7 +14,7 @@ export default function AreaTypeStep({
         <div className="py-4 pl-4 border-l-4 border-[#1e3a8a] md:pl-6">
             <div className="mb-8">
                 <div className="flex items-end justify-between mb-4">
-                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="observationType" className="block text-sm font-medium text-gray-700 dark:text-gray-200">
                         Tipo de Observación
                         <span className="text-red-500">*</span>
                     </label>
@@ -94,11 +94,12 @@ export default function AreaTypeStep({
 
             <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
                 <div>
-                    <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                    <label htmlFor="plant_id" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                         Planta
                         <span className="text-red-500">*</span>
                     </label>
                     <select
+                        id="plant_id"
                         value={formData.plant_id}
                         onChange={(e) => {
                             onChange("plant_id", parseInt(e.target.value));
@@ -121,11 +122,12 @@ export default function AreaTypeStep({
 
                 {!isUnsafeCondition && (
                     <div className="animate-fade-in">
-                        <label className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
+                        <label htmlFor="area_id" className="block mb-2 text-sm font-medium text-gray-700 dark:text-gray-200">
                             Área de la persona observada
                             <span className="text-red-500">*</span>
                         </label>
                         <select
+                            id="area_id"
                             value={formData.area_id}
                             onChange={(e) =>
                                 onChange("area_id", e.target.value === "" ? "" : parseInt(e.target.value))

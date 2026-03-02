@@ -16,7 +16,9 @@ import InputLabel from "@/Components/InputLabel";
 import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 
-export default function AreasManagement({ areas = [] }) {
+const EMPTY_AREAS = [];
+
+export default function AreasManagement({ areas = EMPTY_AREAS }) {
     const [showModal, setShowModal] = useState(false);
     const [showDeleteModal, setShowDeleteModal] = useState(false);
     const [editingArea, setEditingArea] = useState(null);

@@ -14,12 +14,14 @@ import {
 } from "react-icons/hi";
 import FlashMessages from "@/Components/FlashMessages";
 
+const EMPTY_NOTIFICATIONS = [];
+
 export default function AuthenticatedLayout({
     header,
     observation,
     children,
     notificationCount = 0,
-    notifications = [],
+    notifications = EMPTY_NOTIFICATIONS,
 }) {
     const getInitials = (name) => {
         if (!name) return "";

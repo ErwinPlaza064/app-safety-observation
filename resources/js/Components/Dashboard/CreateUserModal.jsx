@@ -7,7 +7,10 @@ import TextInput from "@/Components/TextInput";
 import InputError from "@/Components/InputError";
 import Checkbox from "@/Components/Checkbox";
 
-export default function CreateUserModal({ show, onClose, plants = [], areas = [] }) {
+const EMPTY_PLANTS = [];
+const EMPTY_AREAS = [];
+
+export default function CreateUserModal({ show, onClose, plants = EMPTY_PLANTS, areas = EMPTY_AREAS }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         name: "",
         email: "",

@@ -8,7 +8,10 @@ import { useState, useMemo } from "react";
 import ThemeToggle from "@/Components/ThemeToggle";
 import { Transition } from "@headlessui/react";
 
-export default function Register({ areas = [], plants = [] }) {
+const EMPTY_AREAS = [];
+const EMPTY_PLANTS = [];
+
+export default function Register({ areas = EMPTY_AREAS, plants = EMPTY_PLANTS }) {
     const { data, setData, post, processing, errors, reset } = useForm({
         employee_number: "",
         name: "",

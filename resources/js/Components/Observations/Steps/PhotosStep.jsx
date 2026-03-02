@@ -303,7 +303,7 @@ export default function PhotosStep({ formData, onPhotoChange, onRemovePhoto }) {
                     <div className="grid grid-cols-2 gap-4 sm:grid-cols-3 md:grid-cols-5">
                         {formData.photos.map((photo, index) => (
                             <div
-                                key={index}
+                                key={`${photo.name}-${photo.lastModified}-${index}`}
                                 className="relative overflow-hidden shadow-sm group rounded-xl aspect-square"
                             >
                                 <img
