@@ -8,8 +8,7 @@ export default function EhsManagerHeader({
     plants, 
     params, 
     handleFilterChange,
-    handleExportCsv,
-    handleExportPdf
+    isSyncing
 }) {
     return (
         <div className="flex flex-col items-start justify-between gap-4 md:flex-row md:items-center">
