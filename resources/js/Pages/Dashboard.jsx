@@ -32,6 +32,14 @@ export default function Dashboard({
     const [editingUser, setEditingUser] = useState(null);
     const [deletingUser, setDeletingUser] = useState(null);
     const [showImportModal, setShowImportModal] = useState(false);
+    
+    // Función global para que el Service Worker recargue datos
+    window.refreshData = () => {
+        router.reload({
+            preserveScroll: true,
+            preserveState: true,
+        });
+    };
 
     const openEditModal = (userData) => setEditingUser(userData);
     const closeEditModal = () => setEditingUser(null);

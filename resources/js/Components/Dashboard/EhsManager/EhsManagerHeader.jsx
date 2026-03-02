@@ -53,13 +53,13 @@ export default function EhsManagerHeader({
                 </div>
             </div>
             <div className="flex flex-wrap w-full gap-3 md:w-auto">
-                <div className="flex items-center justify-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border border-blue-200 dark:border-blue-700 rounded-full shadow-sm">
+                <div className={`flex items-center justify-center gap-2 px-3 py-1.5 bg-white dark:bg-gray-800 border rounded-full shadow-sm transition-all ${isSyncing ? 'border-orange-200 dark:border-orange-800 ring-2 ring-orange-100 dark:ring-orange-900/30' : 'border-blue-200 dark:border-blue-700'}`}>
                     <span className="relative flex w-2.5 h-2.5">
-                        <span className="absolute inline-flex w-full h-full bg-blue-400 rounded-full opacity-75 animate-ping"></span>
-                        <span className="relative inline-flex w-2.5 h-2.5 bg-blue-600 rounded-full"></span>
+                        <span className={`absolute inline-flex w-full h-full rounded-full opacity-75 animate-ping ${isSyncing ? 'bg-orange-400' : 'bg-blue-400'}`}></span>
+                        <span className={`relative inline-flex w-2.5 h-2.5 rounded-full ${isSyncing ? 'bg-orange-600' : 'bg-blue-600'}`}></span>
                     </span>
-                    <span className="text-xs font-bold tracking-wide text-blue-700 uppercase dark:text-blue-400">
-                        Sincronizado
+                    <span className={`text-xs font-bold tracking-wide uppercase transition-colors ${isSyncing ? 'text-orange-700 dark:text-orange-400' : 'text-blue-700 dark:text-blue-400'}`}>
+                        {isSyncing ? 'Actualizando...' : 'Sincronizado'}
                     </span>
                 </div>
                 <a

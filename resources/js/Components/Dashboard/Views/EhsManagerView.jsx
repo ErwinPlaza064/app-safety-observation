@@ -39,19 +39,20 @@ export default function EhsManagerView({
     const [copiedId, setCopiedId] = useState(null);
     const [isMobile, setIsMobile] = useState(false);
 
-    const searchSectionRef = useRef(null);
-    const isFirstRender = useRef(true);
+    const [isSyncing, setIsSyncing] = useState(false);
 
     // 1. Efecto para recarga automática
     useEffect(() => {
         const intervalId = setInterval(() => {
+            setIsSyncing(true);
             router.reload({
                 only: ["ehsStats"],
                 preserveScroll: true,
                 preserveState: true,
                 replace: true,
+                onFinish: () => setIsSyncing(false),
             });
-        }, 5000 * 60); // Aumentado a 1 minuto para evitar carga excesiva, o dejar en 5000 si es crítico
+        }, 5000); // 5 segundos para tiempo real, como en EmployeeView
 
         return () => clearInterval(intervalId);
     }, []);
@@ -178,6 +179,7 @@ export default function EhsManagerView({
                 plants={plants}
                 params={params}
                 handleFilterChange={handleFilterChange}
+                isSyncing={isSyncing}
             />
 
             {/* 2. Grid de Métricas (Tarjetas) */}
