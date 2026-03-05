@@ -10,6 +10,7 @@ class Observation extends Model
     use HasFactory;
 
     protected $fillable = [
+        'uuid',
         'user_id',
         'plant_id',
         'area_id',
@@ -26,6 +27,16 @@ class Observation extends Model
         'closed_by',
         'closure_notes',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+        static::creating(function ($model) {
+            if (empty($model->uuid)) {
+                $model->uuid = (string) \Illuminate\Support\Str::uuid();
+            }
+        });
+    }
 
     protected $casts = [
         'observation_date' => 'date',

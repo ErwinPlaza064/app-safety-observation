@@ -102,7 +102,7 @@ export default function ObservationDetailsModal({
     };
 
     const handleShare = () => {
-        const url = `${window.location.origin}/observations/${observation.id}`;
+        const url = `${window.location.origin}/observations/${observation.uuid}`;
         navigator.clipboard.writeText(url).then(() => {
             setCopied(true);
             setTimeout(() => setCopied(false), 2000);

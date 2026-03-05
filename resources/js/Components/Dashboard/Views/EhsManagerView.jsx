@@ -32,7 +32,7 @@ export default function EhsManagerView({
     });
     const [selectedPayroll, setSelectedPayroll] = useState(null);
     const [activeTab, setActiveTab] = useState("actos");
-    
+
     // Estados para UI/UX
     const [hoveredObservation, setHoveredObservation] = useState(null);
     const [hoverPosition, setHoverPosition] = useState({ x: 0, y: 0 });
@@ -139,10 +139,11 @@ export default function EhsManagerView({
     const handleRecidivismClick = (item) => {
         setActiveMetric(null);
         setSelectedPayroll(item);
-        
-        const searchTerm = item.company === "WASION" 
-            ? item.payroll_number 
-            : item.observed_person;
+
+        const searchTerm =
+            item.company === "WASION"
+                ? item.payroll_number
+                : item.observed_person;
 
         setParams({ ...params, search: searchTerm });
 
@@ -156,27 +157,28 @@ export default function EhsManagerView({
 
     const handleShare = (e, obs) => {
         e.stopPropagation();
-        const url = `${window.location.origin}/observations/${obs.id}`;
+        const url = `${window.location.origin}/observations/${obs.uuid}`;
         navigator.clipboard.writeText(url).then(() => {
             setCopiedId(obs.id);
             setTimeout(() => setCopiedId(null), 2000);
         });
     };
 
-    const filteredRecent = stats.recent?.filter((obs) => {
-        if (activeTab === "actos") {
-            return (
-                obs.observation_type === "acto_seguro" ||
-                obs.observation_type === "acto_inseguro"
-            );
-        }
-        return obs.observation_type === "condicion_insegura";
-    }) || [];
+    const filteredRecent =
+        stats.recent?.filter((obs) => {
+            if (activeTab === "actos") {
+                return (
+                    obs.observation_type === "acto_seguro" ||
+                    obs.observation_type === "acto_inseguro"
+                );
+            }
+            return obs.observation_type === "condicion_insegura";
+        }) || [];
 
     return (
         <div className="space-y-8 animate-fade-in">
             {/* 1. Header & Filtros Globales */}
-            <EhsManagerHeader 
+            <EhsManagerHeader
                 user={user}
                 canViewAllPlants={canViewAllPlants}
                 plants={plants}
@@ -186,13 +188,10 @@ export default function EhsManagerView({
             />
 
             {/* 2. Grid de Métricas (Tarjetas) */}
-            <EhsStatsGrid 
-                stats={stats}
-                setActiveMetric={setActiveMetric}
-            />
+            <EhsStatsGrid stats={stats} setActiveMetric={setActiveMetric} />
 
             {/* 3. Grid de Distribuciones (Gráficos/Barras) */}
-            <EhsDistributionsGrid 
+            <EhsDistributionsGrid
                 canViewAllPlants={canViewAllPlants}
                 stats={stats}
                 handleGenericClick={handleGenericClick}
@@ -200,7 +199,7 @@ export default function EhsManagerView({
             />
 
             {/* 4. Tabla de búsqueda y resultados */}
-            <EhsObservationsTable 
+            <EhsObservationsTable
                 searchSectionRef={searchSectionRef}
                 params={params}
                 handleFilterChange={handleFilterChange}
@@ -242,7 +241,8 @@ export default function EhsManagerView({
                                       ? "Participación de Hoy"
                                       : activeMetric === "participation_weekly"
                                         ? "Participación de la Semana"
-                                        : activeMetric === "participation_monthly"
+                                        : activeMetric ===
+                                            "participation_monthly"
                                           ? "Participación del Mes"
                                           : ""
                 }
@@ -265,7 +265,8 @@ export default function EhsManagerView({
                                       ? stats.participation_daily.list
                                       : activeMetric === "participation_weekly"
                                         ? stats.participation_weekly.list
-                                        : activeMetric === "participation_monthly"
+                                        : activeMetric ===
+                                            "participation_monthly"
                                           ? stats.participation_monthly.list
                                           : []
                 }
@@ -307,4 +308,3 @@ export default function EhsManagerView({
         </div>
     );
 }
-

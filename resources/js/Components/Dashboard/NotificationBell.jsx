@@ -75,7 +75,7 @@ export default function NotificationBell({ user, count = 0, list = EMPTY_LIST })
 
     const handleShare = (e, notif) => {
         e.stopPropagation();
-        const url = `${window.location.origin}/observations/${notif.id}`;
+        const url = `${window.location.origin}/observations/${notif.uuid}`;
         navigator.clipboard.writeText(url).then(() => {
             setCopiedId(notif.id);
             setTimeout(() => setCopiedId(null), 2000);
@@ -102,7 +102,7 @@ export default function NotificationBell({ user, count = 0, list = EMPTY_LIST })
         const key = `${notif.id}-${notif.status}`;
         const isNew = newNotifications.has(key);
         const isClosed = notif.status === 'cerrada';
-        const href = route("observations.show", notif.id);
+        const href = route("observations.show", notif.uuid);
 
         return (
             <button

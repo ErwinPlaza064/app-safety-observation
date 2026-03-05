@@ -50,7 +50,7 @@ Route::get('/', function () {
 
 
 // Ruta pública para ver reportes compartidos
-Route::get('/observations/{observation}', [App\Http\Controllers\ObservationController::class, 'show'])
+Route::get('/observations/{observation:uuid}', [App\Http\Controllers\ObservationController::class, 'show'])
     ->name('observations.show');
 
 Route::middleware(['auth', 'prevent-back-history'])->group(function () {
