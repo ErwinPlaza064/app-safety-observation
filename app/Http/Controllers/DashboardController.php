@@ -172,8 +172,8 @@ class DashboardController extends Controller
             $query = Observation::with($baseRelations)
                 ->submitted();
 
-            if (RequestFacade::input('search')) {
-                $search = RequestFacade::input('search');
+            $search = trim(RequestFacade::input('search', ''));
+            if ($search !== '') {
                 $query->where(function ($q) use ($search) {
                     $q->where('folio', 'like', "%{$search}%")
                         ->orWhere('description', 'like', "%{$search}%")

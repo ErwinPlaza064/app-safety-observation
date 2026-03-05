@@ -44,8 +44,15 @@ export default function EhsManagerView({
     const searchSectionRef = useRef(null);
     const isFirstRender = useRef(true);
 
-    // 1. Efecto para recarga automática
+    // 1. Efecto para recarga automática - Optimizado para evitar conflictos con filtros
     useEffect(() => {
+        // No recargar automáticamente si el usuario está escribiendo o si el filtro local 
+        // no coincide con el filtro del servidor (estamos esperando respuesta)
+        const isStale = params.search !== (filters?.search || "") || 
+                        params.plant_id !== (filters?.plant_id || "");
+        
+        if (isStale) return;
+
         const intervalId = setInterval(() => {
             setIsSyncing(true);
             router.reload({
@@ -55,10 +62,10 @@ export default function EhsManagerView({
                 replace: true,
                 onFinish: () => setIsSyncing(false),
             });
-        }, 5000); // 5 segundos para tiempo real, como en EmployeeView
+        }, 8000); // 8 segundos para evitar saturar el servidor en dashboards pesados
 
         return () => clearInterval(intervalId);
-    }, []);
+    }, [params, filters]);
 
     // 2. Efecto para abrir modal desde URL (notificaciones)
     useEffect(() => {
@@ -94,17 +101,31 @@ export default function EhsManagerView({
             return;
         }
 
+        const searchTerm = params.search?.trim() || "";
+
         const timer = setTimeout(() => {
-            router.get(route("dashboard"), params, {
+            const options = {
                 preserveState: true,
                 preserveScroll: true,
-                only: ["ehsStats", "filters", "areas"],
                 replace: true,
-            });
-        }, 300);
+                onStart: () => setIsSyncing(true),
+                onFinish: () => setIsSyncing(false),
+            };
+
+            // Si el buscador está vacío, NO usamos 'only' para forzar una recarga completa 
+            // de las estadísticas y limpiar cualquier estado "bugeado"
+            if (searchTerm === "") {
+                router.get(route("dashboard"), { ...params, search: "" }, options);
+            } else {
+                router.get(route("dashboard"), params, {
+                    ...options,
+                    only: ["ehsStats", "filters"],
+                });
+            }
+        }, 400);
 
         return () => clearTimeout(timer);
-    }, [params]);
+    }, [params.search, params.plant_id]);
 
     // Handlers
     const handleFilterChange = (e) => {

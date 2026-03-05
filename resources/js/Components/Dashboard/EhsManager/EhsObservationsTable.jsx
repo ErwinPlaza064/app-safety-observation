@@ -66,7 +66,7 @@ export default function EhsObservationsTable({
                 </div>
             </div>
 
-            {params.search && (selectedPayroll || params.search.length > 0) ? (
+            {(params.search?.trim() !== "" || selectedPayroll) ? (
                 <div className="space-y-4 animate-fade-in">
                     <div className="flex items-center justify-between p-4 bg-blue-50 dark:bg-blue-900/20 border border-blue-100 dark:border-blue-800 rounded-xl">
                         <div className="flex items-center gap-4">

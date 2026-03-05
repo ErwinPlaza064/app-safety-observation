@@ -222,7 +222,14 @@ class ObservationController extends Controller
         ]);
 
         return Inertia::render('Observations/Show', [
-            'observation' => $observation
+            'observation' => $observation,
+            'meta' => [
+                'title' => "Reporte: " . ($observation->folio ?? "#" . $observation->id),
+                'description' => ($observation->user->name ?? 'Un colaborador') . " ha compartido un reporte de seguridad (" . str_replace('_', ' ', $observation->observation_type) . ") contigo.",
+                'image' => $observation->images->first()
+                    ? url('/storage/' . $observation->images->first()->path)
+                    : url('/images/icons/icon-512x512.png'),
+            ]
         ]);
     }
 

@@ -5,11 +5,21 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <title inertia>{{ config('app.name', 'Safety Obs') }}</title>
+
+    <!-- Open Graph / Meta Compartir -->
+    <meta property="og:title" content="{{ $page['props']['meta']['title'] ?? config('app.name', 'Safety Obs') }}">
+    <meta property="og:description"
+        content="{{ $page['props']['meta']['description'] ?? 'Sistema de gestión de observaciones de seguridad industrial - WASION' }}">
+    <meta property="og:image" content="{{ $page['props']['meta']['image'] ?? url('/images/icons/icon-512x512.png') }}">
+    <meta property="og:type" content="website">
+    <meta property="og:url" content="{{ url()->current() }}">
+    <meta name="twitter:card" content="summary_large_image">
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1e3a8a">
-    <meta name="description" content="Sistema de gestión de observaciones de seguridad industrial - WASION">
+    <meta name="description"
+        content="{{ $page['props']['meta']['description'] ?? 'Sistema de gestión de observaciones de seguridad industrial - WASION' }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Safety Obs">
@@ -71,7 +81,7 @@
                                     // Nueva versión disponible
                                     console.log(
                                         '🆕 Nueva versión disponible - Recarga para actualizar'
-                                        );
+                                    );
 
                                     // Mostrar notificación al usuario (opcional)
                                     if (window.showUpdateNotification) {
@@ -127,4 +137,3 @@
 </body>
 
 </html>
-
