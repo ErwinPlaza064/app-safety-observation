@@ -18,7 +18,7 @@ Route::get('/health', function () {
 
 // Backup trigger endpoint (Protected: Only superadmin@wasion.com)
 Route::get('/trigger-backup', function () {
-    if (!auth()->check() || auth()->user()->email !== 'superadmin@wasion.com') {
+    if (!Auth::check() || Auth::user()->email !== 'superadmin@wasion.com') {
         return response()->json([
             'status' => 'error',
             'message' => 'Acceso denegado. Solo el super administrador puede ejecutar respaldos manually.'

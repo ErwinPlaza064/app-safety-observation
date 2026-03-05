@@ -194,9 +194,17 @@ class ObservationController extends Controller
 
     public function show(Observation $observation)
     {
+        // Si no está autenticado, verificar si el enlace compartido ha expirado (7 días)
+        if (!Auth::check()) {
+            $expirationDays = 7;
+            if ($observation->created_at->addDays($expirationDays)->isPast()) {
+                return redirect()->route('login')->with('error', 'El enlace compartido ha expirado por seguridad. Por favor, inicia sesión para ver el reporte.');
+            }
+        }
+
         // Si es borrador, solo el dueño o admins pueden verlo (requiere login)
         if ($observation->is_draft) {
-            if (!auth()->check()) {
+            if (!Auth::check()) {
                 return redirect()->route('login');
             }
 
