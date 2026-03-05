@@ -172,15 +172,15 @@ class DashboardController extends Controller
             $query = Observation::with($baseRelations)
                 ->submitted();
 
-            $search = trim(RequestFacade::input('search', ''));
+            $search = mb_strtolower(trim(RequestFacade::input('search', '')), 'UTF-8');
             if ($search !== '') {
                 $query->where(function ($q) use ($search) {
-                    $q->where('folio', 'like', "%{$search}%")
-                        ->orWhere('description', 'like', "%{$search}%")
-                        ->orWhere('observed_person', 'like', "%{$search}%")
-                        ->orWhere('payroll_number', 'like', "%{$search}%")
+                    $q->whereRaw('LOWER(folio) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(description) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(observed_person) LIKE ?', ["%{$search}%"])
+                        ->orWhereRaw('LOWER(payroll_number) LIKE ?', ["%{$search}%"])
                         ->orWhereHas('user', function ($u) use ($search) {
-                            $u->where('name', 'like', "%{$search}%");
+                            $u->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]);
                         });
                 });
             }

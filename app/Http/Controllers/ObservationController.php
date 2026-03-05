@@ -344,13 +344,15 @@ class ObservationController extends Controller
             $q->where('observations.area_id', $areaId);
         });
 
-        // Filtro por búsqueda de texto
+        // Filtro por búsqueda de texto (Case Insensitive)
         $query->when(request('search'), function ($q, $search) {
+            $search = mb_strtolower(trim($search), 'UTF-8');
             $q->where(function ($subQ) use ($search) {
-                $subQ->where('observations.folio', 'like', "%{$search}%")
-                    ->orWhere('observations.description', 'like', "%{$search}%")
-                    ->orWhere('observations.observed_person', 'like', "%{$search}%")
-                    ->orWhereHas('user', fn($u) => $u->where('name', 'like', "%{$search}%"));
+                $subQ->whereRaw('LOWER(observations.folio) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(observations.description) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(observations.observed_person) LIKE ?', ["%{$search}%"])
+                    ->orWhereRaw('LOWER(observations.payroll_number) LIKE ?', ["%{$search}%"])
+                    ->orWhereHas('user', fn($u) => $u->whereRaw('LOWER(name) LIKE ?', ["%{$search}%"]));
             });
         });
 
