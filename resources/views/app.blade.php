@@ -5,21 +5,25 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Safety Obs') }}</title>
+    <title inertia>{{ data_get($page, 'props.meta.title', config('app.name', 'Safety Obs')) }}</title>
 
-    <!-- Open Graph / Meta Compartir -->
-    <meta property="og:title" content="{{ $page['props']['meta']['title'] ?? config('app.name', 'Safety Obs') }}">
-    <meta property="og:description"
-        content="{{ $page['props']['meta']['description'] ?? 'Sistema de gestión de observaciones de seguridad industrial - WASION' }}">
-    <meta property="og:image" content="{{ $page['props']['meta']['image'] ?? url('/images/icons/icon-512x512.png') }}">
+    <!-- Open Graph / Meta Compartir (WhatsApp, Telegram, etc.) -->
+    <meta property="og:site_name" content="Safety Observation - WASION">
+    <meta property="og:title" content="{{ data_get($page, 'props.meta.title', 'Safety Observation - WASION') }}">
+    <meta property="og:description" content="{{ data_get($page, 'props.meta.description', 'Sistema de gestión de observaciones de seguridad industrial - WASION') }}">
+    <meta property="og:image" content="{{ data_get($page, 'props.meta.image', url('/images/icons/icon-512x512.png')) }}">
+    <meta property="og:image:width" content="512">
+    <meta property="og:image:height" content="512">
     <meta property="og:type" content="website">
     <meta property="og:url" content="{{ url()->current() }}">
-    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{ data_get($page, 'props.meta.title', 'Safety Observation - WASION') }}">
+    <meta name="twitter:description" content="{{ data_get($page, 'props.meta.description', 'Sistema de gestión de observaciones de seguridad industrial - WASION') }}">
+    <meta name="twitter:image" content="{{ data_get($page, 'props.meta.image', url('/images/icons/icon-512x512.png')) }}">
 
     <!-- PWA Meta Tags -->
     <meta name="theme-color" content="#1e3a8a">
-    <meta name="description"
-        content="{{ $page['props']['meta']['description'] ?? 'Sistema de gestión de observaciones de seguridad industrial - WASION' }}">
+    <meta name="description" content="{{ data_get($page, 'props.meta.description', 'Sistema de gestión de observaciones de seguridad industrial - WASION') }}">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     <meta name="apple-mobile-web-app-title" content="Safety Obs">
