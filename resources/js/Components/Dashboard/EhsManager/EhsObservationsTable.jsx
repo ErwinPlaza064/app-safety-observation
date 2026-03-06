@@ -103,14 +103,13 @@ export default function EhsObservationsTable({
                             <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                                 <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                     <tr>
-                                        <th className="px-6 py-3">Folio</th>
-                                        <th className="px-6 py-3">Persona Observada</th>
-                                        <th className="px-6 py-3">Observador</th>
-                                        <th className="px-6 py-3">Fecha</th>
-                                        <th className="px-6 py-3">Descripción</th>
-                                        <th className="px-6 py-3">Planta</th>
-                                        <th className="px-6 py-3">Área</th>
-                                        <th className="px-6 py-3">Estado</th>
+                                        <th className="px-4 py-3 sm:px-6">Folio/Persona</th>
+                                        <th className="hidden px-6 py-3 lg:table-cell">Observador</th>
+                                        <th className="hidden px-6 py-3 md:table-cell">Fecha</th>
+                                        <th className="px-4 py-3 sm:px-6">Descripción</th>
+                                        <th className="hidden px-6 py-3 sm:table-cell">Planta</th>
+                                        <th className="hidden px-6 py-3 md:table-cell">Área</th>
+                                        <th className="px-4 py-3 sm:px-6">Estado</th>
                                     </tr>
                                 </thead>
                                 <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -118,16 +117,18 @@ export default function EhsObservationsTable({
                                         <tr
                                             key={obs.id}
                                             onClick={() => handleRowClick(obs)}
-                                            className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 active:bg-blue-100"
                                         >
-                                            <td className="px-6 py-4 font-bold text-blue-600 dark:text-blue-400">#{obs.id}</td>
-                                            <td className="px-6 py-4 font-medium text-gray-900 dark:text-gray-100 whitespace-nowrap">{obs.observed_person || "N/A"}</td>
-                                            <td className="px-6 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap">{obs.user?.name || "N/A"}</td>
-                                            <td className="px-6 py-4 whitespace-nowrap">{new Date(obs.observation_date).toLocaleDateString()}</td>
-                                            <td className="px-6 py-4 max-w-xs truncate" title={obs.description}>{obs.description}</td>
-                                            <td className="px-6 py-4">{obs.plant?.name || "N/A"}</td>
-                                            <td className="px-6 py-4">{obs.area?.name || "N/A"}</td>
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 sm:px-6">
+                                                <div className="font-bold text-blue-600 dark:text-blue-400">#{obs.id}</div>
+                                                <div className="text-xs font-medium text-gray-900 dark:text-gray-100 sm:text-sm">{obs.observed_person || "N/A"}</div>
+                                            </td>
+                                            <td className="hidden px-6 py-4 text-gray-600 dark:text-gray-400 whitespace-nowrap lg:table-cell">{obs.user?.name || "N/A"}</td>
+                                            <td className="hidden px-6 py-4 whitespace-nowrap md:table-cell">{new Date(obs.observation_date).toLocaleDateString()}</td>
+                                            <td className="px-4 py-4 max-w-xs truncate sm:px-6" title={obs.description}>{obs.description}</td>
+                                            <td className="hidden px-6 py-4 sm:table-cell">{obs.plant?.name || "N/A"}</td>
+                                            <td className="hidden px-6 py-4 md:table-cell">{obs.area?.name || "N/A"}</td>
+                                            <td className="px-4 py-4 sm:px-6">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${obs.status === "en_progreso" ? "bg-blue-100 text-blue-800" : "bg-green-100 text-green-800"}`}>
                                                     {obs.status === "en_progreso" ? "Abierta" : "Cerrada"}
                                                 </span>
@@ -158,14 +159,14 @@ export default function EhsObservationsTable({
                         <table className="w-full text-sm text-left text-gray-500 dark:text-gray-400">
                             <thead className="text-xs text-gray-700 uppercase dark:text-gray-300 bg-gray-50 dark:bg-gray-700">
                                 <tr>
-                                    <th className="px-6 py-3">{activeTab === "actos" ? "Observada" : "Condición"}</th>
-                                    <th className="px-6 py-3">Descripción</th>
-                                    <th className="px-6 py-3">Observador</th>
-                                    <th className="px-6 py-3">Planta</th>
-                                    {activeTab !== "condiciones" && <th className="px-6 py-3">Área</th>}
-                                    <th className="px-6 py-3">Estado</th>
-                                    <th className="px-6 py-3 text-center">Fecha</th>
-                                    {canViewAllPlants && <th className="px-6 py-3 text-center">Acción</th>}
+                                    <th className="px-4 py-3 sm:px-6">{activeTab === "actos" ? "Observada" : "Condición"}</th>
+                                    <th className="px-4 py-3 sm:px-6">Descripción</th>
+                                    <th className="hidden px-6 py-3 md:table-cell">Observador</th>
+                                    <th className="hidden px-6 py-3 lg:table-cell">Planta</th>
+                                    {activeTab !== "condiciones" && <th className="hidden px-6 py-3 lg:table-cell">Área</th>}
+                                    <th className="px-4 py-3 sm:px-6">Estado</th>
+                                    <th className="hidden px-6 py-3 text-center md:table-cell">Fecha</th>
+                                    {canViewAllPlants && <th className="px-4 py-3 text-center sm:px-6">Acción</th>}
                                 </tr>
                             </thead>
                             <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
@@ -176,26 +177,29 @@ export default function EhsObservationsTable({
                                             onClick={() => handleRowClick(obs)}
                                             onMouseEnter={(e) => handleRowMouseEnter(obs, e)}
                                             onMouseLeave={handleRowMouseLeave}
-                                            className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                            className="transition-colors duration-150 bg-white cursor-pointer dark:bg-gray-800 hover:bg-blue-50 dark:hover:bg-blue-900/20 active:bg-blue-100"
                                         >
-                                            <td className="px-6 py-4 font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">{obs.observed_person}</td>
-                                            <td className="max-w-xs px-6 py-4 text-gray-900 truncate dark:text-gray-200">{obs.description}</td>
-                                            <td className="px-6 py-4 text-gray-900 dark:text-gray-200">{obs.user?.name}</td>
-                                            <td className="px-6 py-4 text-gray-900 dark:text-gray-200">{obs.plant?.name || "N/A"}</td>
-                                            {activeTab !== "condiciones" && <td className="px-6 py-4 text-gray-900 dark:text-gray-200">{obs.area?.name || "N/A"}</td>}
-                                            <td className="px-6 py-4">
+                                            <td className="px-4 py-4 sm:px-6">
+                                                <div className="font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">{obs.observed_person}</div>
+                                                <div className="text-[10px] text-gray-400 md:hidden">{new Date(obs.observation_date).toLocaleDateString()}</div>
+                                            </td>
+                                            <td className="max-w-[120px] sm:max-w-xs px-4 py-4 text-gray-900 truncate dark:text-gray-200 sm:px-6">{obs.description}</td>
+                                            <td className="hidden px-6 py-4 text-gray-900 dark:text-gray-200 md:table-cell">{obs.user?.name}</td>
+                                            <td className="hidden px-6 py-4 text-gray-900 dark:text-gray-200 lg:table-cell">{obs.plant?.name || "N/A"}</td>
+                                            {activeTab !== "condiciones" && <td className="hidden px-6 py-4 text-gray-900 dark:text-gray-200 lg:table-cell">{obs.area?.name || "N/A"}</td>}
+                                            <td className="px-4 py-4 sm:px-6">
                                                 <span className={`px-2 py-1 rounded-full text-xs font-semibold ${obs.status === "en_progreso" ? "bg-blue-100 text-blue-800" : obs.status === "cerrada" ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"}`}>
                                                     {obs.status === "en_progreso" ? "Abierta" : obs.status}
                                                 </span>
                                             </td>
-                                            <td className="px-6 py-4 text-center">{new Date(obs.observation_date).toLocaleDateString()}</td>
+                                            <td className="hidden px-6 py-4 text-center md:table-cell">{new Date(obs.observation_date).toLocaleDateString()}</td>
                                             {canViewAllPlants && (
-                                                <td className="px-6 py-4 text-center">
+                                                <td className="px-4 py-4 text-center sm:px-6">
                                                     <button
                                                         onClick={(e) => handleShare(e, obs)}
                                                         className={`p-2 rounded-lg transition-all active:scale-90 ${copiedId === obs.id ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400" : "bg-blue-50 text-blue-600 dark:bg-blue-900/30 dark:text-blue-400 hover:bg-blue-100 dark:hover:bg-blue-900/50"}`}
                                                     >
-                                                        {copiedId === obs.id ? <span className="text-[10px] font-bold">¡Copiado!</span> : <IoMdShare className="w-4 h-4" />}
+                                                        {copiedId === obs.id ? <span className="text-[10px] font-bold">¡Copia!</span> : <IoMdShare className="w-4 h-4" />}
                                                     </button>
                                                 </td>
                                             )}

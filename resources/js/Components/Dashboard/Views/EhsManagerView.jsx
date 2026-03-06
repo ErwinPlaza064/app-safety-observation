@@ -46,11 +46,12 @@ export default function EhsManagerView({
 
     // 1. Efecto para recarga automática - Optimizado para evitar conflictos con filtros
     useEffect(() => {
-        // No recargar automáticamente si el usuario está escribiendo o si el filtro local 
+        // No recargar automáticamente si el usuario está escribiendo o si el filtro local
         // no coincide con el filtro del servidor (estamos esperando respuesta)
-        const isStale = params.search !== (filters?.search || "") || 
-                        params.plant_id !== (filters?.plant_id || "");
-        
+        const isStale =
+            params.search !== (filters?.search || "") ||
+            params.plant_id !== (filters?.plant_id || "");
+
         if (isStale) return;
 
         const intervalId = setInterval(() => {
@@ -112,10 +113,14 @@ export default function EhsManagerView({
                 onFinish: () => setIsSyncing(false),
             };
 
-            // Si el buscador está vacío, NO usamos 'only' para forzar una recarga completa 
+            // Si el buscador está vacío, NO usamos 'only' para forzar una recarga completa
             // de las estadísticas y limpiar cualquier estado "bugeado"
             if (searchTerm === "") {
-                router.get(route("dashboard"), { ...params, search: "" }, options);
+                router.get(
+                    route("dashboard"),
+                    { ...params, search: "" },
+                    options,
+                );
             } else {
                 router.get(route("dashboard"), params, {
                     ...options,
@@ -138,9 +143,7 @@ export default function EhsManagerView({
     };
 
     const handleRowClick = (obs) => {
-        if (!isMobile) {
-            setSelectedObservation(obs);
-        }
+        setSelectedObservation(obs);
     };
 
     const handleRowMouseEnter = (obs, e) => {
