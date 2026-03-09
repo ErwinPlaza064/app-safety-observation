@@ -18,10 +18,13 @@ return new class extends Migration
         });
 
         // Poblar last_login_at con la última actividad actual de sessions si existe
+        $driver = DB::getDriverName();
+        $fromUnixTime = $driver === 'pgsql' ? 'to_timestamp' : 'FROM_UNIXTIME';
+
         DB::statement("
             UPDATE users
             SET last_login_at = (
-                SELECT FROM_UNIXTIME(MAX(sessions.last_activity))
+                SELECT {$fromUnixTime}(MAX(sessions.last_activity))
                 FROM sessions
                 WHERE sessions.user_id = users.id
             )

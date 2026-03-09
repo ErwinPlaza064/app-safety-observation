@@ -30,13 +30,16 @@ class DashboardController extends Controller
                 'super_admins' => User::where('is_super_admin', true)->count(),
             ];
 
+            $driver = DB::getDriverName();
+            $fromUnixTime = $driver === 'pgsql' ? 'to_timestamp' : 'FROM_UNIXTIME';
+
             $usersQuery = User::query()
                 ->addSelect([
                     'last_activity' => DB::raw("
                         GREATEST(
                             COALESCE(users.last_login_at, '1970-01-01'),
                             COALESCE((
-                                SELECT FROM_UNIXTIME(MAX(s.last_activity))
+                                SELECT {$fromUnixTime}(MAX(s.last_activity))
                                 FROM sessions s
                                 WHERE s.user_id = users.id
                             ), '1970-01-01')
