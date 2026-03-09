@@ -34,6 +34,7 @@ class DashboardController extends Controller
             $fromUnixTime = $driver === 'pgsql' ? 'to_timestamp' : 'FROM_UNIXTIME';
 
             $usersQuery = User::query()
+                ->select('users.*')
                 ->addSelect([
                     'last_activity' => DB::raw("
                         GREATEST(
