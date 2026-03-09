@@ -63,6 +63,9 @@ class AuthenticatedSessionController extends Controller
             ]);
         }
 
+        // Registrar timestamp de login persistente
+        $user->update(['last_login_at' => now()]);
+
         return redirect()->intended(route('dashboard', absolute: false));
     }
 

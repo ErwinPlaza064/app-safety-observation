@@ -32,11 +32,16 @@ class DashboardController extends Controller
 
             $usersQuery = User::query()
                 ->addSelect([
-                    'last_activity' => DB::table('sessions')
-                        ->select('last_activity')
-                        ->whereColumn('user_id', 'users.id')
-                        ->orderByDesc('last_activity')
-                        ->limit(1)
+                    'last_activity' => DB::raw("
+                        GREATEST(
+                            COALESCE(users.last_login_at, '1970-01-01'),
+                            COALESCE((
+                                SELECT FROM_UNIXTIME(MAX(s.last_activity))
+                                FROM sessions s
+                                WHERE s.user_id = users.id
+                            ), '1970-01-01')
+                        )
+                    ")
                 ])
                 ->when(request('search'), function ($query, $search) {
                     $query->where(function ($q) use ($search) {

@@ -32,6 +32,7 @@ class User extends Authenticatable implements MustVerifyEmail
         'suspended_at',
         'suspension_reason',
         'email_verified_at',
+        'last_login_at',
     ];
 
     /**
@@ -59,6 +60,7 @@ class User extends Authenticatable implements MustVerifyEmail
             'is_super_admin' => 'boolean',
             'is_suspended' => 'boolean',
             'suspended_at' => 'datetime',
+            'last_login_at' => 'datetime',
         ];
     }
 

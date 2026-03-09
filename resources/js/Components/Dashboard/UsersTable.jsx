@@ -2,11 +2,11 @@ import { Link, usePage, router } from "@inertiajs/react";
 
 const decodePaginationLabel = (label) => {
     return label
-        .replace(/&laquo;/g, '\u00AB')
-        .replace(/&raquo;/g, '\u00BB')
-        .replace(/&amp;/g, '&')
-        .replace(/&lt;/g, '<')
-        .replace(/&gt;/g, '>');
+        .replace(/&laquo;/g, "\u00AB")
+        .replace(/&raquo;/g, "\u00BB")
+        .replace(/&amp;/g, "&")
+        .replace(/&lt;/g, "<")
+        .replace(/&gt;/g, ">");
 };
 
 export default function UsersTable({ users, onUserClick, onDelete }) {
@@ -15,7 +15,16 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
 
     const formatLastActivity = (timestamp) => {
         if (!timestamp) return "Nunca";
-        const date = new Date(timestamp * 1000);
+
+        // Handle ISO datetime string from GREATEST() query
+        const date =
+            typeof timestamp === "number"
+                ? new Date(timestamp * 1000)
+                : new Date(timestamp);
+
+        // Filter out the 1970-01-01 sentinel value (user never logged in)
+        if (isNaN(date.getTime()) || date.getFullYear() <= 1970) return "Nunca";
+
         return date.toLocaleString("es-MX", {
             month: "short",
             day: "numeric",
@@ -253,14 +262,18 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                                         : "bg-white dark:bg-gray-700 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-600"
                                                 }`}
                                             >
-                                                {decodePaginationLabel(link.label)}
+                                                {decodePaginationLabel(
+                                                    link.label,
+                                                )}
                                             </Link>
                                         ) : (
                                             <span
                                                 key={`page-${link.label}-${key}`}
                                                 className="relative inline-flex items-center px-4 py-2 text-sm font-medium text-gray-300 dark:text-gray-600 bg-white dark:bg-gray-700 border border-gray-300 dark:border-gray-600 cursor-default"
                                             >
-                                                {decodePaginationLabel(link.label)}
+                                                {decodePaginationLabel(
+                                                    link.label,
+                                                )}
                                             </span>
                                         ),
                                     )}
