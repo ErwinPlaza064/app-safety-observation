@@ -153,7 +153,7 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                         </td>
                                         <td className="px-6 py-4 text-sm text-gray-600 dark:text-gray-300 whitespace-nowrap">
                                             {formatLastActivity(
-                                                userData.last_activity,
+                                                userData.last_login_at,
                                             )}
                                         </td>
                                         <td className="px-6 py-4 text-sm whitespace-nowrap">
