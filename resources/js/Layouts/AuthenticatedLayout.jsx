@@ -7,11 +7,7 @@ import { useState } from "react";
 import NotificationBell from "@/Components/Dashboard/NotificationBell";
 import ThemeToggle from "@/Components/ThemeToggle";
 import { Transition } from "@headlessui/react";
-import {
-    HiOutlineUserGroup,
-    HiOutlineShieldCheck,
-    HiOutlineShieldExclamation,
-} from "react-icons/hi";
+import { HiOutlineUserGroup } from "react-icons/hi";
 import FlashMessages from "@/Components/FlashMessages";
 
 const EMPTY_NOTIFICATIONS = [];
@@ -64,24 +60,13 @@ export default function AuthenticatedLayout({
                                 href={route("dashboard")}
                                 active={route().current("dashboard")}
                             >
-                                <div className="flex items-center gap-2">
-                                    {user.is_super_admin ? (
-                                        <>
-                                            <HiOutlineShieldExclamation className="w-5 h-5 text-red-500" />
-                                            <span>Dashboard Super Admin</span>
-                                        </>
-                                    ) : user.is_ehs_manager ? (
-                                        <>
-                                            <HiOutlineShieldCheck className="w-5 h-5 text-blue-500" />
-                                            <span>Dashboard EHS</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HiOutlineUserGroup className="w-5 h-5 text-green-500" />
-                                            <span>Dashboard Empleado</span>
-                                        </>
-                                    )}
-                                </div>
+                                {user.is_super_admin ? (
+                                    "Dashboard Super Admin"
+                                ) : user.is_ehs_manager ? (
+                                    "Dashboard EHS"
+                                ) : (
+                                    "Dashboard Empleado"
+                                )}
                             </NavLink>
                         </div>
 
@@ -220,24 +205,13 @@ export default function AuthenticatedLayout({
                                 href={route("dashboard")}
                                 active={route().current("dashboard")}
                             >
-                                <div className="flex items-center gap-2">
-                                    {user.is_super_admin ? (
-                                        <>
-                                            <HiOutlineShieldExclamation className="w-5 h-5 text-red-500" />
-                                            <span>Dashboard Admin</span>
-                                        </>
-                                    ) : user.is_ehs_manager ? (
-                                        <>
-                                            <HiOutlineShieldCheck className="w-5 h-5 text-blue-500" />
-                                            <span>Dashboard EHS</span>
-                                        </>
-                                    ) : (
-                                        <>
-                                            <HiOutlineUserGroup className="w-5 h-5 text-green-500" />
-                                            <span>Dashboard Empleado</span>
-                                        </>
-                                    )}
-                                </div>
+                                {user.is_super_admin ? (
+                                    "Dashboard Admin"
+                                ) : user.is_ehs_manager ? (
+                                    "Dashboard EHS"
+                                ) : (
+                                    "Dashboard Empleado"
+                                )}
                             </ResponsiveNavLink>
                         </div>
 
