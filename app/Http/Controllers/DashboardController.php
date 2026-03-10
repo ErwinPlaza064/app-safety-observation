@@ -57,7 +57,9 @@ class DashboardController extends Controller
                     elseif ($status === 'suspended') $query->where('is_suspended', true);
                 })
                 ->with(['plant', 'areaEntity'])
-                ->orderByDesc('created_at');
+                ->orderByRaw('CASE WHEN users.last_login_at IS NULL THEN 1 ELSE 0 END')
+                ->orderByDesc('users.last_login_at')
+                ->orderByDesc('users.created_at');
 
             $data['users'] = $usersQuery->paginate(10)->withQueryString();
 

@@ -104,7 +104,9 @@ export default function UsersTable({ users, onUserClick, onDelete }) {
                                         className={`transition-colors cursor-pointer ${
                                             userData.is_suspended
                                                 ? "opacity-60 bg-red-50/50 dark:bg-red-900/10 hover:bg-red-100/50 dark:hover:bg-red-900/20"
-                                                : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
+                                                : !userData.last_login_at
+                                                  ? "bg-amber-50/80 dark:bg-amber-900/20 hover:bg-amber-100 dark:hover:bg-amber-900/30"
+                                                  : "hover:bg-blue-50 dark:hover:bg-blue-900/20"
                                         }`}
                                     >
                                         <td className="px-6 py-4 text-sm font-medium text-blue-600 dark:text-blue-400 whitespace-nowrap">
