@@ -30,6 +30,14 @@ export default function SuperAdminView({
     const [isBackingUp, setIsBackingUp] = useState(false);
     const [backupStatus, setBackupStatus] = useState(null); // 'success' | 'error' | null
     const [backupMessage, setBackupMessage] = useState("");
+    
+    // Restore states
+    const [showRestoreModal, setShowRestoreModal] = useState(false);
+    const [isRestoring, setIsRestoring] = useState(false);
+    const [restoreStatus, setRestoreStatus] = useState(null); // 'success' | 'error' | null
+    const [restoreMessage, setRestoreMessage] = useState("");
+    const [backupFile, setBackupFile] = useState(null);
+
     const [activeTab, setActiveTab] = useState("users");
 
     const [params, setParams] = useState({
@@ -91,6 +99,37 @@ export default function SuperAdminView({
             );
         } finally {
             setIsBackingUp(false);
+        }
+    };
+
+    const handleRestore = async () => {
+        if (!backupFile) return;
+        setIsRestoring(true);
+        setRestoreStatus(null);
+        setRestoreMessage("");
+
+        const formData = new FormData();
+        formData.append("backup_zip", backupFile);
+
+        try {
+            const response = await axios.post("/restore-backup", formData, {
+                headers: { "Content-Type": "multipart/form-data" }
+            });
+            if (response.data.status === "success") {
+                setRestoreStatus("success");
+                setRestoreMessage(response.data.message);
+            } else {
+                setRestoreStatus("error");
+                setRestoreMessage(response.data.message || "Hubo un problema al restaurar el respaldo.");
+            }
+        } catch (error) {
+            setRestoreStatus("error");
+            setRestoreMessage(
+                error.response?.data?.message || 
+                "Error de conexión. No se pudo completar la restauración."
+            );
+        } finally {
+            setIsRestoring(false);
         }
     };
 
@@ -192,6 +231,14 @@ export default function SuperAdminView({
                             >
                                 <HiDatabase className="w-5 h-5 mr-2 text-green-600 dark:text-green-400" />
                                 Crear Respaldo
+                            </button>
+
+                            <button
+                                onClick={() => setShowRestoreModal(true)}
+                                className="inline-flex items-center justify-center px-4 py-2 bg-white dark:bg-gray-800 border border-gray-300 dark:border-gray-600 rounded-lg font-semibold text-xs text-red-600 dark:text-red-400 uppercase tracking-widest shadow-sm hover:bg-gray-50 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-red-500 focus:ring-offset-2 transition-all active:scale-95"
+                            >
+                                <HiUpload className="w-5 h-5 mr-2 text-red-600 dark:text-red-400" />
+                                Restaurar Respaldo
                             </button>
                         </div>
                     </div>
@@ -403,6 +450,109 @@ export default function SuperAdminView({
                                         setBackupStatus(null);
                                         setBackupMessage("");
                                     }, 300);
+                                }}
+                                className="w-full justify-center"
+                            >
+                                Entendido
+                            </PrimaryButton>
+                        </div>
+                    )}
+                </div>
+            </Modal>
+
+            <Modal 
+                show={showRestoreModal} 
+                onClose={() => !isRestoring && setShowRestoreModal(false)} 
+                maxWidth="md"
+            >
+                <div className="p-6">
+                    {restoreStatus === null ? (
+                        <>
+                            <div className="flex items-center gap-4 mb-4">
+                                <div className="p-3 bg-red-100 rounded-full dark:bg-red-900/30">
+                                    <HiUpload className="w-6 h-6 text-red-600 dark:text-red-400" />
+                                </div>
+                                <h2 className="text-xl font-bold text-gray-900 dark:text-gray-100">
+                                    Restaurar Sistema desde Respaldo
+                                </h2>
+                            </div>
+
+                            <p className="mb-6 text-sm text-gray-600 dark:text-gray-400">
+                                ADVERTENCIA: Esta acción reemplazará toda tu base de datos actual y los archivos de evidencia con los del archivo ZIP. Se perderá cualquier dato nuevo que no esté en este respaldo. Este proceso puede tardar unos segundos.
+                            </p>
+
+                            <div className="mb-6">
+                                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2">Archivo ZIP de respaldo</label>
+                                <input 
+                                    type="file" 
+                                    accept=".zip,application/zip,application/x-zip-compressed"
+                                    onChange={(e) => setBackupFile(e.target.files[0])}
+                                    className="block w-full text-sm text-gray-500 dark:text-gray-400 file:mr-4 file:py-2 file:px-4 file:rounded-full file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 dark:file:bg-blue-900 dark:file:text-blue-300"
+                                />
+                            </div>
+
+                            <div className="flex justify-end gap-3">
+                                <SecondaryButton 
+                                    onClick={() => setShowRestoreModal(false)}
+                                    disabled={isRestoring}
+                                >
+                                    Cancelar
+                                </SecondaryButton>
+                                <PrimaryButton
+                                    onClick={handleRestore}
+                                    disabled={isRestoring || !backupFile}
+                                    className="!bg-red-600 hover:!bg-red-700 dark:!bg-red-500 dark:hover:!bg-red-600"
+                                >
+                                    {isRestoring ? (
+                                        <div className="flex items-center gap-2">
+                                            <svg className="w-4 h-4 animate-spin" viewBox="0 0 24 24">
+                                                <circle className="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" strokeWidth="4" fill="none" />
+                                                <path className="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z" />
+                                            </svg>
+                                            Procesando...
+                                        </div>
+                                    ) : (
+                                        "Sobreescribir y Restaurar"
+                                    )}
+                                </PrimaryButton>
+                            </div>
+                        </>
+                    ) : (
+                        <div className="text-center">
+                            <div className={`mx-auto flex items-center justify-center h-12 w-12 rounded-full mb-4 ${
+                                restoreStatus === 'success' ? 'bg-green-100 dark:bg-green-900/30' : 'bg-red-100 dark:bg-red-900/30'
+                            }`}>
+                                {restoreStatus === 'success' ? (
+                                    <svg className="h-6 w-6 text-green-600 dark:text-green-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M5 13l4 4L19 7" />
+                                    </svg>
+                                ) : (
+                                    <svg className="h-6 w-6 text-red-600 dark:text-red-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M6 18L18 6M6 6l12 12" />
+                                    </svg>
+                                )}
+                            </div>
+                            
+                            <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2">
+                                {restoreStatus === 'success' ? '¡Excelente!' : 'Hubo un error'}
+                            </h3>
+                            
+                            <p className="text-sm text-gray-500 dark:text-gray-400 mb-6">
+                                {restoreMessage}
+                            </p>
+
+                            <PrimaryButton
+                                onClick={() => {
+                                    setShowRestoreModal(false);
+                                    if(restoreStatus === 'success') {
+                                        window.location.reload();
+                                    } else {
+                                        setTimeout(() => {
+                                            setRestoreStatus(null);
+                                            setRestoreMessage("");
+                                            setBackupFile(null);
+                                        }, 300);
+                                    }
                                 }}
                                 className="w-full justify-center"
                             >

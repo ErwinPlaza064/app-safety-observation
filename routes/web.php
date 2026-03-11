@@ -43,6 +43,104 @@ Route::get('/trigger-backup', function () {
     }
 });
 
+// Restore backup endpoint (Protected: Only superadmin@wasion.com)
+Route::post('/restore-backup', function (Illuminate\Http\Request $request) {
+    if (!Auth::check() || Auth::user()->email !== 'superadmin@wasion.com') {
+        return response()->json([
+            'status' => 'error',
+            'message' => 'Acceso denegado. Solo el super administrador puede restaurar respaldos.'
+        ], 403);
+    }
+
+    $request->validate([
+        'backup_zip' => 'required|file|mimes:zip',
+    ]);
+
+    $file = $request->file('backup_zip');
+    $zipPath = $file->storeAs('temp-restores', 'upload_' . uniqid() . '.zip', 'local');
+    $absoluteZipPath = storage_path('app/' . $zipPath);
+    $extractTo = storage_path('app/temp-restores/extracted_' . uniqid());
+
+    try {
+        // 1. Extraer ZIP
+        $zip = new \ZipArchive();
+        if ($zip->open($absoluteZipPath) === true) {
+            $zip->extractTo($extractTo);
+            $zip->close();
+        } else {
+            throw new \Exception('No se pudo abrir o leer el archivo ZIP de respaldo.');
+        }
+
+        // 2. Restaurar Base de Datos (MySQL)
+        $dumpFiles = glob($extractTo . '/db-dumps/*.sql');
+        if (!empty($dumpFiles)) {
+            $sqlFile = $dumpFiles[0];
+            
+            $host = config('database.connections.mysql.host', '127.0.0.1');
+            $port = config('database.connections.mysql.port', '3306');
+            $database = config('database.connections.mysql.database');
+            $username = config('database.connections.mysql.username');
+            $password = config('database.connections.mysql.password');
+            
+            $mysqlPath = config('database.connections.mysql.dump.dump_binary_path') 
+                            ? config('database.connections.mysql.dump.dump_binary_path') . DIRECTORY_SEPARATOR . 'mysql'
+                            : 'mysql';
+
+            // MySQL expects password without space after -p if passed inline, but Process with array is safer
+            $command = [
+                $mysqlPath,
+                '-h', $host,
+                '-P', $port,
+                '-u', $username,
+            ];
+            
+            if (!empty($password)) {
+                 $command[] = '--password=' . $password;
+            }
+            $command[] = $database;
+
+            // Para redirigir la entrada de archivo en Process de Symfony, pasamos el contenido o usamos shell si es complicado
+            $process = \Symfony\Component\Process\Process::fromShellCommandline(
+                implode(' ', array_map('escapeshellarg', $command)) . ' < ' . escapeshellarg($sqlFile)
+            );
+            $process->setTimeout(600);
+            $process->run();
+
+            if (!$process->isSuccessful()) {
+                throw new \Exception('Error restaurando la BD: ' . $process->getErrorOutput());
+            }
+        }
+
+        // 3. Restaurar Archivos de la carpeta public (observaciones, etc)
+        $appStorageSource = $extractTo . '/storage/app/public';
+        if (\Illuminate\Support\Facades\File::exists($appStorageSource)) {
+            \Illuminate\Support\Facades\File::copyDirectory($appStorageSource, storage_path('app/public'));
+        }
+        
+        // 4. Limpieza del ZIP y los extraídos
+        \Illuminate\Support\Facades\File::deleteDirectory($extractTo);
+        \Illuminate\Support\Facades\Storage::disk('local')->delete($zipPath);
+
+        return response()->json([
+            'status' => 'success',
+            'message' => 'El sistema y la base de datos se han restaurado exitosamente.'
+        ], 200);
+        
+    } catch (\Exception $e) {
+         if (\Illuminate\Support\Facades\File::exists($extractTo)) {
+             \Illuminate\Support\Facades\File::deleteDirectory($extractTo);
+         }
+         if (\Illuminate\Support\Facades\Storage::disk('local')->exists($zipPath)) {
+             \Illuminate\Support\Facades\Storage::disk('local')->delete($zipPath);
+         }
+             
+        return response()->json([
+            'status' => 'error',
+            'message' => $e->getMessage()
+        ], 500);
+    }
+});
+
 
 Route::get('/', function () {
     return redirect()->route('login');
