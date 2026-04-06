@@ -3,6 +3,7 @@
 use App\Http\Controllers\Admin\AreaController;
 use App\Http\Controllers\Admin\PlantController;
 use App\Http\Controllers\Admin\UserManagementController;
+use App\Http\Controllers\Admin\LogController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\ObservationController;
 use App\Http\Controllers\ParticipationController;
@@ -181,6 +182,11 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             ->name('users.toggle-suspension');
         Route::post('/users/import', [UserManagementController::class, 'import'])->name('users.import');
         Route::get('/users/template', [UserManagementController::class, 'downloadTemplate'])->name('users.template');
+        
+        // --- GESTIÓN DE LOGS (Super Admin) ---
+        Route::get('/logs', [LogController::class, 'getLogs'])->name('logs.get');
+        Route::get('/logs/download', [LogController::class, 'downloadLogs'])->name('logs.download');
+        Route::post('/logs/clear', [LogController::class, 'clearLogs'])->name('logs.clear');
     });
 
     // --- ADMINISTRACIÓN DE PLANTAS (Super Admin) ---

@@ -1,12 +1,13 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import { IoMdClose } from "react-icons/io";
-import { HiUsers, HiOfficeBuilding, HiUpload, HiDatabase } from "react-icons/hi";
+import { HiUsers, HiOfficeBuilding, HiUpload, HiDatabase, HiClipboardList } from "react-icons/hi";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
 import AreasManagement from "@/Components/Dashboard/AreasManagement";
 import PlantsManagement from "@/Components/Dashboard/PlantsManagement";
+import LogsManagement from "@/Components/Dashboard/LogsManagement";
 import PrimaryButton from "@/Components/PrimaryButton";
 import Modal from "@/Components/Modal";
 import SecondaryButton from "@/Components/SecondaryButton";
@@ -158,6 +159,7 @@ export default function SuperAdminView({
     const tabs = [
         { id: "users", label: "Usuarios", icon: HiUsers },
         { id: "areas", label: "Áreas / Plantas", icon: HiOfficeBuilding },
+        { id: "logs", label: "Logs de Salud", icon: HiClipboardList },
     ];
 
     return (
@@ -361,6 +363,12 @@ export default function SuperAdminView({
                     <PlantsManagement plants={plants} />
                     <hr className="border-gray-200 dark:border-gray-700" />
                     <AreasManagement areas={areas} />
+                </div>
+            )}
+
+            {activeTab === "logs" && (
+                <div className="animate-in fade-in slide-in-from-bottom-4 duration-500">
+                    <LogsManagement />
                 </div>
             )}
 
