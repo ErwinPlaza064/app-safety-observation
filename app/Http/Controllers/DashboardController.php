@@ -152,6 +152,10 @@ class DashboardController extends Controller
                 ? ($requestPlantId !== null && $requestPlantId !== '' ? $requestPlantId : null)
                 : $user->plant_id;
 
+            // Date range filters
+            $dateFrom = RequestFacade::input('date_from');
+            $dateTo = RequestFacade::input('date_to');
+
             // Las áreas son globales
             $data['areas'] = Area::where('is_active', true)->get();
 
@@ -185,15 +189,29 @@ class DashboardController extends Controller
                 $query->where('observations.plant_id', $currentPlantId);
             }
 
+            // Apply date range filters to main query
+            if ($dateFrom) {
+                $query->whereDate('observations.observation_date', '>=', $dateFrom);
+            }
+            if ($dateTo) {
+                $query->whereDate('observations.observation_date', '<=', $dateTo);
+            }
+
             $recentObservations = $query
                 ->orderByDesc('observations.created_at')
                 ->take(100)
                 ->get();
 
-            $applyFilters = function ($q) use ($currentPlantId) {
+            $applyFilters = function ($q) use ($currentPlantId, $dateFrom, $dateTo) {
                 $q->submitted();
                 if ($currentPlantId !== null && $currentPlantId !== '') {
                     $q->where('observations.plant_id', $currentPlantId);
+                }
+                if ($dateFrom) {
+                    $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                }
+                if ($dateTo) {
+                    $q->whereDate('observations.observation_date', '<=', $dateTo);
                 }
                 return $q;
             };
@@ -266,10 +284,10 @@ class DashboardController extends Controller
                 ->count();
 
             // Función auxiliar para obtener reporteros por periodo - OPTIMIZADA: No cargar lista completa por defecto
-            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $currentPlantId) {
+            $getReportersByPeriod = function ($days = null) use ($canViewAllPlants, $currentPlantId, $dateFrom, $dateTo) {
                 $query = User::where('is_ehs_manager', false)
                     ->where('is_super_admin', false)
-                    ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $currentPlantId) {
+                    ->whereHas('observations', function ($q) use ($days, $canViewAllPlants, $currentPlantId, $dateFrom, $dateTo) {
                         $q->submitted();
                         if ($days) {
                             $q->where('observations.created_at', '>=', now()->subDays($days));
@@ -277,15 +295,27 @@ class DashboardController extends Controller
                         if ($currentPlantId !== null && $currentPlantId !== '') {
                             $q->where('observations.plant_id', $currentPlantId);
                         }
+                        if ($dateFrom) {
+                            $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                        }
+                        if ($dateTo) {
+                            $q->whereDate('observations.observation_date', '<=', $dateTo);
+                        }
                     });
 
-                return $query->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $currentPlantId) {
+                return $query->withCount(['observations' => function ($q) use ($days, $canViewAllPlants, $currentPlantId, $dateFrom, $dateTo) {
                     $q->submitted();
                     if ($days) {
                         $q->where('observations.created_at', '>=', now()->subDays($days));
                     }
                     if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
+                    }
+                    if ($dateFrom) {
+                        $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                    }
+                    if ($dateTo) {
+                        $q->whereDate('observations.observation_date', '<=', $dateTo);
                     }
                 }])
                     // Solo cargar los últimos 3 para el preview si es necesario, o nada para ahorrar datos
@@ -313,17 +343,29 @@ class DashboardController extends Controller
 
             // 1. Distribución por ÁREA (Antes observationsByPlant)
             $observationsByArea = Area::where('is_active', true)
-                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
+                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations, $dateFrom, $dateTo) {
                     $q->submitted();
                     if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
                     }
-                    $q->with($baseRelations)->latest('observations.created_at')->take(50); // Cargar lista para el modal (limitado)
+                    if ($dateFrom) {
+                        $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                    }
+                    if ($dateTo) {
+                        $q->whereDate('observations.observation_date', '<=', $dateTo);
+                    }
+                    $q->with($baseRelations)->latest('observations.created_at')->take(50);
                 }])
-                ->withCount(['observations' => function ($q) use ($currentPlantId) {
+                ->withCount(['observations' => function ($q) use ($currentPlantId, $dateFrom, $dateTo) {
                     $q->submitted();
                     if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
+                    }
+                    if ($dateFrom) {
+                        $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                    }
+                    if ($dateTo) {
+                        $q->whereDate('observations.observation_date', '<=', $dateTo);
                     }
                 }])
                 ->get()
@@ -331,23 +373,35 @@ class DashboardController extends Controller
                     return [
                         'name' => $area->name,
                         'count' => $area->observations_count,
-                        'list' => $area->observations // Ahora sí tiene datos
+                        'list' => $area->observations
                     ];
                 });
 
             // 2. Nueva Card: Distribución por PLANTA REAL
             $observationsByRealPlant = Plant::where('is_active', true)
-                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations) {
+                ->with(['observations' => function ($q) use ($currentPlantId, $baseRelations, $dateFrom, $dateTo) {
                     $q->submitted();
                     if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
                     }
+                    if ($dateFrom) {
+                        $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                    }
+                    if ($dateTo) {
+                        $q->whereDate('observations.observation_date', '<=', $dateTo);
+                    }
                     $q->with($baseRelations)->latest('observations.created_at')->take(50);
                 }])
-                ->withCount(['observations' => function ($q) use ($currentPlantId) {
+                ->withCount(['observations' => function ($q) use ($currentPlantId, $dateFrom, $dateTo) {
                     $q->submitted();
                     if ($currentPlantId !== null && $currentPlantId !== '') {
                         $q->where('observations.plant_id', $currentPlantId);
+                    }
+                    if ($dateFrom) {
+                        $q->whereDate('observations.observation_date', '>=', $dateFrom);
+                    }
+                    if ($dateTo) {
+                        $q->whereDate('observations.observation_date', '<=', $dateTo);
                     }
                 }])
                 ->get()
@@ -445,7 +499,7 @@ class DashboardController extends Controller
 
             $data['canViewAllPlants'] = $canViewAllPlants;
 
-            $data['filters'] = request()->only(['search']);
+            $data['filters'] = request()->only(['search', 'date_from', 'date_to']);
             $data['filters']['plant_id'] = $currentPlantId;
 
             $data['managerPlantName'] = $currentPlantId

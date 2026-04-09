@@ -24,6 +24,8 @@ export default function EhsManagerView({
     const [params, setParams] = useState({
         search: filters?.search || "",
         plant_id: filters?.plant_id || "",
+        date_from: filters?.date_from || "",
+        date_to: filters?.date_to || "",
     });
     const [activeMetric, setActiveMetric] = useState(null);
     const [customDrillDown, setCustomDrillDown] = useState({
@@ -50,7 +52,9 @@ export default function EhsManagerView({
         // no coincide con el filtro del servidor (estamos esperando respuesta)
         const isStale =
             params.search !== (filters?.search || "") ||
-            params.plant_id !== (filters?.plant_id || "");
+            params.plant_id !== (filters?.plant_id || "") ||
+            params.date_from !== (filters?.date_from || "") ||
+            params.date_to !== (filters?.date_to || "");
 
         if (isStale) return;
 
@@ -130,7 +134,7 @@ export default function EhsManagerView({
         }, 400);
 
         return () => clearTimeout(timer);
-    }, [params.search, params.plant_id]);
+    }, [params.search, params.plant_id, params.date_from, params.date_to]);
 
     // Handlers
     const handleFilterChange = (e) => {
@@ -208,6 +212,7 @@ export default function EhsManagerView({
                 plants={plants}
                 params={params}
                 handleFilterChange={handleFilterChange}
+                setParams={setParams}
                 isSyncing={isSyncing}
             />
 
