@@ -1,13 +1,14 @@
 import { useState, useEffect, useRef } from "react";
 import { router } from "@inertiajs/react";
 import { IoMdClose } from "react-icons/io";
-import { HiUsers, HiOfficeBuilding, HiUpload, HiDatabase, HiClipboardList } from "react-icons/hi";
+import { HiUsers, HiOfficeBuilding, HiUpload, HiDatabase, HiClipboardList, HiDocumentText } from "react-icons/hi";
 import StatsCards from "@/Components/Dashboard/StatsCards";
 import UsersTable from "@/Components/Dashboard/UsersTable";
 import CreateUserModal from "@/Components/Dashboard/CreateUserModal";
 import AreasManagement from "@/Components/Dashboard/AreasManagement";
 import PlantsManagement from "@/Components/Dashboard/PlantsManagement";
 import LogsManagement from "@/Components/Dashboard/LogsManagement";
+import ObservationsManagement from "@/Components/Dashboard/ObservationsManagement";
 import PrimaryButton from "@/Components/PrimaryButton";
 import Modal from "@/Components/Modal";
 import SecondaryButton from "@/Components/SecondaryButton";
@@ -25,6 +26,7 @@ export default function SuperAdminView({
     onDeleteUser,
     onImportClick,
     filters,
+    allObservations = [],
 }) {
     const [showCreateModal, setShowCreateModal] = useState(false);
     const [showBackupModal, setShowBackupModal] = useState(false);
@@ -158,6 +160,7 @@ export default function SuperAdminView({
 
     const tabs = [
         { id: "users", label: "Usuarios", icon: HiUsers },
+        { id: "observations", label: "Observaciones", icon: HiDocumentText },
         { id: "areas", label: "Áreas / Plantas", icon: HiOfficeBuilding },
         { id: "logs", label: "Logs de Salud", icon: HiClipboardList },
     ];
@@ -364,6 +367,14 @@ export default function SuperAdminView({
                     <hr className="border-gray-200 dark:border-gray-700" />
                     <AreasManagement areas={areas} />
                 </div>
+            )}
+
+            {activeTab === "observations" && (
+                <ObservationsManagement
+                    observations={allObservations}
+                    plants={plants}
+                    areas={areas}
+                />
             )}
 
             {activeTab === "logs" && (

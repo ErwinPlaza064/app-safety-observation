@@ -25,6 +25,7 @@ export default function Dashboard({
     employeeNotificationCount,
     canViewAllPlants,
     plants,
+    allObservations,
 }) {
     const { auth } = usePage().props;
     const user = auth.user;
@@ -92,6 +93,7 @@ export default function Dashboard({
                             onImportClick={() => setShowImportModal(true)}
                             filters={filters}
                             filterAreas={filterAreas}
+                            allObservations={allObservations || []}
                         />
                     ) : user.is_ehs_manager ? (
                         ehsStats ? (

@@ -69,6 +69,20 @@ class DashboardController extends Controller
             $data['plants'] = Plant::withCount(['observations', 'users'])->get()->sortBy('name')->values();
             $data['areas'] = Area::withCount('observations')->orderBy('name')->get();
             $data['categories'] = Category::where('is_active', true)->get();
+
+            // Todas las observaciones para el panel de gestión
+            $data['allObservations'] = Observation::with([
+                'user:id,name,email',
+                'plant:id,name',
+                'area:id,name',
+                'categories:id,name',
+                'images:id,observation_id,path',
+                'closedByUser:id,name',
+            ])
+                ->submitted()
+                ->orderByDesc('observations.created_at')
+                ->take(500)
+                ->get();
         }
 
         // ==========================================
