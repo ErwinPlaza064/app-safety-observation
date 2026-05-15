@@ -26,6 +26,8 @@ class Observation extends Model
         'closed_at',
         'closed_by',
         'closure_notes',
+        'share_token',
+        'share_expires_at',
     ];
 
     protected static function boot()
@@ -42,7 +44,38 @@ class Observation extends Model
         'observation_date' => 'date',
         'is_draft' => 'boolean',
         'closed_at' => 'datetime',
+        'share_expires_at' => 'datetime',
     ];
+
+    /**
+     * Genera un token único para compartir y establece la expiración en 7 días.
+     */
+    public function generateShareToken(): string
+    {
+        $this->share_token = bin2hex(random_bytes(32));
+        $this->share_expires_at = now()->addDays(7);
+        $this->save();
+
+        return $this->share_token;
+    }
+
+    /**
+     * Verifica si el enlace compartido ha expirado.
+     */
+    public function isShareExpired(): bool
+    {
+        // Si nunca se ha compartido (no tiene token), permitir acceso
+        // para mantener compatibilidad con enlaces antiguos basados en UUID
+        if (!$this->share_token && !$this->share_expires_at) {
+            return false;
+        }
+
+        if (!$this->share_expires_at) {
+            return true;
+        }
+
+        return $this->share_expires_at->isPast();
+    }
 
 
     public function user()

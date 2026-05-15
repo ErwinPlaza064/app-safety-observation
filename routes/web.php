@@ -229,6 +229,8 @@ Route::middleware(['auth', 'prevent-back-history'])->group(function () {
             ->name('close');
         Route::post('/{observation}/reopen', [ObservationController::class, 'reopen'])
             ->name('reopen');
+        Route::post('/{observation}/share', [ObservationController::class, 'generateShareLink'])
+            ->name('share');
     });
 
     Route::get('/participation/history', [ParticipationController::class, 'history'])

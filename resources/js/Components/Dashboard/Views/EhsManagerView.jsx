@@ -47,7 +47,10 @@ export default function EhsManagerView({
     const isFirstRender = useRef(true);
 
     // 1. Efecto para recarga automática - Optimizado para evitar conflictos con filtros
+    // Pausar si hay un modal abierto para evitar errores de React (#310)
     useEffect(() => {
+        if (activeMetric || selectedObservation) return;
+
         // No recargar automáticamente si el usuario está escribiendo o si el filtro local
         // no coincide con el filtro del servidor (estamos esperando respuesta)
         const isStale =
@@ -67,10 +70,10 @@ export default function EhsManagerView({
                 replace: true,
                 onFinish: () => setIsSyncing(false),
             });
-        }, 8000); // 8 segundos para evitar saturar el servidor en dashboards pesados
+        }, 8000);
 
         return () => clearInterval(intervalId);
-    }, [params, filters]);
+    }, [params, filters, activeMetric, selectedObservation]);
 
     // 2. Efecto para abrir modal desde URL (notificaciones)
     useEffect(() => {
@@ -248,8 +251,9 @@ export default function EhsManagerView({
             />
 
             {/* Modales Compartidas */}
+            {activeMetric && (
             <DrillDownModal
-                show={!!activeMetric}
+                show={true}
                 onClose={() => setActiveMetric(null)}
                 title={
                     activeMetric === "custom"
@@ -320,12 +324,13 @@ export default function EhsManagerView({
                     }
                 }}
             />
+            )}
 
             <ObservationDetailsModal
                 show={!!selectedObservation}
                 observation={selectedObservation}
                 onClose={() => setSelectedObservation(null)}
-                canShare={canViewAllPlants}
+                canShare={true}
             />
 
             {!isMobile && (

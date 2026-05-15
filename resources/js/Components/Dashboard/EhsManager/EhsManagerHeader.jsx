@@ -246,18 +246,16 @@ export default function EhsManagerHeader({
                         </svg>
                     </a>
                     
-                    {canViewAllPlants && (
-                        <button
-                            onClick={() => {
-                                const section = document.getElementById('recent-observations-table');
-                                section?.scrollIntoView({ behavior: 'smooth' });
-                            }}
-                            className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 shadow-md group"
-                        >
-                            <IoMdShare className="w-4 h-4 group-hover:rotate-12 transition-transform" />
-                            <span>Compartir</span>
-                        </button>
-                    )}
+                    <button
+                        onClick={() => {
+                            const section = document.getElementById('recent-observations-table');
+                            section?.scrollIntoView({ behavior: 'smooth' });
+                        }}
+                        className="flex items-center gap-2 px-5 py-2.5 bg-purple-600 text-white rounded-xl text-sm font-bold hover:bg-purple-700 hover:shadow-lg hover:shadow-purple-500/25 transition-all active:scale-95 shadow-md group"
+                    >
+                        <IoMdShare className="w-4 h-4 group-hover:rotate-12 transition-transform" />
+                        <span>Compartir</span>
+                    </button>
                 </div>
             </div>
         </div>
