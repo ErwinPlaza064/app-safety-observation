@@ -194,13 +194,6 @@ class ObservationController extends Controller
 
     public function show(Observation $observation)
     {
-        // Si no está autenticado, verificar si el enlace compartido ha expirado (7 días dinámicos)
-        if (!Auth::check()) {
-            if ($observation->isShareExpired()) {
-                return Inertia::render('Observations/ShareExpired');
-            }
-        }
-
         // Si es borrador, solo el dueño o admins pueden verlo (requiere login)
         if ($observation->is_draft) {
             if (!Auth::check()) {
@@ -229,30 +222,6 @@ class ObservationController extends Controller
                     ? url('/storage/' . $observation->images->first()->path)
                     : url('/images/icons/icon-512x512.png'),
             ]
-        ]);
-    }
-
-    /**
-     * Genera un enlace de compartir con 7 días de vigencia.
-     * Solo para usuarios EHS.
-     */
-    public function generateShareLink(Observation $observation)
-    {
-        $user = Auth::user();
-
-        // Solo usuarios EHS pueden compartir
-        $canShare = $user->is_ehs_manager || $user->is_ehs_coordinator || $user->is_super_admin;
-
-        if (!$canShare) {
-            abort(403, 'No tienes permisos para compartir este reporte.');
-        }
-
-        $observation->generateShareToken();
-
-        return response()->json([
-            'url' => route('observations.show', $observation->uuid),
-            'expires_at' => $observation->share_expires_at->toIso8601String(),
-            'expires_in_days' => 7
         ]);
     }
 
